@@ -7,9 +7,11 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import { useNavigate } from 'react-router-dom';
 // material
-import { Stack, TextField} from '@mui/material';
+import { Stack, TextField } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+import { number } from 'prop-types';
 
+const axios = require('axios');
 // ----------------------------------------------------------------------
 
 export default function RegisterForm() {
@@ -19,8 +21,25 @@ export default function RegisterForm() {
   const [name, setName] = useState('');
   const [sArea, setSArea] = useState();
 
-  const fileChangeHandler = (event) => {
-    setImage(event.target.files[0]);
+  const fileToDataUri = (file) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      resolve(event.target.result)
+    };
+    reader.readAsDataURL(file);
+    })
+
+  const fileChangeHandler = (file) => {
+    if(!file) {
+      setImage('');
+      return;
+    }
+
+    fileToDataUri(file)
+      .then(dataUri => {
+        setImage(dataUri)
+      })
+    
     console.log(image);
   }
 
@@ -28,9 +47,11 @@ export default function RegisterForm() {
   //   console.log(image);
   // }
 
+
   
+    
 
-
+  
   const RegisterSchema = Yup.object().shape({
     name: Yup.string()
       .min(2, 'Too Short!')
@@ -40,7 +61,9 @@ export default function RegisterForm() {
     add: Yup.string().required('Address is required'),
     locality: Yup.string().required('Locality is required'),
     city: Yup.string().required('City is required'),
-    pin: Yup.string().required('PIN is required')
+    pin: Yup.string().required('PIN is required'),
+    service: Yup.string().required('Service is required'),
+    
   });
 
   const formik = useFormik({
@@ -49,13 +72,43 @@ export default function RegisterForm() {
       add: '',
       locality: '',
       city: '',
-      pin: ''
+      pin: '',
+      service:'',
+      hghlts:''
     },
     validationSchema: RegisterSchema,
     onSubmit: () => {
-      console.log('imag',image);
-      // navigate('/dashboard', { replace: true });
+      // console.log('imag', formik.values.name);
+      const nm = localStorage.getItem('number');
+      console.log('number:', nm);
+      axios.post('http://localhost:5000/users/updateDetails',{
+        'name':formik.values.name,
+        'number':nm,
+        'img':image,
+        'addr':formik.values.add,
+        'locality':formik.values.locality,
+        'city':formik.values.city,
+        'pin':formik.values.pin,
+        'area':sArea,
+        'service':formik.values.service,
+        'hghlts':formik.values.hghlts
+      })
+      .then((response) => {
+        console.log("response:",response)
+        if(response.data==="Success")
+        {
+          
+          navigate('/dashboard', { replace: true });
+        }
+      })
+      .catch((e) =>{
+        console.log("Error",e);
+      })
+      
+      
     }
+      
+    
   });
 
   const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
@@ -86,8 +139,9 @@ export default function RegisterForm() {
             <input
               accept="image/*"
               type="file"
-              onChange={fileChangeHandler}
+              onChange={(event)=>{fileChangeHandler(event.target.files[0] || null)}}
             />
+            <img width="200" height="200" src={image} alt="avatar"/>
           </Stack>
 
           <TextField
@@ -128,26 +182,47 @@ export default function RegisterForm() {
             />
           </Stack>
           <FormControl>
-          <InputLabel>Area of Service</InputLabel>
+            <InputLabel>Area of Service</InputLabel>
 
-          <Select
-           
-            value={sArea}
-            label="Area of Service"
-            onChange={(e)=>setSArea(e.target.value)}
-          >
-            <MenuItem value={5}>5 KM Radius</MenuItem>
-            <MenuItem value={10}>10 KM Radius</MenuItem>
-            <MenuItem value={15}>15 KM Radius</MenuItem>
-          </Select>
+            <Select
+
+              value={sArea}
+              label="Area of Service"
+              onChange={(e) => setSArea(e.target.value)}
+            >
+              <MenuItem value={5}>5 KM Radius</MenuItem>
+              <MenuItem value={10}>10 KM Radius</MenuItem>
+              <MenuItem value={15}>15 KM Radius</MenuItem>
+            </Select>
           </FormControl>
+
+          <TextField
+            fullWidth
+            type="text"
+            label="Service Provided"
+            {...getFieldProps('service')}
+            error={Boolean(touched.service && errors.service)}
+            helperText={touched.service && errors.service}
+          />
+
+          <TextField
+            fullWidth
+            multiline
+            minRows='2'
+            type="text"
+            label="Highlights"
+            {...getFieldProps('hghlts')}
+            error={Boolean(touched.hghlts && errors.hghlts)}
+            helperText={touched.hghlts && errors.hghlts}
+          />
+
           <LoadingButton
             fullWidth
             size="large"
             type="submit"
             variant="contained"
             loading={isSubmitting}
-            
+
           >
             Register
           </LoadingButton>

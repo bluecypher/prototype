@@ -48,6 +48,7 @@ export default function LoginForm() {
         console.log(response)
         if(response.data==="Success")
         {
+          localStorage.setItem('number',values.number);
           navigate('/register', { replace: true });
         }
       })

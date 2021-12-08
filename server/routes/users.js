@@ -25,10 +25,29 @@ router.get('/',async(req,res)=>{
 
 router.post('/login',(req,res)=>{
     const { number } = req.body;
+    
     if(number)
     {
         try{
             db.promise().query(`INSERT INTO USERS(number) VALUES('${number}')`);
+            res.status(200).send('Success');
+            
+        }
+        catch(e){
+            
+            console.log(e);
+            res.status(404).send('Error');
+        }
+    }
+    
+})
+
+router.post('/updateDetails',(req,res)=>{
+    const { name,number,img,addr,locality,city,pin,area,service,hghlts } = req.body;
+    if(number)
+    {
+        try{
+            db.promise().query(`UPDATE USERS SET name='${name}',img='${img}',addr='${addr}',locality='${locality}',city='${city}',pin='${pin}',area='${area}',service='${service}',hghlts='${hghlts}' WHERE number='${number}' `);
             res.status(200).send('Success');
             
         }
