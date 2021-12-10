@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import React,{ useState } from 'react';
 import { Outlet,Link as RouterLink } from 'react-router-dom';
 // material
 import { styled } from '@mui/material/styles';
-import { Stack,Link } from '@mui/material';
-import Logo from '../../components/Logo';
+import DashboardApp from '../../pages/DashboardApp';
+// import { Stack,Link } from '@mui/material';
+// import Logo from '../../components/Logo';
 //
 import DashboardNavbar from './DashboardNavbar';
 import DashboardSidebar from './DashboardSidebar';
@@ -36,7 +37,7 @@ const MainStyle = styled('div')(({ theme }) => ({
 
 export default function DashboardLayout() {
   const [open, setOpen] = useState(false);
-
+  const { Provider, Consumer } = React.createContext();
   return (
     <RootStyle>
       
@@ -45,7 +46,9 @@ export default function DashboardLayout() {
       <DashboardSidebar isOpenSidebar={open} onCloseSidebar={() => setOpen(false)} />
       
       <MainStyle>
-        <Outlet />
+        <Provider profile="abcde">
+        <Outlet/>
+        </Provider>
       </MainStyle>
     </RootStyle>
   );

@@ -17,8 +17,13 @@ app.use(express.json({limit:'50mb'}));
 app.use(express.urlencoded( {extended:true,limit:'50mb'} ));
 app.use(cors());
 
-app.get('/', (req, res) => {
+app.get('/session', (req, res) => {
+    res.cookie('session','uasu',{
+        expires: new Date(Date.now() + 1000*60),
+        httpOnly:true
+    });
     res.send('Hello');
+        
 });
 
 app.post('/', (req, res) => {

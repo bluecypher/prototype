@@ -3,14 +3,18 @@ import { useRef, useState } from 'react';
 import homeFill from '@iconify/icons-eva/home-fill';
 import personFill from '@iconify/icons-eva/person-fill';
 import settings2Fill from '@iconify/icons-eva/settings-2-fill';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useSelector } from "react-redux";
+import { useCookies } from 'react-cookie';
 // material
 import { alpha } from '@mui/material/styles';
-import { Button, Box, Divider, MenuItem, Typography, Avatar, IconButton } from '@mui/material';
+import { Button, Box, Divider, MenuItem, Typography, Avatar, IconButton,Link } from '@mui/material';
 // components
 import MenuPopover from '../../components/MenuPopover';
+
 //
-import account from '../../_mocks_/account';
+// import account from '../../_mocks_/account';
+const axios = require('axios');
 
 // ----------------------------------------------------------------------
 
@@ -37,13 +41,33 @@ const MENU_OPTIONS = [
 export default function AccountPopover() {
   const anchorRef = useRef(null);
   const [open, setOpen] = useState(false);
-
+  
+  const name = useSelector((state)=> state.profileReducer.name)
+  const number = useSelector((state)=> state.profileReducer.number)
+  const img = useSelector((state)=> state.profileReducer.img)
+  const [cookies, setCookie, removeCookie] = useCookies('');
   const handleOpen = () => {
     setOpen(true);
   };
   const handleClose = () => {
     setOpen(false);
   };
+  const navigate = useNavigate(); 
+  const handleLogout= ()=>{
+    // console.log('hiiiiiiiiii')
+     axios.get('http://localhost:5000/users/logout',{params:{number}})
+     .then((res) => {
+       if(res.data === 'success')
+       {
+        removeCookie('token');
+          navigate('/login');
+       }
+     })
+     .catch((err)=>{
+       console.log('error',err);
+     })
+    
+  }
 
   return (
     <>
@@ -67,7 +91,7 @@ export default function AccountPopover() {
           })
         }}
       >
-        <Avatar src={account.photoURL} alt="photoURL" />
+        <Avatar src={img} alt="photoURL" />
       </IconButton>
 
       <MenuPopover
@@ -78,10 +102,10 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2.5 }}>
           <Typography variant="subtitle1" noWrap>
-            {account.displayName}
+            {name}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {account.number}
+            {number}
           </Typography>
         </Box>
 
@@ -110,9 +134,11 @@ export default function AccountPopover() {
         ))}
 
         <Box sx={{ p: 2, pt: 1.5 }}>
-          <Button fullWidth color="inherit" variant="outlined">
+          {/* <Link underline="none" to="/login" component={RouterLink}> */}
+          <Button fullWidth color="inherit" variant="outlined" onClick={handleLogout}>
             Logout
           </Button>
+          {/* </Link> */}
         </Box>
       </MenuPopover>
     </>

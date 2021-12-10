@@ -40,7 +40,7 @@ export default function RegisterForm() {
         setImage(dataUri)
       })
     
-    console.log(image);
+    console.log('image:',image);
   }
 
   // const onSubmitHandler = () => {
@@ -141,7 +141,7 @@ export default function RegisterForm() {
               type="file"
               onChange={(event)=>{fileChangeHandler(event.target.files[0] || null)}}
             />
-            <img width="200" height="200" src={image} alt="avatar"/>
+            {/* <img width="200" height="200" src={image} alt="avatar"/> */}
           </Stack>
 
           <TextField

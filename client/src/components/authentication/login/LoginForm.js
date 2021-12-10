@@ -5,6 +5,7 @@ import { useFormik, Form, FormikProvider } from 'formik';
 import { Icon } from '@iconify/react';
 import eyeFill from '@iconify/icons-eva/eye-fill';
 import eyeOffFill from '@iconify/icons-eva/eye-off-fill';
+import { useCookies } from 'react-cookie';
 // material
 import {
   Link,
@@ -24,7 +25,7 @@ const axios = require('axios');
 export default function LoginForm() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-
+  const [cookies, setCookie] = useCookies('');
   const LoginSchema = Yup.object().shape({
     number: Yup.number().min(10).required('Mobile number is required'),
     password: Yup.string().required('OTP is required')
@@ -46,9 +47,10 @@ export default function LoginForm() {
       })
       .then((response) => {
         console.log(response)
-        if(response.data==="Success")
+        if(response.data.res==="success")
         {
           localStorage.setItem('number',values.number);
+          setCookie("token",response.data.jwToken,{path: '/',expires:new Date(Date.now() + 1000*60*15)});
           navigate('/register', { replace: true });
         }
       })

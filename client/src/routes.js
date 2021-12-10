@@ -16,13 +16,14 @@ import NotFound from './pages/Page404';
 // ----------------------------------------------------------------------
 
 export default function Router() {
+  
   return useRoutes([
     {
       path: '/dashboard',
       element: <DashboardLayout />,
       children: [
         { element: <Navigate to="/dashboard/app" replace /> },
-        { path: 'app', element: <DashboardApp /> },
+        { path: 'app', element: <DashboardApp/> },
         { path: 'work', element: <WorkDashboard /> },
         { path: 'user', element: <User /> },
         { path: 'products', element: <Products /> },
