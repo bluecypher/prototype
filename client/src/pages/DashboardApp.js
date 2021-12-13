@@ -5,7 +5,7 @@ import React,{ useState, useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { Box, Grid, Container, Typography, Card, Avatar, Stack, Button, Link } from '@mui/material';
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addProfile } from '../actions/index';
 
 // components
@@ -42,32 +42,44 @@ const RootStyle = styled(Card)(({ theme }) => ({
 }));
 
 
- const DashboardApp = ({profile}) => {
-  const navigate = useNavigate();
-  const [name, setName] = useState('');
-  const [img, setImg] = useState();
-  const [number, setNumber] = useState('');
+ const DashboardApp = () => {
+  // const navigate = useNavigate();
+  // const [name, setName] = useState('');
+  // const [img, setImg] = useState();
+  // const [number, setNumber] = useState('');
   const [cookies, setCookies] = useCookies('');
-
+  
+  const name = useSelector((state)=>state.profileReducer.name);
+  const number = useSelector((state)=>state.profileReducer.number);
+  const img = useSelector((state)=>state.profileReducer.img);
   const dispatch = useDispatch();
   useEffect(() => {
-    async function foo() {
-      setNumber(localStorage.getItem('number'));
-      const res = await axios.get('http://localhost:5000/users/getData', {  params: { 'number': localStorage.getItem('number'),'Cookies':cookies } })
-        // .then((res) => {
-          console.log('img data', res.data[0]);
-          const bufferOriginal = Buffer.from(res.data[0].img.data);
-          // console.log('img data', bufferOriginal.toString('utf8'));
-          dispatch(addProfile([res.data[0].name, localStorage.getItem('number'), bufferOriginal.toString('utf8')]));
-          setName(res.data[0].name);
-          setImg(bufferOriginal.toString('utf8'));
-        
-        // .catch((err) => {
-        //   console.log('err', err);
-        // });
+    //  function foo() {
+      // setNumber(localStorage.getItem('number'));
+      axios.get('http://localhost:5000/users/getData', {  params: { 'number': localStorage.getItem('number'),Cookies:cookies } })
 
-    }
-    foo();
+        .then((res) => {
+          console.log('img data', res.data[0]);
+          let bufferOriginal=null;
+          if(res.data[0].img)
+          {
+          if(res.data[0].img.data)
+          {
+          bufferOriginal = Buffer.from(res.data[0].img.data);
+          // setImg(bufferOriginal.toString('utf8'));
+          }
+        }
+          // console.log('img data', bufferOriginal.toString('utf8'));
+          dispatch(addProfile([res.data[0].name?res.data[0].name:null, localStorage.getItem('number'), bufferOriginal?bufferOriginal.toString('utf8'):null]));
+          
+          
+      })
+        .catch((err) => {
+          console.log('err', typeof err);
+        });
+
+    
+    // foo();
   });
   return (
     <Page title="Dashboard">
@@ -76,9 +88,14 @@ const RootStyle = styled(Card)(({ theme }) => ({
           <Typography variant="h4">Hi, Welcome back</Typography>
         </Box>
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid item xs={12} sm={6} md={3} align='center'>
             <RootStyle>
+              {
+                img ?
               <Avatar src={img} sx={{ width: 150, height: 150, alignSelf: 'center' }} alt="photoURL" />
+              :
+              <Avatar  sx={{ width: 150, height: 150, alignSelf: 'center' }} alt="photoURL" />
+              }
             </RootStyle>
           </Grid>
           <Grid item xs={12} sm={6} md={6}>
@@ -98,7 +115,7 @@ const RootStyle = styled(Card)(({ theme }) => ({
                 variant="contained"
 
               >
-                Sign in
+                Proceed
               </Button>
             </Link>
           </Grid>

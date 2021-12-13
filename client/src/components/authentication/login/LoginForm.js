@@ -14,7 +14,8 @@ import {
   TextField,
   IconButton,
   InputAdornment,
-  FormControlLabel
+  FormControlLabel,
+  withStyles
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
@@ -22,12 +23,19 @@ const axios = require('axios');
 
 // ----------------------------------------------------------------------
 
-export default function LoginForm() {
+// const styles = (theme) => ({
+//   textField: {
+//     borderColor:'black'
+//   }
+// });
+
+
+function LoginForm() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [cookies, setCookie] = useCookies('');
   const LoginSchema = Yup.object().shape({
-    number: Yup.number().min(10).required('Mobile number is required'),
+    number: Yup.number('Mobile number must be numeric.').min(1000000000,'Too Short. Please enter a valid number.').required('Mobile number is required'),
     password: Yup.string().required('OTP is required')
   });
 
@@ -67,15 +75,15 @@ export default function LoginForm() {
   const handleShowPassword = () => {
     setShowPassword((show) => !show);
   };
-
+  
   return (
     <FormikProvider value={formik}>
       <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
         <Stack spacing={3}>
           <TextField
             fullWidth
-            maxlength={10}
-            type="number"
+            inputProps={{maxLength:10}}
+            
             label="Mobile number"
             {...getFieldProps('number')}
             error={Boolean(touched.number && errors.number)}
@@ -88,25 +96,30 @@ export default function LoginForm() {
             
             variant="contained"
             loading={isSubmitting}
-            onClick={()=>console.log('get otp')}
+            onClick={()=>{
+              
+              console.log('get otp')}}
           >
             Get OTP
           </LoadingButton>
           <TextField
             fullWidth
-
+            
             type={showPassword ? 'text' : 'password'}
             label="OTP"
             {...getFieldProps('password')}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={handleShowPassword} edge="end">
-                    <Icon icon={showPassword ? eyeFill : eyeOffFill} />
-                  </IconButton>
-                </InputAdornment>
-              )
+            inputProps={{
+              maxLength:6,
+              // endAdornment: (
+              //   <InputAdornment position="end">
+              //     <IconButton onClick={handleShowPassword} edge="end">
+              //       <Icon icon={showPassword ? eyeFill : eyeOffFill} />
+              //     </IconButton>
+              //   </InputAdornment>
+              // )
+              
             }}
+            
             error={Boolean(touched.password && errors.password)}
             helperText={touched.password && errors.password}
           />
@@ -136,3 +149,6 @@ export default function LoginForm() {
     </FormikProvider>
   );
 }
+
+
+export default (LoginForm);

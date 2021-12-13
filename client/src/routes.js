@@ -12,6 +12,7 @@ import Products from './pages/Products';
 import Blog from './pages/Blog';
 import User from './pages/User';
 import NotFound from './pages/Page404';
+import SessionExpired from './pages/SessionExpired';
 
 // ----------------------------------------------------------------------
 
@@ -38,6 +39,7 @@ export default function Router() {
         { path: 'login', element: <Login /> },
         { path: 'register', element: <Register /> },
         { path: '404', element: <NotFound /> },
+        { path: 'sessionExpired', element: <SessionExpired /> },
         { path: '/', element: <Login /> },
         { path: '*', element: <Navigate to="/404" /> }
       ]

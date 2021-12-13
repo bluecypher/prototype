@@ -22,7 +22,7 @@ const MENU_OPTIONS = [
   {
     label: 'Home',
     icon: homeFill,
-    linkTo: '/'
+    linkTo: '/dashboard'
   },
   {
     label: 'Profile',
@@ -54,13 +54,14 @@ export default function AccountPopover() {
   };
   const navigate = useNavigate(); 
   const handleLogout= ()=>{
-    // console.log('hiiiiiiiiii')
+    
      axios.get('http://localhost:5000/users/logout',{params:{number}})
      .then((res) => {
        if(res.data === 'success')
        {
+         localStorage.removeItem('number');
         removeCookie('token');
-          navigate('/login');
+          navigate('/sessionExpired');
        }
      })
      .catch((err)=>{

@@ -33,10 +33,8 @@ import USERLIST from '../_mocks_/user';
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', alignRight: false },
-  // { id: 'company', label: 'Company', alignRight: false },
-  { id: 'role', label: 'Role', alignRight: false },
-  { id: 'isVerified', label: 'Verified', alignRight: false },
-  { id: 'status', label: 'Status', alignRight: false },
+  
+  { id: 'number', label: 'Mobile number', alignRight: false },
   { id: '' }
 ];
 
@@ -156,7 +154,7 @@ export default function User() {
           />
 
           <Scrollbar>
-            <TableContainer sx={{ minWidth: 800 }}>
+            <TableContainer sx={{ minWidth: {xs:400, md:800} }}>
               <Table>
                 <UserListHead
                   order={order}
@@ -192,14 +190,14 @@ export default function User() {
                           <TableCell component="th" scope="row" padding="none">
                             <Stack direction="row" alignItems="center" spacing={2}>
                               <Avatar alt={name} src={avatarUrl} />
-                              <Typography variant="subtitle2" noWrap>
+                              <Typography variant="subtitle2" >
                                 {name}
                               </Typography>
                             </Stack>
                           </TableCell>
                           {/* <TableCell align="left">{company}</TableCell> */}
-                          <TableCell align="left">{role}</TableCell>
-                          <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
+                          <TableCell align="left">9999999999</TableCell>
+                          {/* <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
                           <TableCell align="left">
                             <Label
                               variant="ghost"
@@ -207,7 +205,7 @@ export default function User() {
                             >
                               {sentenceCase(status)}
                             </Label>
-                          </TableCell>
+                          </TableCell> */}
 
                           <TableCell align="right">
                             <UserMoreMenu />

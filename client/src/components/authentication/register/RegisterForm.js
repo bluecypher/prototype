@@ -7,9 +7,9 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import { useNavigate } from 'react-router-dom';
 // material
-import { Stack, TextField } from '@mui/material';
+import { Stack, TextField, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { number } from 'prop-types';
+// import { number } from 'prop-types';
 
 const axios = require('axios');
 // ----------------------------------------------------------------------
@@ -27,10 +27,10 @@ export default function RegisterForm() {
       resolve(event.target.result)
     };
     reader.readAsDataURL(file);
-    })
+  })
 
   const fileChangeHandler = (file) => {
-    if(!file) {
+    if (!file) {
       setImage('');
       return;
     }
@@ -39,8 +39,8 @@ export default function RegisterForm() {
       .then(dataUri => {
         setImage(dataUri)
       })
-    
-    console.log('image:',image);
+
+    console.log('image:', image);
   }
 
   // const onSubmitHandler = () => {
@@ -48,10 +48,10 @@ export default function RegisterForm() {
   // }
 
 
-  
-    
 
-  
+
+
+
   const RegisterSchema = Yup.object().shape({
     name: Yup.string()
       .min(2, 'Too Short!')
@@ -63,7 +63,7 @@ export default function RegisterForm() {
     city: Yup.string().required('City is required'),
     pin: Yup.string().required('PIN is required'),
     service: Yup.string().required('Service is required'),
-    
+
   });
 
   const formik = useFormik({
@@ -73,42 +73,41 @@ export default function RegisterForm() {
       locality: '',
       city: '',
       pin: '',
-      service:'',
-      hghlts:''
+      service: '',
+      hghlts: ''
     },
     validationSchema: RegisterSchema,
     onSubmit: () => {
       // console.log('imag', formik.values.name);
       const nm = localStorage.getItem('number');
       console.log('number:', nm);
-      axios.post('http://localhost:5000/users/updateDetails',{
-        'name':formik.values.name,
-        'number':nm,
-        'img':image,
-        'addr':formik.values.add,
-        'locality':formik.values.locality,
-        'city':formik.values.city,
-        'pin':formik.values.pin,
-        'area':sArea,
-        'service':formik.values.service,
-        'hghlts':formik.values.hghlts
+      axios.post('http://localhost:5000/users/updateDetails', {
+        'name': formik.values.name,
+        'number': nm,
+        'img': image,
+        'addr': formik.values.add,
+        'locality': formik.values.locality,
+        'city': formik.values.city,
+        'pin': formik.values.pin,
+        'area': sArea,
+        'service': formik.values.service,
+        'hghlts': formik.values.hghlts
       })
-      .then((response) => {
-        console.log("response:",response)
-        if(response.data==="Success")
-        {
-          
-          navigate('/dashboard', { replace: true });
-        }
-      })
-      .catch((e) =>{
-        console.log("Error",e);
-      })
-      
-      
+        .then((response) => {
+          console.log("response:", response)
+          if (response.data === "Success") {
+
+            navigate('/dashboard', { replace: true });
+          }
+        })
+        .catch((e) => {
+          console.log("Error", e);
+        })
+
+
     }
-      
-    
+
+
   });
 
   const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
@@ -117,7 +116,7 @@ export default function RegisterForm() {
     <FormikProvider value={formik}>
       <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
         <Stack spacing={3}>
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 2, sm: 4 }}>
             <TextField
               fullWidth
               value={name}
@@ -135,13 +134,25 @@ export default function RegisterForm() {
               error={Boolean(touched.lastName && errors.lastName)}
               helperText={touched.lastName && errors.lastName}
             /> */}
+            <Stack spacing={1}>
+              <Stack direction="row" spacing={6}>
+                <Typography>
+                  Upload photo
+                </Typography>
+                {
+                  image &&
+                (<img width="30" height="30" src={image} alt="avatar" />)
+                }
+              </Stack>
+              <input
+                accept="image/*"
+                type="file"
+                onChange={(event) => { fileChangeHandler(event.target.files[0] || null) }}
+              />
 
-            <input
-              accept="image/*"
-              type="file"
-              onChange={(event)=>{fileChangeHandler(event.target.files[0] || null)}}
-            />
-            {/* <img width="200" height="200" src={image} alt="avatar"/> */}
+
+            </Stack>
+
           </Stack>
 
           <TextField
@@ -224,7 +235,7 @@ export default function RegisterForm() {
             loading={isSubmitting}
 
           >
-            Register
+            Update
           </LoadingButton>
         </Stack>
       </Form>

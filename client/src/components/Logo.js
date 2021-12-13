@@ -13,7 +13,7 @@ Logo.propTypes = {
 export default function Logo({ sx }) {
   return (
   <Box sx={{...sx}}>
-    <Typography fontFamily='"Segoe UI"' variant="h2">Sahayak</Typography>
+    <Typography fontFamily='"Segoe UI"' variant="h1">Sahayak</Typography>
     </Box>
     );
 }
