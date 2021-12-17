@@ -11,6 +11,7 @@ import Products from './pages/Products';
 // import Landing from './Landing';
 import Blog from './pages/Blog';
 import User from './pages/User';
+import Customers from './pages/Customers';
 import NotFound from './pages/Page404';
 import SessionExpired from './pages/SessionExpired';
 
@@ -27,6 +28,7 @@ export default function Router() {
         { path: 'app', element: <DashboardApp/> },
         { path: 'work', element: <WorkDashboard /> },
         { path: 'user', element: <User /> },
+        { path: 'customers', element: <Customers /> },
         { path: 'products', element: <Products /> },
         { path: 'blog', element: <Blog /> }
       ]

@@ -2,7 +2,7 @@ import React,{ useState } from 'react';
 import { Outlet,Link as RouterLink } from 'react-router-dom';
 // material
 import { styled } from '@mui/material/styles';
-import DashboardApp from '../../pages/DashboardApp';
+// import DashboardApp from '../../pages/DashboardApp';
 // import { Stack,Link } from '@mui/material';
 // import Logo from '../../components/Logo';
 //
@@ -46,7 +46,7 @@ export default function DashboardLayout() {
       <DashboardSidebar isOpenSidebar={open} onCloseSidebar={() => setOpen(false)} />
       
       <MainStyle>
-        <Provider profile="abcde">
+        <Provider>
         <Outlet/>
         </Provider>
       </MainStyle>

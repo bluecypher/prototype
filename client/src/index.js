@@ -18,7 +18,7 @@ ReactDOM.render(
   <HelmetProvider>
     
     <BrowserRouter>
-    <Provider store={store}>
+    <Provider store={store.store}>
       <App />
       </Provider>
     </BrowserRouter>

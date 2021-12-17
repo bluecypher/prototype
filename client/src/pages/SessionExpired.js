@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
+import { useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 // material
+import { useCookies } from 'react-cookie';
 import { styled } from '@mui/material/styles';
 import { Box, Button, Typography, Container } from '@mui/material';
 // components
@@ -20,6 +22,14 @@ const RootStyle = styled(Page)(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function SessionExpired() {
+
+    const [cookies,setCookie,removeCookie] = useCookies();
+
+    useEffect(()=>{
+        localStorage.removeItem('number');
+         localStorage.removeItem('persist:root');
+        removeCookie('token');
+    },[])
   return (
     <RootStyle title="Session Expired">
       <Container>

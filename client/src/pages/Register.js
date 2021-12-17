@@ -42,12 +42,12 @@ const ContentStyle = styled('div')(({ theme }) => ({
 export default function Register() {
   return (
     <RootStyle title="Register">
-      <AuthLayout>
+      {/* <AuthLayout>
         Already have an account? &nbsp;
         <Link underline="none" variant="subtitle2" component={RouterLink} to="/login">
           Login
         </Link>
-      </AuthLayout>
+      </AuthLayout> */}
 
       <MHidden width="mdDown">
         <SectionStyle>
@@ -85,14 +85,14 @@ export default function Register() {
             .
           </Typography>
 
-          <MHidden width="smUp">
+          {/* <MHidden width="smUp">
             <Typography variant="subtitle2" sx={{ mt: 3, textAlign: 'center' }}>
               Already have an account?&nbsp;
               <Link to="/login" component={RouterLink}>
                 Login
               </Link>
             </Typography>
-          </MHidden>
+          </MHidden> */}
         </ContentStyle>
       </Container>
     </RootStyle>

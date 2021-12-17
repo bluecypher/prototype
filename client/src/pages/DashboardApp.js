@@ -43,7 +43,7 @@ const RootStyle = styled(Card)(({ theme }) => ({
 
 
  const DashboardApp = () => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   // const [name, setName] = useState('');
   // const [img, setImg] = useState();
   // const [number, setNumber] = useState('');
@@ -59,7 +59,13 @@ const RootStyle = styled(Card)(({ theme }) => ({
       axios.get('http://localhost:5000/users/getData', {  params: { 'number': localStorage.getItem('number'),Cookies:cookies } })
 
         .then((res) => {
-          console.log('img data', res.data[0]);
+          // console.log('img data', res.data[0]);
+          if(res.data==="InvalidToken" || res.data==="Empty_Request")
+        {
+          navigate('/sessionExpired')
+        }
+        else
+        {
           let bufferOriginal=null;
           if(res.data[0].img)
           {
@@ -71,6 +77,7 @@ const RootStyle = styled(Card)(({ theme }) => ({
         }
           // console.log('img data', bufferOriginal.toString('utf8'));
           dispatch(addProfile([res.data[0].name?res.data[0].name:null, localStorage.getItem('number'), bufferOriginal?bufferOriginal.toString('utf8'):null]));
+      }
           
           
       })

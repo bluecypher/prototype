@@ -58,7 +58,7 @@ function LoginForm() {
         if(response.data.res==="success")
         {
           localStorage.setItem('number',values.number);
-          setCookie("token",response.data.jwToken,{path: '/',expires:new Date(Date.now() + 1000*60*15)});
+          setCookie("token",response.data.jwToken,{path: '/',expires:new Date(Date.now() + 1000*60*60)});
           navigate('/register', { replace: true });
         }
       })

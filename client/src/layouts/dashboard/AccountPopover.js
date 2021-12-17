@@ -59,8 +59,7 @@ export default function AccountPopover() {
      .then((res) => {
        if(res.data === 'success')
        {
-         localStorage.removeItem('number');
-        removeCookie('token');
+         
           navigate('/sessionExpired');
        }
      })

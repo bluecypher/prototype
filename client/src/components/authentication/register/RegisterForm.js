@@ -56,7 +56,7 @@ export default function RegisterForm() {
     name: Yup.string()
       .min(2, 'Too Short!')
       .max(50, 'Too Long!')
-      .required('Name required'),
+      .required('Name is required'),
 
     add: Yup.string().required('Address is required'),
     locality: Yup.string().required('Locality is required'),
@@ -136,7 +136,7 @@ export default function RegisterForm() {
             /> */}
             <Stack spacing={1}>
               <Stack direction="row" spacing={6}>
-                <Typography>
+                <Typography variant="h6">
                   Upload photo
                 </Typography>
                 {

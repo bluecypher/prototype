@@ -8,7 +8,6 @@ import plusFill from '@iconify/icons-eva/plus-fill';
 import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
-import trash2Outline from '@iconify/icons-eva/trash-2-outline';
 // material
 import {
   Card,
@@ -26,7 +25,6 @@ import {
   TablePagination,
   Alert,
   OutlinedInput,
-  IconButton
 } from '@mui/material';
 
 // components
@@ -37,7 +35,7 @@ import SearchNotFound from '../components/SearchNotFound';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../components/_dashboard/user';
 
 //
-// import USERLIST from '../_mocks_/user';
+import USERLIST from '../_mocks_/user';
 
 const axios = require('axios');
 
@@ -102,44 +100,45 @@ function applySortFilter(array, comparator, query) {
 }
 
 // let filteredUsers=[];
-export default function User() {
-  const [USERLIST, setUSERLIST] = useState([]);
+export default function Customers() {
+//   const [USERLIST, setUSERLIST] = useState([]);
   const navigate = useNavigate();
-  const name = useSelector((state) => state.profileReducer.name);
+  const name = useSelector((state)=>state.profileReducer.name);
   // const number = useSelector((state)=>state.profileReducer.number);
   // const img = useSelector((state)=>state.profileReducer.img);
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
-  useEffect(() => {
-    axios.get('http://localhost:5000/users/getMembers', { params: { 'number': localStorage.getItem('number'), Cookies: cookies } })
-      .then((res) => {
-        console.log('redux_name:', name);
-        if (res.data === "InvalidToken") {
-          navigate('/sessionExpired')
-        }
-        else {
-          let uList = [];
-          uList = res.data.map(item => {
-
-            if (item.img) {
-              if (item.img.data) {
-                const bufferOriginal = Buffer.from(item.img.data);
-                item.img = bufferOriginal.toString('utf8');
-                // setImg(bufferOriginal.toString('utf8'));
-              }
-
-            }
-            return item;
-          });
-          setUSERLIST(uList);
-          //  filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
-          console.log('res:', uList);
-        }
-      })
-      .catch((err) => {
-        console.log('err', err);
-      })
-  }, [error, success]);
+//   useEffect(() => {
+//     axios.get('http://localhost:5000/users/getMembers', { params: { 'number': localStorage.getItem('number'), Cookies:cookies } })
+//       .then((res) => {
+//         console.log('redux_name:',name);
+//         if(res.data==="InvalidToken")
+//         {
+//           navigate('/sessionExpired')
+//         }
+//         else {
+//           let uList = [];
+//           uList = res.data.map(item => {
+             
+//             if (item.img) {
+//               if (item.img.data) {
+//                 const bufferOriginal = Buffer.from(item.img.data);
+//                 item.img = bufferOriginal.toString('utf8');
+//                 // setImg(bufferOriginal.toString('utf8'));
+//               }
+              
+//             }
+//             return item;
+//           });
+//           setUSERLIST(uList);
+//           //  filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
+//           console.log('res:', uList);
+//         }
+//         })
+//       .catch((err) => {
+//         console.log('err', err);
+//       })
+//   }, [error,success]);
 
 
 
@@ -151,10 +150,10 @@ export default function User() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [number, setNumber] = useState('');
   const [showAdd, setShowAdd] = useState(false);
+  
+  
 
-
-
-  const [cookies, setCookies] = useCookies('');
+//   const [cookies, setCookies] = useCookies('');
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -169,24 +168,6 @@ export default function User() {
     }
     setSelected([]);
   };
-
-  const handleDelete = (event,n) => {
-    axios.get('http://localhost:5000/users/deleteMembers', { params: { 'number': n, Cookies: cookies } })
-      .then((res) => {
-        console.log('redux_name:', name);
-        if (res.data === "InvalidToken") {
-          navigate('/sessionExpired')
-        }
-        else {
-          
-          console.log('res:', res);
-        }
-      })
-      .catch((err) => {
-        console.log('err', err);
-      })
-    // console.log('number34:', n);
-  }
 
   const handleClick = (event, name) => {
     const selectedIndex = selected.indexOf(name);
@@ -241,29 +222,29 @@ export default function User() {
   const handleAdd = () => {
 
     console.log('Add');
-    axios.post('http://localhost:5000/users/addMembers', {
-      'number': number,
-      'pNumber': localStorage.getItem('number')
-    })
-      .then((res) => {
-        console.log(res);
-        if (res.data === 'success') {
-          setNumber('');
-          setError(false);
-          setSuccess(true);
+    // axios.post('http://localhost:5000/users/addMembers', {
+    //   'number': number,
+    //   'pNumber': localStorage.getItem('number')
+    // })
+    //   .then((res) => {
+    //     console.log(res);
+    //     if (res.data === 'success') {
+    //       setNumber('');
+    //       setError(false);
+    //       setSuccess(true);
+          
 
+    //     }
 
-        }
+    //     else if (res.data === 'no_user') {
+    //       setSuccess(false);
+    //       setError(true);
+    //     }
 
-        else if (res.data === 'no_user') {
-          setSuccess(false);
-          setError(true);
-        }
-
-      })
-      .catch((err) => {
-        console.log('err', err);
-      })
+    //   })
+    //   .catch((err) => {
+    //     console.log('err', err);
+    //   })
   }
 
 
@@ -275,11 +256,11 @@ export default function User() {
   // filteredUsers.length === 0;
 
   return (
-    <Page title="My Team">
+    <Page title="Customers">
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            My Team
+            Customers List
           </Typography>
           {
             showAdd ?
@@ -295,7 +276,7 @@ export default function User() {
                 onClick={handleNewMember}
                 startIcon={<Icon icon={plusFill} />}
               >
-                New Member
+                New Customer
               </Button>
           }
         </Stack>
@@ -303,7 +284,7 @@ export default function User() {
           showAdd &&
           (<Card sx={{ mb: 3, p: 2 }}>
             <Typography variant="h6" gutterBottom>
-              Add a new member
+              Add a new Customer
             </Typography>
             <Stack direction="row" alignItems="center" justifyContent="space-between" >
               <SearchStyle
@@ -317,15 +298,15 @@ export default function User() {
               <Button onClick={handleAdd}>Add</Button>
             </Stack >
             {
-              error &&
+              error && 
               <Stack m={2}>
-                <Alert severity="error">User does not exist!</Alert>
+              <Alert severity="error">User does not exist!</Alert>
               </Stack>
             }
             {
-              success &&
+              success && 
               <Stack m={2}>
-                <Alert severity="success">Member added successfully!</Alert>
+              <Alert severity="success">Customer added successfully!</Alert>
               </Stack>
             }
           </Card>)
@@ -353,7 +334,7 @@ export default function User() {
                   {filteredUsers
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
-                      const { img, name, number } = row;
+                      const { img, name, number  } = row;
                       const isItemSelected = selected.indexOf(name) !== -1;
 
                       return (
@@ -392,10 +373,7 @@ export default function User() {
                           </TableCell> */}
 
                           <TableCell align="right">
-                            {/* <UserMoreMenu /> */}
-                            <IconButton onClick={(event)=>handleDelete(event,number)}>
-                              <Icon icon={trash2Outline} width={24} height={24} />
-                            </IconButton>
+                            <UserMoreMenu />
                           </TableCell>
                         </TableRow>
                       );
