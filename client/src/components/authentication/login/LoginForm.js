@@ -2,20 +2,17 @@ import * as Yup from 'yup';
 import { useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useFormik, Form, FormikProvider } from 'formik';
-import { Icon } from '@iconify/react';
-import eyeFill from '@iconify/icons-eva/eye-fill';
-import eyeOffFill from '@iconify/icons-eva/eye-off-fill';
+// import { Icon } from '@iconify/react';
+// import eyeFill from '@iconify/icons-eva/eye-fill';
+// import eyeOffFill from '@iconify/icons-eva/eye-off-fill';
 import { useCookies } from 'react-cookie';
 // material
 import {
   Link,
   Stack,
-  Checkbox,
+
   TextField,
-  IconButton,
-  InputAdornment,
-  FormControlLabel,
-  withStyles
+  
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
@@ -57,9 +54,18 @@ function LoginForm() {
         console.log(response)
         if(response.data.res==="success")
         {
+          
           localStorage.setItem('number',values.number);
           setCookie("token",response.data.jwToken,{path: '/',expires:new Date(Date.now() + 1000*60*60)});
+          
+          if(response.data.status === 'F')
+          {
+            navigate('/dashboard', { replace: true });
+          }
+          else
+          {
           navigate('/register', { replace: true });
+          }
         }
       })
       .catch((e) =>{

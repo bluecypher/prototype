@@ -26,7 +26,7 @@ export default function LogoOnlyLayout() {
     
       <HeaderStyle>
         <Stack direction='row' sx={{justifyContent:'center'}}>
-        <Link underline="none" to="/" component={RouterLink}>
+        <Link underline="none" to="/dashboard" component={RouterLink}>
           <Logo />
           {/* <Typography>Hi</Typography> */}
         </Link>

@@ -37,7 +37,7 @@ const MainStyle = styled('div')(({ theme }) => ({
 
 export default function DashboardLayout() {
   const [open, setOpen] = useState(false);
-  const { Provider, Consumer } = React.createContext();
+  // const { Provider, Consumer } = React.createContext();
   return (
     <RootStyle>
       
@@ -46,9 +46,10 @@ export default function DashboardLayout() {
       <DashboardSidebar isOpenSidebar={open} onCloseSidebar={() => setOpen(false)} />
       
       <MainStyle>
-        <Provider>
+        {/* <Provider>
         <Outlet/>
-        </Provider>
+        </Provider> */}
+        <Outlet/>
       </MainStyle>
     </RootStyle>
   );

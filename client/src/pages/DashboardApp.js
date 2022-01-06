@@ -1,7 +1,7 @@
 // material
 
 import { alpha, styled } from '@mui/material/styles';
-import React,{ useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { Box, Grid, Container, Typography, Card, Avatar, Stack, Button, Link } from '@mui/material';
@@ -42,52 +42,68 @@ const RootStyle = styled(Card)(({ theme }) => ({
 }));
 
 
- const DashboardApp = () => {
+const DashboardApp = () => {
   const navigate = useNavigate();
   // const [name, setName] = useState('');
   // const [img, setImg] = useState();
   // const [number, setNumber] = useState('');
   const [cookies, setCookies] = useCookies('');
-  
-  const name = useSelector((state)=>state.profileReducer.name);
-  const number = useSelector((state)=>state.profileReducer.number);
-  const img = useSelector((state)=>state.profileReducer.img);
+
+  const data = useSelector((state) => state.profileReducer);
+  // const lname = useSelector((state) => state.profileReducer.lname);
+  // const number = useSelector((state) => state.profileReducer.number);
+  // const img = useSelector((state) => state.profileReducer.img);
   const dispatch = useDispatch();
   useEffect(() => {
     //  function foo() {
-      // setNumber(localStorage.getItem('number'));
-      axios.get('http://localhost:5000/users/getData', {  params: { 'number': localStorage.getItem('number'),Cookies:cookies } })
+    // setNumber(localStorage.getItem('number'));
+    axios.get('http://localhost:5000/users/getData', { params: { 'number': localStorage.getItem('number') } })
 
-        .then((res) => {
-          // console.log('img data', res.data[0]);
-          if(res.data==="InvalidToken" || res.data==="Empty_Request")
-        {
+      .then((res) => {
+        console.log('data', res.data[0]);
+        if (Object.keys(cookies).length) {
+          // console.log('data', cookies);
+          let bufferOriginal = null;
+          if (res.data[0].photo) {
+            if (res.data[0].photo.data) {
+              bufferOriginal = Buffer.from(res.data[0].photo.data);
+              // setImg(bufferOriginal.toString('utf8'));
+            }
+          }
+          // console.log('img data', bufferOriginal.toString('utf8'));
+          dispatch(addProfile([res.data[0].first_name,
+            res.data[0].last_name,
+            localStorage.getItem('number'), 
+            bufferOriginal ? bufferOriginal.toString('utf8') : null,
+            res.data[0].email,
+            res.data[0].address1,
+            res.data[0].address2,
+            res.data[0].city,
+            res.data[0].pin,
+            res.data[0].state,
+            res.data[0].locality_of_work,
+            res.data[0].highlights,
+            res.data[0].enterprise,
+            res.data[0].user_mast_id,
+            res.data[0].user_type
+
+          ]));
+
+
+        }
+        else {
           navigate('/sessionExpired')
         }
-        else
-        {
-          let bufferOriginal=null;
-          if(res.data[0].img)
-          {
-          if(res.data[0].img.data)
-          {
-          bufferOriginal = Buffer.from(res.data[0].img.data);
-          // setImg(bufferOriginal.toString('utf8'));
-          }
-        }
-          // console.log('img data', bufferOriginal.toString('utf8'));
-          dispatch(addProfile([res.data[0].name?res.data[0].name:null, localStorage.getItem('number'), bufferOriginal?bufferOriginal.toString('utf8'):null]));
-      }
-          
-          
-      })
-        .catch((err) => {
-          console.log('err', typeof err);
-        });
 
-    
+
+      })
+      .catch((err) => {
+        console.log('err', typeof err);
+      });
+
+
     // foo();
-  });
+  },[]);
   return (
     <Page title="Dashboard">
       <Container maxWidth="xl">
@@ -98,17 +114,17 @@ const RootStyle = styled(Card)(({ theme }) => ({
           <Grid item xs={12} sm={6} md={3} align='center'>
             <RootStyle>
               {
-                img ?
-              <Avatar src={img} sx={{ width: 150, height: 150, alignSelf: 'center' }} alt="photoURL" />
-              :
-              <Avatar  sx={{ width: 150, height: 150, alignSelf: 'center' }} alt="photoURL" />
+                data.img ?
+                  <Avatar src={data.img} sx={{ width: 150, height: 150, alignSelf: 'center' }} alt="photoURL" />
+                  :
+                  <Avatar sx={{ width: 150, height: 150, alignSelf: 'center' }} alt="photoURL" />
               }
             </RootStyle>
           </Grid>
           <Grid item xs={12} sm={6} md={6}>
             <Stack sx={{ justifyContent: 'center', marginTop: 5 }} spacing={2}>
-              <Typography variant="h4">{name}</Typography>
-              <Typography variant="h4">{number}</Typography>
+              <Typography variant="h4">{data.fname} {data.lname}</Typography>
+              <Typography variant="h4">{data.number}</Typography>
 
             </Stack>
           </Grid>

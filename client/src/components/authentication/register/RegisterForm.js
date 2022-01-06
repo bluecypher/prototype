@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useFormik, Form, FormikProvider } from 'formik';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
@@ -7,7 +7,7 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import { useNavigate } from 'react-router-dom';
 // material
-import { Stack, TextField, Typography } from '@mui/material';
+import { Stack, TextField, Typography, Checkbox, Grid } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // import { number } from 'prop-types';
 
@@ -16,10 +16,21 @@ const axios = require('axios');
 
 export default function RegisterForm() {
   const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
+  // let services;
+  const [services, setServices] = useState([]);
+  useEffect(() => {
+    axios.get("http://localhost:5000/users/getServices")
+      .then((res) => {
+        setServices(res.data);
+        const tm = new Date(Date.now())
+        console.log("datetike:", new Date(Date.now()));
+      })
+  }, [])
+  // const [showPassword, setShowPassword] = useState(false);
   const [image, setImage] = useState(null);
-  const [name, setName] = useState('');
-  const [sArea, setSArea] = useState();
+  const [fname, setFname] = useState('');
+  const [lname, setLname] = useState('');
+  const [selected, setSelected] = useState([]);
 
   const fileToDataUri = (file) => new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -43,6 +54,24 @@ export default function RegisterForm() {
     console.log('image:', image);
   }
 
+  const handleCheck = (e,id) => {
+    const selectedIndex = selected.indexOf(id);
+    let newSelected = [];
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selected, id);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selected.slice(1));
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selected.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selected.slice(0, selectedIndex),
+        selected.slice(selectedIndex + 1)
+      );
+    }
+    setSelected(newSelected);
+    // console.log('click', newSelected);
+  }
   // const onSubmitHandler = () => {
   //   console.log(image);
   // }
@@ -53,26 +82,32 @@ export default function RegisterForm() {
 
 
   const RegisterSchema = Yup.object().shape({
-    name: Yup.string()
+    fname: Yup.string()
       .min(2, 'Too Short!')
       .max(50, 'Too Long!')
-      .required('Name is required'),
+      .required('First name is required'),
 
     add: Yup.string().required('Address is required'),
-    locality: Yup.string().required('Locality is required'),
+
     city: Yup.string().required('City is required'),
     pin: Yup.string().required('PIN is required'),
-    service: Yup.string().required('Service is required'),
+    state: Yup.string().required('State is required'),
+
 
   });
 
   const formik = useFormik({
     initialValues: {
-      name: '',
+      fname: '',
+      lname: '',
+      email: '',
       add: '',
+      add2: '',
       locality: '',
       city: '',
       pin: '',
+      state: '',
+      ent: '',
       service: '',
       hghlts: ''
     },
@@ -82,15 +117,20 @@ export default function RegisterForm() {
       const nm = localStorage.getItem('number');
       console.log('number:', nm);
       axios.post('http://localhost:5000/users/updateDetails', {
-        'name': formik.values.name,
+        'fname': formik.values.fname,
+        'lname': formik.values.lname,
+        'email': formik.values.email,
         'number': nm,
         'img': image,
-        'addr': formik.values.add,
+        'addr1': formik.values.add,
+        'addr2': formik.values.add2,
         'locality': formik.values.locality,
         'city': formik.values.city,
         'pin': formik.values.pin,
-        'area': sArea,
-        'service': formik.values.service,
+        'state': formik.values.state,
+        'ent': formik.values.ent,
+
+        'services': selected,
         'hghlts': formik.values.hghlts
       })
         .then((response) => {
@@ -110,7 +150,7 @@ export default function RegisterForm() {
 
   });
 
-  const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
+  const { touched, errors, isSubmitting, handleSubmit, getFieldProps } = formik;
 
   return (
     <FormikProvider value={formik}>
@@ -119,42 +159,54 @@ export default function RegisterForm() {
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 2, sm: 4 }}>
             <TextField
               fullWidth
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              label="Name"
-              {...getFieldProps('name')}
-              error={Boolean(touched.name && errors.name)}
-              helperText={touched.name && errors.name}
+              value={fname}
+              onChange={(e) => setFname(e.target.value)}
+              label="First name"
+              {...getFieldProps('fname')}
+              error={Boolean(touched.fname && errors.fname)}
+              helperText={touched.fname && errors.fname}
             />
 
-            {/* <TextField
+            <TextField
               fullWidth
+              value={lname}
+              onChange={(e) => setLname(e.target.value)}
               label="Last name"
-              {...getFieldProps('lastName')}
-              error={Boolean(touched.lastName && errors.lastName)}
-              helperText={touched.lastName && errors.lastName}
-            /> */}
-            <Stack spacing={1}>
-              <Stack direction="row" spacing={6}>
-                <Typography variant="h6">
-                  Upload photo
-                </Typography>
-                {
-                  image &&
-                (<img width="30" height="30" src={image} alt="avatar" />)
-                }
-              </Stack>
-              <input
-                accept="image/*"
-                type="file"
-                onChange={(event) => { fileChangeHandler(event.target.files[0] || null) }}
-              />
+              {...getFieldProps('lname')}
+              error={Boolean(touched.lname && errors.lname)}
+              helperText={touched.lname && errors.lname}
+            />
 
+            
 
-            </Stack>
 
           </Stack>
+          <TextField
+              fullWidth
+              type="text"
+              label="Email"
+              {...getFieldProps('email')}
+              error={Boolean(touched.email && errors.email)}
+              helperText={touched.email && errors.email}
+            />
+          <Stack spacing={1}>
+            <Stack direction="row" spacing={6}>
+              <Typography variant="h6">
+                Upload photo
+              </Typography>
+              {
+                image &&
+                (<img width="30" height="30" src={image} alt="avatar" />)
+              }
+            </Stack>
+            <input
+              accept="image/*"
+              type="file"
+              onChange={(event) => { fileChangeHandler(event.target.files[0] || null) }}
+            />
 
+
+          </Stack>
           <TextField
             fullWidth
             multiline
@@ -166,6 +218,15 @@ export default function RegisterForm() {
             helperText={touched.add && errors.add}
           />
 
+          <TextField
+            fullWidth
+            multiline
+            type="text"
+            label="Address line 2"
+            {...getFieldProps('add2')}
+            error={Boolean(touched.add2 && errors.add2)}
+            helperText={touched.add2 && errors.add2}
+          />
           <TextField
             fullWidth
             type="text"
@@ -187,34 +248,71 @@ export default function RegisterForm() {
             <TextField
               fullWidth
               label="PIN"
+              inputProps={{maxLength:6}}
               {...getFieldProps('pin')}
               error={Boolean(touched.pin && errors.pin)}
               helperText={touched.pin && errors.pin}
             />
           </Stack>
-          <FormControl>
-            <InputLabel>Area of Service</InputLabel>
+          <TextField
+            fullWidth
+            label="State"
+            {...getFieldProps('state')}
+            error={Boolean(touched.state && errors.state)}
+            helperText={touched.state && errors.state}
+          />
+          <TextField
+            fullWidth
+            label="Enterprise"
+            {...getFieldProps('ent')}
+            error={Boolean(touched.ent && errors.ent)}
+            helperText={touched.ent && errors.ent}
+          />
+          {/* <FormControl>
+            <InputLabel>Service Provided</InputLabel>
 
             <Select
 
-              value={sArea}
-              label="Area of Service"
-              onChange={(e) => setSArea(e.target.value)}
+              value={selectedService}
+              label="Service Provided"
+              onChange={(e) => setSelectedService(e.target.value)}
             >
-              <MenuItem value={5}>5 KM Radius</MenuItem>
-              <MenuItem value={10}>10 KM Radius</MenuItem>
-              <MenuItem value={15}>15 KM Radius</MenuItem>
+              {services.map( (s,i) => 
+              <MenuItem index={i} value={s.serv_id}>{s.serv_name}</MenuItem>
+              
+              )}
+              
             </Select>
-          </FormControl>
-
-          <TextField
+          </FormControl> */}
+          <Typography variant="h6" >
+            Services Provided
+          </Typography>
+          <Grid container spacing={1}>
+          {services.map( (s,i) => {
+          const isItemSelected = selected.indexOf(s.serv_id) !== -1
+          return(
+          <Stack direction="row" >
+          <Checkbox
+            checked = {isItemSelected}
+            onChange={(event) => handleCheck(event,s.serv_id)}
+          />
+          <Typography alignSelf='center' variant="subtitle2" >
+            {s.serv_name}
+          </Typography>
+          </Stack>
+          )
+          }
+          )}
+          </Grid>
+          
+          {/* <TextField
             fullWidth
             type="text"
             label="Service Provided"
             {...getFieldProps('service')}
             error={Boolean(touched.service && errors.service)}
             helperText={touched.service && errors.service}
-          />
+          /> */}
 
           <TextField
             fullWidth
@@ -233,7 +331,6 @@ export default function RegisterForm() {
             type="submit"
             variant="contained"
             loading={isSubmitting}
-
           >
             Update
           </LoadingButton>

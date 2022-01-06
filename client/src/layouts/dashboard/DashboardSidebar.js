@@ -12,7 +12,7 @@ import NavSection from '../../components/NavSection';
 import { MHidden } from '../../components/@material-extend';
 //
 import sidebarConfig from './SidebarConfig';
-import account from '../../_mocks_/account';
+// import account from '../../_mocks_/account';
 
 // ----------------------------------------------------------------------
 
@@ -51,7 +51,7 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
   
-  const name = useSelector((state)=> state.profileReducer.name)
+  const name = useSelector((state)=> state.profileReducer.fname)
   const number = useSelector((state)=> state.profileReducer.number)
   const img = useSelector((state)=> state.profileReducer.img)
   const renderContent = (

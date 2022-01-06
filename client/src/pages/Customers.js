@@ -23,6 +23,7 @@ import {
   Typography,
   TableContainer,
   TablePagination,
+  TextField,
   Alert,
   OutlinedInput,
 } from '@mui/material';
@@ -101,44 +102,44 @@ function applySortFilter(array, comparator, query) {
 
 // let filteredUsers=[];
 export default function Customers() {
-//   const [USERLIST, setUSERLIST] = useState([]);
+  const [USERLIST, setUSERLIST] = useState([]);
   const navigate = useNavigate();
-  const name = useSelector((state)=>state.profileReducer.name);
+  const id = useSelector((state)=>state.profileReducer.id);
   // const number = useSelector((state)=>state.profileReducer.number);
   // const img = useSelector((state)=>state.profileReducer.img);
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
-//   useEffect(() => {
-//     axios.get('http://localhost:5000/users/getMembers', { params: { 'number': localStorage.getItem('number'), Cookies:cookies } })
-//       .then((res) => {
-//         console.log('redux_name:',name);
-//         if(res.data==="InvalidToken")
-//         {
-//           navigate('/sessionExpired')
-//         }
-//         else {
-//           let uList = [];
-//           uList = res.data.map(item => {
+  useEffect(() => {
+    axios.post('http://localhost:5000/users/getCustomers', {  'id': id  })
+      .then((res) => {
+        
+        if(!Object.keys(cookies).length)
+        {
+          navigate('/sessionExpired')
+        }
+        else {
+          // let uList = [];
+          // uList = res.data.map(item => {
              
-//             if (item.img) {
-//               if (item.img.data) {
-//                 const bufferOriginal = Buffer.from(item.img.data);
-//                 item.img = bufferOriginal.toString('utf8');
-//                 // setImg(bufferOriginal.toString('utf8'));
-//               }
+          //   if (item.img) {
+          //     if (item.img.data) {
+          //       const bufferOriginal = Buffer.from(item.img.data);
+          //       item.img = bufferOriginal.toString('utf8');
+          //       // setImg(bufferOriginal.toString('utf8'));
+          //     }
               
-//             }
-//             return item;
-//           });
-//           setUSERLIST(uList);
-//           //  filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
-//           console.log('res:', uList);
-//         }
-//         })
-//       .catch((err) => {
-//         console.log('err', err);
-//       })
-//   }, [error,success]);
+          //   }
+          //   return item;
+          // });
+          console.log('res data:',res.data);
+          setUSERLIST(res.data);
+          
+        }
+        })
+      .catch((err) => {
+        console.log('err', err);
+      })
+  }, [error,success]);
 
 
 
@@ -149,11 +150,12 @@ export default function Customers() {
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [number, setNumber] = useState('');
+  const [cName, setCName] = useState('');
   const [showAdd, setShowAdd] = useState(false);
   
   
 
-//   const [cookies, setCookies] = useCookies('');
+  const [cookies, setCookies] = useCookies('');
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -204,6 +206,10 @@ export default function Customers() {
     setNumber(event.target.value);
   };
 
+  const handleCName = (event) => {
+    setCName(event.target.value);
+  };
+
   const handleNewMember = () => {
     // console.log('filtered:',filteredUsers)
     if (showAdd) {
@@ -222,29 +228,31 @@ export default function Customers() {
   const handleAdd = () => {
 
     console.log('Add');
-    // axios.post('http://localhost:5000/users/addMembers', {
-    //   'number': number,
-    //   'pNumber': localStorage.getItem('number')
-    // })
-    //   .then((res) => {
-    //     console.log(res);
-    //     if (res.data === 'success') {
-    //       setNumber('');
-    //       setError(false);
-    //       setSuccess(true);
+    axios.post('http://localhost:5000/users/addCustomers', {
+      'number': number,
+      'id': id,
+      'name': cName
+    })
+      .then((res) => {
+        console.log(res);
+        if (res.data === 'Success') {
+          setNumber('');
+          setCName('');
+          setError(false);
+          setSuccess(true);
           
 
-    //     }
+        }
 
-    //     else if (res.data === 'no_user') {
-    //       setSuccess(false);
-    //       setError(true);
-    //     }
+        else if (res.data === 'no_user') {
+          setSuccess(false);
+          setError(true);
+        }
 
-    //   })
-    //   .catch((err) => {
-    //     console.log('err', err);
-    //   })
+      })
+      .catch((err) => {
+        console.log('err', err);
+      })
   }
 
 
@@ -286,10 +294,16 @@ export default function Customers() {
             <Typography variant="h6" gutterBottom>
               Add a new Customer
             </Typography>
-            <Stack direction="row" alignItems="center" justifyContent="space-between" >
-              <SearchStyle
+            <Stack  spacing={2} >
+            <TextField
+                inputProps={{ maxLength: 40 }}
+                label="Name"
+                value={cName}
+                onChange={handleCName}
+              />
+              <TextField
                 inputProps={{ maxLength: 10 }}
-                placeholder="Phone number"
+                label="Phone number"
                 value={number}
                 onChange={handleNumber}
               />
@@ -361,7 +375,7 @@ export default function Customers() {
                             </Stack>
                           </TableCell>
                           {/* <TableCell align="left">{company}</TableCell> */}
-                          <TableCell align="left">{number}</TableCell>
+                          <TableCell align="left">9292838928</TableCell>
                           {/* <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
                           <TableCell align="left">
                             <Label

@@ -57,7 +57,7 @@ export default function DashboardNavbar({ onOpenSidebar }) {
 
         {/* <Searchbar /> */}
         <Stack direction='row' marginLeft='auto' sx={{justifyContent:'center'}}>
-        <Link underline="none" to="/" component={RouterLink}>
+        <Link underline="none" to="/dashboard" component={RouterLink}>
           <Logo />
         </Link>
         </Stack>

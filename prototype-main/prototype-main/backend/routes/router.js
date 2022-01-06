@@ -4,34 +4,44 @@ const dao = require("../dao/dao");
 
 
 
-const checkToken = (req, res, next) => {
-    // console.log("Checking Token: ", req.query);
-    const cookies = JSON.parse(req.query.Cookies);
-    const number = req.query.number;
-    const jwt = cookies["token"];
+// const checkToken = (req, res, next) => {
+//     // console.log("Checking Token: ", req.query);
+//     const cookies = JSON.parse(req.query.Cookies);
+//     const number = req.query.number;
+//     const jwt = cookies["token"];
 
-    if(number && cookies)
-    {
+//     if(number && cookies)
+//     {
 
-    // console.log(jwt, " ");
-    dao.checkToken(number).then((resp) => {
-        if (resp === jwt) {
-            next();
-        }
-        else {
-            res.status(200).send('InvalidToken');
-        }
-    })
-   }
-   else{
-       res.status(200).send('Empty_Request');
-   }
-}
+//     // console.log(jwt, " ");
+//     dao.checkToken(number).then((resp) => {
+//         if (resp === jwt) {
+//             next();
+//         }
+//         else {
+//             res.status(200).send('InvalidToken');
+//         }
+//     })
+//    }
+//    else{
+//        res.status(200).send('Empty_Request');
+//    }
+// }
 
-router.get("/getData", checkToken, (req, res) => {
+router.get("/getData",  (req, res) => {
     const number = req.query.number;
     dao.getData(number).then((resp) => {
         console.log("Getting Data")
+        res.status(200).send(resp);
+    }).catch((err) => {
+        res.status(404).send({ "Error": err });
+    })
+})
+
+router.get("/getServices",  (req, res) => {
+    
+    dao.getServices().then((resp) => {
+        console.log("Getting Services")
         res.status(200).send(resp);
     }).catch((err) => {
         res.status(404).send({ "Error": err });
@@ -43,9 +53,9 @@ router.post("/login", (req, res) => {
     const number = req.body.number;
     console.log(number);
     if (number) {
-        dao.login(number).then(
+        dao.login_new(number).then(
             (resp) => {
-                console.log("Phone number successfully updated")
+                console.log('message: ',resp)
                 res.status(200).send(resp);
             }).catch((err) => {
                 console.log(err);
@@ -59,8 +69,9 @@ router.post("/login", (req, res) => {
 router.post("/updateDetails", (req, res) => {
     const data = req.body;
     if (data.number) {
-        dao.updateDetails(data).then(() => {
-            console.log("Data Inserted successfully");
+        dao.updateDetails(data).then((resp) => {
+            
+            console.log("Data Inserted successfully",resp);
             res.status(200).send("Success");
         }).catch((err) => {
             console.log(err);
@@ -82,8 +93,10 @@ router.get("/logout", (req, res) => {
 router.post("/addMembers",  (req, res) => {
     const number = req.body.number;
     const pNumber = req.body.pNumber;
+    const name = req.body.name;
+
     if (pNumber) {
-        dao.addMembers(number, pNumber).then((resp) => {
+        dao.addMembers(name, number, pNumber).then((resp) => {
             console.log("Members details updated")
             res.status(200).send(resp);
         }).catch((err) => {
@@ -95,23 +108,24 @@ router.post("/addMembers",  (req, res) => {
 
 });
 
-router.get("/getMembers", checkToken, (req, res) => {
-    const number = req.query.number;
+router.get("/getMembers",  (req, res) => {
+    const id = req.query.id;
     
-    dao.getMembers(number).then((resp) => {
+    dao.getMembers(id).then((resp) => {
         console.log("Getting Members")
         res.status(200).send(resp);
     }).catch((err) => {
+        console.log("Error", err)
         res.status(404).send({ "Error": err });
     })
 
 
 })
 
-router.get("/deleteMembers",  (req, res) => {
-    const number = req.query.number;
-    
-    dao.deleteMembers(number).then((resp) => {
+router.post("/deleteMembers",  (req, res) => {
+    const oID = req.body.parent_id;
+    const tID = req.body.member_id;
+    dao.deleteMembers(oID,tID).then((resp) => {
         console.log("Deleting Members")
         res.status(200).send(resp);
     }).catch((err) => {
@@ -121,7 +135,42 @@ router.get("/deleteMembers",  (req, res) => {
 
 })
 
+router.post("/addCustomers",  (req, res) => {
+    const number = req.body.number;
+    const id = req.body.id;
+    const name = req.body.name;
 
-// router.post()
+    if (id) {
+        dao.addCustomers(name, number, id).then((resp) => {
+            
+            res.status(200).send(resp);
+        }).catch((err) => {
+            res.status(404).send("Error");
+        })
+    }
+    else{
+        res.status(404).send('Not valid ID');
+    }
+
+
+
+});
+
+router.post("/getCustomers",  (req, res) => {
+    const id = req.body.id;
+    if(id)
+    {
+        console.log('here')
+    dao.getCustomers(id).then((resp) => {
+        console.log("Getting Customers")
+        res.status(200).send(resp);
+    }).catch((err) => {
+        console.log("Error", err)
+        res.status(404).send({ "Error": err });
+    })
+}
+
+
+})
 
 module.exports = router;

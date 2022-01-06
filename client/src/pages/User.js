@@ -9,6 +9,7 @@ import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 import trash2Outline from '@iconify/icons-eva/trash-2-outline';
+import close from '@iconify/icons-ant-design/close-circle-outlined';
 // material
 import {
   Card,
@@ -26,7 +27,8 @@ import {
   TablePagination,
   Alert,
   OutlinedInput,
-  IconButton
+  IconButton,
+  TextField
 } from '@mui/material';
 
 // components
@@ -105,35 +107,36 @@ function applySortFilter(array, comparator, query) {
 export default function User() {
   const [USERLIST, setUSERLIST] = useState([]);
   const navigate = useNavigate();
-  const name = useSelector((state) => state.profileReducer.name);
+  const id = useSelector((state) => state.profileReducer.id);
   // const number = useSelector((state)=>state.profileReducer.number);
   // const img = useSelector((state)=>state.profileReducer.img);
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
   useEffect(() => {
-    axios.get('http://localhost:5000/users/getMembers', { params: { 'number': localStorage.getItem('number'), Cookies: cookies } })
+    console.log('redux_id:', id);
+    axios.get('http://localhost:5000/users/getMembers', { params: { 'id': id} })
       .then((res) => {
-        console.log('redux_name:', name);
-        if (res.data === "InvalidToken") {
+        
+        if (!Object.keys(cookies).length) {
           navigate('/sessionExpired')
         }
         else {
-          let uList = [];
-          uList = res.data.map(item => {
+          // let uList = [];
+          // uList = res.data.map(item => {
 
-            if (item.img) {
-              if (item.img.data) {
-                const bufferOriginal = Buffer.from(item.img.data);
-                item.img = bufferOriginal.toString('utf8');
-                // setImg(bufferOriginal.toString('utf8'));
-              }
+          //   if (item.img) {
+          //     if (item.img.data) {
+          //       const bufferOriginal = Buffer.from(item.img.data);
+          //       item.img = bufferOriginal.toString('utf8');
+          //       // setImg(bufferOriginal.toString('utf8'));
+          //     }
 
-            }
-            return item;
-          });
-          setUSERLIST(uList);
-          //  filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
-          console.log('res:', uList);
+          //   }
+          //   return item;
+          // });
+          console.log('res data:',res.data);
+          setUSERLIST(res.data);
+          
         }
       })
       .catch((err) => {
@@ -150,6 +153,7 @@ export default function User() {
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [number, setNumber] = useState('');
+  const [tName, setTName] = useState('');
   const [showAdd, setShowAdd] = useState(false);
 
 
@@ -170,15 +174,16 @@ export default function User() {
     setSelected([]);
   };
 
-  const handleDelete = (event,n) => {
-    axios.get('http://localhost:5000/users/deleteMembers', { params: { 'number': n, Cookies: cookies } })
+  const handleDelete = (event,memberId) => {
+    axios.post('http://localhost:5000/users/deleteMembers', {  'parent_id':id, 'member_id':memberId })
       .then((res) => {
-        console.log('redux_name:', name);
-        if (res.data === "InvalidToken") {
+        
+        if (!Object.keys(cookies).length) {
           navigate('/sessionExpired')
         }
         else {
-          
+          setError('true');
+          setError('false');
           console.log('res:', res);
         }
       })
@@ -222,6 +227,9 @@ export default function User() {
   const handleNumber = (event) => {
     setNumber(event.target.value);
   };
+  const handleTName = (event) => {
+    setTName(event.target.value);
+  };
 
   const handleNewMember = () => {
     // console.log('filtered:',filteredUsers)
@@ -243,12 +251,14 @@ export default function User() {
     console.log('Add');
     axios.post('http://localhost:5000/users/addMembers', {
       'number': number,
+      'name': tName,
       'pNumber': localStorage.getItem('number')
     })
       .then((res) => {
         console.log(res);
         if (res.data === 'success') {
           setNumber('');
+          setTName('');
           setError(false);
           setSuccess(true);
 
@@ -283,12 +293,13 @@ export default function User() {
           </Typography>
           {
             showAdd ?
-              <Button
-                variant="contained"
-                onClick={handleNewMember}
-              >
-                Close
-              </Button>
+              // <Button
+              //   variant="contained"
+              //   onClick={handleNewMember}
+              // >
+                <Icon color="red" onClick={handleNewMember} icon={close} width={32} height={32} />
+                
+              // </Button>
               :
               <Button
                 variant="contained"
@@ -305,14 +316,20 @@ export default function User() {
             <Typography variant="h6" gutterBottom>
               Add a new member
             </Typography>
-            <Stack direction="row" alignItems="center" justifyContent="space-between" >
-              <SearchStyle
+            <Stack  spacing={2} >
+              <TextField
                 inputProps={{ maxLength: 10 }}
-                placeholder="Phone number"
+                label="Phone number"
                 value={number}
                 onChange={handleNumber}
               />
 
+              <TextField
+                inputProps={{ maxLength: 50 }}
+                label="Name"
+                value={tName}
+                onChange={handleTName}
+              />
 
               <Button onClick={handleAdd}>Add</Button>
             </Stack >
@@ -353,7 +370,7 @@ export default function User() {
                   {filteredUsers
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
-                      const { img, name, number } = row;
+                      const { img, name, number, memberId } = row;
                       const isItemSelected = selected.indexOf(name) !== -1;
 
                       return (
@@ -393,7 +410,7 @@ export default function User() {
 
                           <TableCell align="right">
                             {/* <UserMoreMenu /> */}
-                            <IconButton onClick={(event)=>handleDelete(event,number)}>
+                            <IconButton onClick={(event)=>handleDelete(event,memberId)}>
                               <Icon icon={trash2Outline} width={24} height={24} />
                             </IconButton>
                           </TableCell>
