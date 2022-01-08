@@ -41,52 +41,7 @@ const getData = (number) => {
     });
 };
 
-// const login = (number) => {
-//     return new Promise((resolve, reject) => {
-//         const jwToken = jwt.sign({ id: number }, 'Thisisasecretkeyforgeneratingjwt');
-//         const db = getconnection();
-//         db.query(
-//             "SELECT number FROM users WHERE number=?",
-//             [number],
-//             (err, row) => {
 
-//                 if (row && row.length) {
-//                     try {
-//                         console.log('update');
-//                         db.query("UPDATE users SET jwt=? WHERE number=?", [
-//                             jwToken,
-//                             number,
-//                         ]);
-
-//                         resolve({
-//                             jwToken: jwToken,
-//                             res: "success",
-//                         });
-//                     } catch (e) {
-//                         console.log(e);
-//                         reject(e);
-//                     }
-//                 } else {
-//                     try {
-//                         console.log('insert');
-//                         db.query("INSERT INTO users(number,jwt) VALUES(?,?)", [
-//                             number,
-//                             jwToken,
-//                         ]);
-
-//                         resolve({
-//                             jwToken: jwToken,
-//                             res: "success",
-//                         });
-//                     } catch (e) {
-//                         console.log(e);
-//                         reject(e);
-//                     }
-//                 }
-//             }
-//         );
-//     });
-// };
 
 const login_new = (number) => {
     return new Promise((resolve, reject) => {
