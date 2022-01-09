@@ -345,10 +345,52 @@ const getCustomers = (id) => {
     });
 };
 
+const addWork = (spId,custId,date,todos) => {
+    return new Promise((resolve, reject) => {
+        const db = getconnection();
+        
+        db.query("INSERT INTO service_provider_work_list(service_provider_id,work_plan_date,cust_mast_id,work_desc,created_on,last_updated) VALUES(?,?,?,?,?,?)", [
+            spId,
+            new Date(date),
+            custId,
+            todos,
+            new Date(Date.now()),
+            new Date(Date.now())
+        ], (err, row) => {
+            if(!err)
+            {
+                
+                resolve("Success");
+            }
+            else{
+                console.log('error add work:',err);
+                reject(err);
+            }
+        }
+        );
+    });
+};
+
+const getTodaysWork = (id) => {
+    return new Promise((resolve, reject) => {
+        const db = getconnection();
+        
+        db.query("SELECT spwl.work_list_id AS work_id, spcm.cust_name AS name, spcm.address1 AS addr, spcm.cust_phone  FROM service_provider_work_list spwl INNER JOIN service_provider_customer_master spcm USING(cust_mast_id) WHERE spwl.service_provider_id=? AND Date(spwl.work_plan_date)=curdate() ", [id], (err, row) => {
+            if (!err) {
+                console.log('row',row);
+                resolve(row);
+                // console.log(row);
+            } else {
+                console.log('err',err);
+                reject(err);
+            }
+        });
+    });
+};
+
 module.exports = {
     getconnection,
     updateDetails,
-
     login_new,
     addMembers,
     logout,
@@ -359,5 +401,7 @@ module.exports = {
     getMembers,
     deleteMembers,
     addCustomers,
-    getCustomers
+    getCustomers,
+    addWork,
+    getTodaysWork,
 };

@@ -171,6 +171,49 @@ router.post("/getCustomers",  (req, res) => {
 }
 
 
-})
+});
+
+router.post("/addWork",  (req, res) => {
+    const custId = req.body.custId;
+    const spId = req.body.spId;
+    const date = req.body.date;
+    const todos = req.body.todos;
+    
+    if (spId && custId) {
+        dao.addWork(spId,custId,date,todos).then((resp) => {
+            
+            res.status(200).send(resp);
+        }).catch((err) => {
+            res.status(404).send("Error");
+        })
+    }
+    else{
+        res.status(404).send('Not valid ID');
+    }
+
+
+
+});
+
+router.post("/getTodaysWork",  (req, res) => {
+    const spId = req.body.id;
+    
+    
+    if (spId) {
+        
+        dao.getTodaysWork(spId).then((resp) => {
+            
+            res.status(200).send(resp);
+        }).catch((err) => {
+            res.status(404).send("Error");
+        })
+    }
+    else{
+        res.status(404).send('Not valid ID');
+    }
+
+
+
+});
 
 module.exports = router;

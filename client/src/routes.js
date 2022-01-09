@@ -14,6 +14,8 @@ import User from './pages/User';
 import Customers from './pages/Customers';
 import NotFound from './pages/Page404';
 import SessionExpired from './pages/SessionExpired';
+import AddCalls from './pages/AddCalls';
+import WorkUpdate from './pages/WorkUpdate';
 
 // ----------------------------------------------------------------------
 
@@ -26,11 +28,13 @@ export default function Router() {
       children: [
         { element: <Navigate to="/dashboard/app" replace /> },
         { path: 'app', element: <DashboardApp/> },
-        { path: 'work', element: <WorkDashboard /> },
+        { path: 'work', element: <WorkDashboard />},
         { path: 'user', element: <User /> },
         { path: 'customers', element: <Customers /> },
         { path: 'products', element: <Products /> },
-        { path: 'blog', element: <Blog /> }
+        { path: 'blog', element: <Blog /> },
+        { path: 'newCalls', element: <AddCalls /> },
+        { path: 'work/:workId', element: <WorkUpdate/>}
       ]
     },
     {
