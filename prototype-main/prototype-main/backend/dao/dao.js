@@ -388,6 +388,62 @@ const getTodaysWork = (id) => {
     });
 };
 
+const updateWork = (workId,name,serv,amnt,wDetails,pmtMethod,nxtDate,nxtWork) => {
+    return new Promise((resolve, reject) => {
+        const db = getconnection();
+        
+        db.query("UPDATE service_provider_work_list SET work_desc=?,work_done_detail=?,payment_mode=?,amount=?,work_comp_date=?,last_updated=? WHERE work_list_id=?", [
+            serv,
+            wDetails,
+            pmtMethod[0],
+            amnt,
+            new Date(Date.now()),
+            new Date(Date.now()),
+            workId
+        ], (err, row) => {
+            if(!err)
+            {
+                db.query("SELECT service_provider_id,cust_mast_id FROM service_provider_work_list WHERE work_list_id=?",[workId]
+                ,((err,row)=>{
+                    if(!err)
+                    {
+                        // console.log('result',row[0]);
+                        addWork(row[0].service_provider_id,row[0].cust_mast_id,nxtDate,nxtWork);
+                    }
+                    else{
+                        console.log('error',err);
+                        reject(err);
+                    }
+                }));
+                
+                
+                resolve("Success");
+            }
+            else{
+                console.log('error add work:',err);
+                reject(err);
+            }
+        }
+        );
+    });
+};
+
+const getUserServices = (id) => {
+    return new Promise((resolve, reject) => {
+        const db = getconnection();
+        db.query("SELECT sm.serv_id,sm.serv_name FROM service_master sm INNER JOIN service_provider_detail spd ON sm.serv_id=spd.serv_id WHERE spd.user_mast_id=?",[
+            id
+        ],
+         (err, row) => {
+            if (!err) {
+                resolve(row);
+                // console.log(row);
+            } else reject(err);
+        });
+    });
+};
+
+
 module.exports = {
     getconnection,
     updateDetails,
@@ -404,4 +460,6 @@ module.exports = {
     getCustomers,
     addWork,
     getTodaysWork,
+    updateWork,
+    getUserServices,
 };

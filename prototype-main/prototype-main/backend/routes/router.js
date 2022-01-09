@@ -216,4 +216,39 @@ router.post("/getTodaysWork",  (req, res) => {
 
 });
 
+router.post("/updateWork",  (req, res) => {
+    const workId = req.body.workId;
+    const name = req.body.name;
+    const serv = req.body.serv;
+
+    const amnt = req.body.amnt;
+    const wDetails = req.body.wDetails;
+    const pmtMethod = req.body.pmtMethod;
+    const nxtDate = req.body.nxtDate;
+    const nxtWork = req.body.nxtWork;
+    
+    if (workId) {
+        dao.updateWork(workId,name,serv,amnt,wDetails,pmtMethod,nxtDate,nxtWork).then((resp) => {
+            res.status(200).send(resp);
+        }).catch((err) => {
+            res.status(404).send("Error");
+        })
+    }
+    else{
+        res.status(404).send('Not valid ID');
+    }
+
+
+
+});
+
+router.post("/getUserServices",  (req, res) => {
+    id = req.body.id;
+    dao.getUserServices(id).then((resp) => {
+        console.log("Getting Services")
+        res.status(200).send(resp);
+    }).catch((err) => {
+        res.status(404).send({ "Error": err });
+    })
+})
 module.exports = router;

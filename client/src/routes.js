@@ -16,6 +16,7 @@ import NotFound from './pages/Page404';
 import SessionExpired from './pages/SessionExpired';
 import AddCalls from './pages/AddCalls';
 import WorkUpdate from './pages/WorkUpdate';
+import Profile from './pages/Profile';
 
 // ----------------------------------------------------------------------
 
@@ -34,6 +35,7 @@ export default function Router() {
         { path: 'products', element: <Products /> },
         { path: 'blog', element: <Blog /> },
         { path: 'newCalls', element: <AddCalls /> },
+        { path: 'profile', element: <Profile /> },
         { path: 'work/:workId', element: <WorkUpdate/>}
       ]
     },
