@@ -17,6 +17,10 @@ import SessionExpired from './pages/SessionExpired';
 import AddCalls from './pages/AddCalls';
 import WorkUpdate from './pages/WorkUpdate';
 import Profile from './pages/Profile';
+import PaymentProfile from './pages/PaymentProfile';
+import CustomerProfile from './pages/CustomerProfile';
+import WorkToday from './pages/WorkToday';
+import WorkTillDay from './pages/WorkTillDay';
 
 // ----------------------------------------------------------------------
 
@@ -36,7 +40,11 @@ export default function Router() {
         { path: 'blog', element: <Blog /> },
         { path: 'newCalls', element: <AddCalls /> },
         { path: 'profile', element: <Profile /> },
-        { path: 'work/:workId', element: <WorkUpdate/>}
+        { path: 'work/:workId', element: <WorkUpdate/>},
+        { path: 'customer/:custId', element: <CustomerProfile/>},
+        { path: 'payment', element: <PaymentProfile/>},
+        { path: 'todaysWork', element: <WorkToday/>},
+        { path: 'tillDaysWork', element: <WorkTillDay/>},
       ]
     },
     {

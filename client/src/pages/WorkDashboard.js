@@ -48,7 +48,7 @@ export default function DashboardApp() {
   };
   const onPhoneClick = (event,id) => {
 
-    // console.log("yes clicked",event, id);
+    
     navigate(`/dashboard/work/${id}`);
   }
   return (

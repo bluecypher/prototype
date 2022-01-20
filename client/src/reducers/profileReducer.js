@@ -13,7 +13,8 @@ const initialData = {
     hghlts: '',
     ent: '',
     id: '',
-    user_type: ''
+    user_type: '',
+    qr_code: '',
 }
 
 
@@ -37,7 +38,8 @@ const profileReducer = (state = initialData, action) => {
                 hghlts: data[11],
                 ent: data[12],
                 id: data[13],
-                user_type: data[14]
+                user_type: data[14],
+                
             }
         }
 

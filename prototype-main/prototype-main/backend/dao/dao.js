@@ -160,13 +160,7 @@ const updateDetails = (data) => {
     });
 };
 
-const logout = (number) => {
-    return new Promise((resolve, reject) => {
-        const db = getconnection();
-        db.query("UPDATE USERS SET jwt=NULL WHERE number=?", [number]);
-        resolve();
-    });
-};
+
 
 const addServices = (user_id, serv_ids) => {
     return new Promise((resolve, reject) => {
@@ -330,7 +324,7 @@ const addCustomers = (name, number, id) => {
     });
 };
 
-const getCustomers = (id) => {
+const getCustomersList = (id) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
         db.query("SELECT cust_mast_id AS custId, cust_name AS name,cust_phone AS number FROM service_provider_customer_master WHERE user_mast_id=?", [id], (err, row) => {
@@ -345,12 +339,13 @@ const getCustomers = (id) => {
     });
 };
 
-const addWork = (spId,custId,date,todos) => {
+const addWork = (spId,custId,date,todos,servId) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
         
-        db.query("INSERT INTO service_provider_work_list(service_provider_id,work_plan_date,cust_mast_id,work_desc,created_on,last_updated) VALUES(?,?,?,?,?,?)", [
+        db.query("INSERT INTO service_provider_work_list(service_provider_id,work_type,work_plan_date,cust_mast_id,work_desc,created_on,last_updated) VALUES(?,?,?,?,?,?,?)", [
             spId,
+            servId,
             new Date(date),
             custId,
             todos,
@@ -375,7 +370,7 @@ const getTodaysWork = (id) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
         
-        db.query("SELECT spwl.work_list_id AS work_id, spcm.cust_name AS name, spcm.address1 AS addr, spcm.cust_phone  FROM service_provider_work_list spwl INNER JOIN service_provider_customer_master spcm USING(cust_mast_id) WHERE spwl.service_provider_id=? AND Date(spwl.work_plan_date)=curdate() ", [id], (err, row) => {
+        db.query("SELECT spwl.work_list_id AS work_id, spcm.cust_name AS name, spcm.address1 AS addr, spcm.cust_phone  FROM service_provider_work_list spwl INNER JOIN service_provider_customer_master spcm USING(cust_mast_id) WHERE spwl.service_provider_id=? AND Date(spwl.work_plan_date)=curdate() AND spwl.work_comp_date IS NULL", [id], (err, row) => {
             if (!err) {
                 console.log('row',row);
                 resolve(row);
@@ -392,11 +387,11 @@ const updateWork = (workId,name,serv,amnt,wDetails,pmtMethod,nxtDate,nxtWork) =>
     return new Promise((resolve, reject) => {
         const db = getconnection();
         
-        db.query("UPDATE service_provider_work_list SET work_desc=?,work_done_detail=?,payment_mode=?,amount=?,work_comp_date=?,last_updated=? WHERE work_list_id=?", [
-            serv,
+        db.query("UPDATE service_provider_work_list SET work_desc=?,payment_mode=?,amount=?,work_comp_date=?,last_updated=? WHERE work_list_id=?", [
+            
             wDetails,
             pmtMethod[0],
-            amnt,
+            parseFloat(amnt),
             new Date(Date.now()),
             new Date(Date.now()),
             workId
@@ -436,20 +431,206 @@ const getUserServices = (id) => {
         ],
          (err, row) => {
             if (!err) {
+                console.log(row);
                 resolve(row);
-                // console.log(row);
+                
             } else reject(err);
         });
     });
 };
 
+const getWorkDetails = (workId) => {
+    return new Promise((resolve, reject) => {
+        const db = getconnection();
+        db.query("SELECT spcm.cust_name,sm.serv_name FROM service_provider_work_list spwl INNER JOIN service_master sm ON spwl.work_type=sm.serv_id INNER JOIN service_provider_customer_master spcm ON spwl.cust_mast_id=spcm.cust_mast_id WHERE spwl.work_list_id=?",[
+            workId
+        ],
+         (err, row) => {
+            if (!err) {
+                console.log(row);
+                
+                
+                resolve(row);
+                
+            } else reject(err);
+        });
+    });
+};
 
+const getPaymentDetails = (id) => {
+    return new Promise((resolve, reject) => {
+        const db = getconnection();
+        db.query("SELECT user_type FROM service_provider_master WHERE user_mast_id=?",[
+            id
+        ],
+         (err, row) => {
+            if (!err) {
+                console.log(row);
+                if(row[0].user_type === 'O')
+                {
+                    resolve(getQRCode(id));
+                }
+                else
+                {
+                    db.query("SELECT owner_id FROM service_provider_team_detail WHERE team_member_id=?",[
+                        id
+                    ],
+                     (err, row) => {
+                        if (!err) {
+                            console.log(row);
+                            resolve(getQRCode(row[0].owner_id));
+                        }
+                        else
+                        {
+                            reject(err);
+                        }
+                      });
+                }
+                
+                
+            } 
+            else {
+                reject(err)
+            }
+        });
+    });
+};
+
+const getQRCode = (id)=>{
+    return new Promise((resolve, reject) => {
+        const db = getconnection();
+        db.query("SELECT qr_code,phone FROM service_provider_master WHERE user_mast_id=?",[
+            id
+        ],
+         (err, row) => {
+            if (!err) {
+                resolve([row[0].qr_code,row[0].phone]);
+            }
+            else
+            {
+                reject(err);
+            }
+        });
+    });
+}
+
+const uploadQR = (id,qr)=>{
+    return new Promise((resolve, reject) => {
+        const db = getconnection();
+        db.query("UPDATE service_provider_master SET qr_code=? WHERE user_mast_id=?",[
+            qr,
+            id
+        ],
+         (err, row) => {
+            if (!err) {
+                resolve("Success");
+            }
+            else
+            {
+                reject(err);
+            }
+        });
+    });
+}
+
+const getCustomerInfo = (spId,custId) => {
+    return new Promise((resolve,reject)=>{
+        const db = getconnection();
+        db.query('SELECT cust_name as name,cust_phone as number,address1 as add1 FROM service_provider_customer_master WHERE cust_mast_id=? AND user_mast_id=?',[
+            custId,
+            spId
+        ],(err,row)=>{
+            if(!err)
+            {
+                console.log('cust details',row);
+                resolve(row);
+            }
+            else{
+                reject(err);
+            }
+        })
+    })
+}
+
+const getCustomerWork = (spId,custId) => {
+    return new Promise((resolve,reject)=>{
+        const db = getconnection();
+        db.query('SELECT spwl.work_list_id,spwl.work_plan_date as plan, spwl.work_desc, sm.serv_name FROM service_provider_work_list spwl INNER JOIN service_master sm ON spwl.work_type=sm.serv_id WHERE spwl.cust_mast_id=? AND spwl.service_provider_id=? AND Date(spwl.work_plan_date)>=curdate()',[
+            custId,
+            spId
+        ],(err,row)=>{
+            if(!err)
+            {
+                console.log('cust details',row);
+                resolve(row);
+            }
+            else{
+                reject(err);
+            }
+        })
+    })
+}
+
+const getCustomerWorkHistory = (spId,custId) => {
+    return new Promise((resolve,reject)=>{
+        const db = getconnection();
+        db.query('SELECT spwl.work_list_id,spwl.work_plan_date as plan, spwl.work_desc, sm.serv_name, spwl.amount AS amnt, spwl.payment_mode AS mode FROM service_provider_work_list spwl INNER JOIN service_master sm ON spwl.work_type=sm.serv_id WHERE spwl.cust_mast_id=? AND spwl.service_provider_id=? AND work_comp_date IS NOT NULL',[
+            custId,
+            spId
+        ],(err,row)=>{
+            if(!err)
+            {
+                console.log('cust details',row);
+                resolve(row);
+            }
+            else{
+                reject(err);
+            }
+        })
+    })
+}
+
+const workDoneToday = (id) => {
+    return new Promise((resolve,reject)=>{
+        const db = getconnection();
+        db.query('SELECT SUM(amount) AS amnt, payment_mode AS mode FROM service_provider_work_list WHERE service_provider_id=? AND Date(work_comp_date)=curdate() GROUP BY payment_mode',[
+            id
+        ],(err,row)=>{
+            if(!err)
+            {
+                
+                resolve(row);
+            }
+            else{
+                reject(err);
+            }
+        })
+    })
+}
+
+const workTillToday = (id) => {
+    return new Promise((resolve,reject)=>{
+        const db = getconnection();
+        db.query('SELECT SUM(amount) AS amnt, payment_mode AS mode FROM service_provider_work_list WHERE service_provider_id=? AND Date(work_comp_date)<=curdate() GROUP BY payment_mode',[
+            id
+        ],(err,row)=>{
+            if(!err)
+            {
+                
+                resolve(row);
+            }
+            else{
+                reject(err);
+            }
+        })
+    })
+}
 module.exports = {
     getconnection,
     updateDetails,
     login_new,
     addMembers,
-    logout,
+    
     getData,
     addServices,
     getServices,
@@ -457,9 +638,17 @@ module.exports = {
     getMembers,
     deleteMembers,
     addCustomers,
-    getCustomers,
+    getCustomersList,
     addWork,
     getTodaysWork,
     updateWork,
     getUserServices,
+    getWorkDetails,
+    getPaymentDetails,
+    uploadQR,
+    getCustomerInfo,
+    getCustomerWork,
+    getCustomerWorkHistory,
+    workDoneToday,
+    workTillToday,
 };

@@ -287,7 +287,7 @@ export default function RegisterForm() {
           <Typography variant="h6" >
             Services Provided
           </Typography>
-          <Grid container spacing={1}>
+          {/* <Grid container spacing={1}>
           {services.map( (s,i) => {
           const isItemSelected = selected.indexOf(s.serv_id) !== -1
           return(
@@ -303,7 +303,7 @@ export default function RegisterForm() {
           )
           }
           )}
-          </Grid>
+          </Grid> */}
           
           {/* <TextField
             fullWidth
@@ -330,7 +330,7 @@ export default function RegisterForm() {
             size="large"
             type="submit"
             variant="contained"
-            loading={isSubmitting}
+            
           >
             Update
           </LoadingButton>

@@ -1,14 +1,14 @@
 import * as Yup from 'yup';
 import { useState, useEffect } from 'react';
 import { useFormik, Form, FormikProvider } from 'formik';
-import { useCookies } from 'react-cookie';
+// import { useCookies } from 'react-cookie';
 
 import { useSelector } from "react-redux";
 
 import { Link as RouterLink, useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 // material
-import { styled } from '@mui/material/styles';
+// import { styled } from '@mui/material/styles';
 import { Box, Button, Typography, Container, Stack, TextField, FormControl, InputLabel, Select, MenuItem, FormLabel, RadioGroup, FormControlLabel, Radio } from '@mui/material';
 import DatePicker from '@mui/lab/DatePicker';
 
@@ -33,17 +33,54 @@ export default function WorkUpdate() {
     const numbers = [3, 4, 5, 6, 8, 10, 12];
     const navigate = useNavigate();
 
+    const onSubmit = () =>{
+        console.log('imajsdjg',amnt, wDetails);
+
+            axios.post('http://localhost:5000/users/updateWork', {
+                'workId': workId,
+
+                'name': name,
+                'serv': serv,
+                'amnt': amnt,
+                'wDetails': wDetails,
+
+                'pmtMethod': mop,
+                'nxtDate': date,
+                'nxtWork': nxtWork,
+
+            })
+                .then((response) => {
+                    console.log("response:", response)
+                    if (response.data === "Success") {
+
+                        navigate('/dashboard/work', { replace: true });
+                    }
+                })
+                .catch((e) => {
+                    console.log("Error", e);
+                })
+    }
+
+    useEffect(()=>{
+        axios.post('http://localhost:5000/users/getWorkDetails',{'workId':workId})
+        .then((res)=>{
+            console.log("result",res);
+            setName(res.data[0].cust_name);
+            setServ(res.data[0].serv_name);
+        })
+        .catch((err)=>{
+            console.log("error",err);
+        })
+    },[workId])
+
+
     const handleMopChange = (event) => {
         setMop(event.target.value);
 
     }
 
     const RegisterSchema = Yup.object().shape({
-        name: Yup.string()
-            .min(1, 'Too Short!')
-            .max(50, 'Too Long!')
-            .required('Name is required'),
-        serv: Yup.string().required('Service is required'),
+        
         amnt: Yup.string().required('Amount is required'),
 
 
@@ -51,23 +88,22 @@ export default function WorkUpdate() {
 
     const formik = useFormik({
         initialValues: {
-            name: '',
-            serv: '',
+            
             amnt: '',
-            wDetails: '',
+            wd: '',
             nxtWork: '',
         },
         validationSchema: RegisterSchema,
         onSubmit: () => {
-            console.log('imag');
+            console.log('imag', amnt, wDetails);
 
             axios.post('http://localhost:5000/users/updateWork', {
                 'workId': workId,
 
-                'name': formik.values.name,
-                'serv': formik.values.serv,
+                'name': name,
+                'serv': serv,
                 'amnt': formik.values.amnt,
-                'wDetails': formik.values.wDetails,
+                'wDetails': formik.values.wd,
 
                 'pmtMethod': mop,
                 'nxtDate': date,
@@ -91,7 +127,7 @@ export default function WorkUpdate() {
 
     });
 
-    const { touched, errors, isSubmitting, handleSubmit, getFieldProps } = formik;
+    const { touched, errors, handleSubmit, getFieldProps } = formik;
 
     return (
         <Page title="Update Work">
@@ -105,20 +141,25 @@ export default function WorkUpdate() {
                             <TextField
                                 fullWidth
                                 value={name}
-                                onChange={(e) => setName(e.target.value)}
+                                inputProps={{
+                                    readOnly: true,
+                                    disabled: true,
+                                  }}
                                 label="Customer name"
-                                {...getFieldProps('name')}
-                                error={Boolean(touched.name && errors.name)}
-                                helperText={touched.name && errors.name}
+                                
                             />
+                             {/* <Typography variant="subtitle">{name}</Typography>
+                             <Typography variant="subtitle">{serv}</Typography> */}
                             <TextField
                                 fullWidth
+                                
                                 value={serv}
-                                onChange={(e) => setServ(e.target.value)}
+                                inputProps={{
+                                    readOnly: true,
+                                    disabled: true,
+                                  }}
                                 label="Service provided"
-                                {...getFieldProps('serv')}
-                                error={Boolean(touched.serv && errors.serv)}
-                                helperText={touched.serv && errors.serv}
+                                
                             />
 
                             <TextField
@@ -129,9 +170,9 @@ export default function WorkUpdate() {
                                 label="Work details"
                                 value={wDetails}
                                 onChange={(e) => setWDetails(e.target.value)}
-                                {...getFieldProps('wDetails')}
-                                error={Boolean(touched.wDetails && errors.wDetails)}
-                                helperText={touched.wDetails && errors.wDetails}
+                                {...getFieldProps('wd')}
+                                error={Boolean(touched.wd && errors.wd)}
+                                helperText={touched.wd && errors.wd}
                             />
                             <FormControl>
                                 <InputLabel>Gaurantee</InputLabel>
@@ -153,7 +194,9 @@ export default function WorkUpdate() {
                             <TextField
                                 fullWidth
                                 value={amnt}
-                                onChange={(e) => setAmnt(e.target.value)}
+                                onChange={(e) => {
+                                    console.log('change')
+                                    setAmnt(e.target.value)}}
                                 label="Amount"
                                 {...getFieldProps('amnt')}
                                 error={Boolean(touched.amnt && errors.amnt)}
@@ -202,6 +245,7 @@ export default function WorkUpdate() {
                                 size="large"
                                 type="submit"
                                 variant="contained"
+                                
                             >
                                 Save
                             </Button>

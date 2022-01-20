@@ -83,76 +83,147 @@ function LoginForm() {
   };
   
   return (
-    <FormikProvider value={formik}>
-      <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
-        <Stack spacing={3}>
-          <TextField
-            fullWidth
-            inputProps={{maxLength:10}}
+    // <FormikProvider value={formik}>
+    //   <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
+    //     <Stack spacing={3}>
+    //       <TextField
+    //         fullWidth
+    //         inputProps={{maxLength:10}}
             
-            label="Mobile number"
-            {...getFieldProps('number')}
-            error={Boolean(touched.number && errors.number)}
-            helperText={touched.number && errors.number}
-          />
+    //         label="मोबाइल नंबर"
+    //         {...getFieldProps('number')}
+    //         error={Boolean(touched.number && errors.number)}
+    //         helperText={touched.number && errors.number}
+    //       />
 
-          <LoadingButton
-            fullWidth
-            size="large"
+    //       <LoadingButton
+    //         fullWidth
+    //         size="large"
             
-            variant="contained"
-            loading={isSubmitting}
-            onClick={()=>{
+    //         variant="contained"
+    //         loading={isSubmitting}
+    //         onClick={()=>{
               
-              console.log('get otp')}}
-          >
-            Get OTP
-          </LoadingButton>
-          <TextField
-            fullWidth
+    //           console.log('get otp')}}
+    //       >
+    //         ओटीपी प्राप्त करें
+    //       </LoadingButton>
+    //       <TextField
+    //         fullWidth
             
-            type={showPassword ? 'text' : 'password'}
-            label="OTP"
-            {...getFieldProps('password')}
-            inputProps={{
-              maxLength:6,
-              // endAdornment: (
-              //   <InputAdornment position="end">
-              //     <IconButton onClick={handleShowPassword} edge="end">
-              //       <Icon icon={showPassword ? eyeFill : eyeOffFill} />
-              //     </IconButton>
-              //   </InputAdornment>
-              // )
+    //         type={showPassword ? 'text' : 'password'}
+    //         label="ओटीपी"
+    //         {...getFieldProps('password')}
+    //         inputProps={{
+    //           maxLength:6,
+    //           // endAdornment: (
+    //           //   <InputAdornment position="end">
+    //           //     <IconButton onClick={handleShowPassword} edge="end">
+    //           //       <Icon icon={showPassword ? eyeFill : eyeOffFill} />
+    //           //     </IconButton>
+    //           //   </InputAdornment>
+    //           // )
               
-            }}
+    //         }}
             
-            error={Boolean(touched.password && errors.password)}
-            helperText={touched.password && errors.password}
-          />
-        </Stack>
+    //         error={Boolean(touched.password && errors.password)}
+    //         helperText={touched.password && errors.password}
+    //       />
+    //     </Stack>
 
-        <Stack direction="row" alignItems="center" justifyContent="flex-end" sx={{ my: 2 }}>
-          {/* <FormControlLabel
-            control={<Checkbox {...getFieldProps('remember')} checked={values.remember} />}
-            label="Remember me"
-          /> */}
+    //     <Stack direction="row" alignItems="center" justifyContent="flex-end" sx={{ my: 2 }}>
+    //       {/* <FormControlLabel
+    //         control={<Checkbox {...getFieldProps('remember')} checked={values.remember} />}
+    //         label="Remember me"
+    //       /> */}
 
-          <Link component={RouterLink} variant="subtitle2" to="#">
-            Resend OTP?
-          </Link>
-        </Stack>
+    //       <Link component={RouterLink} variant="subtitle2" to="#">
+    //       ओ.टी.पी दुबारा  भेजें?
+    //       </Link>
+    //     </Stack>
 
-        <LoadingButton
-          fullWidth
-          size="large"
-          type="submit"
-          variant="contained"
-          loading={isSubmitting}
-        >
-          Sign in
-        </LoadingButton>
-      </Form>
-    </FormikProvider>
+    //     <LoadingButton
+    //       fullWidth
+    //       size="large"
+    //       type="submit"
+    //       variant="contained"
+    //       loading={isSubmitting}
+    //     >
+    //      साइन इन करें
+    //     </LoadingButton>
+    //   </Form>
+    // </FormikProvider>
+
+<FormikProvider value={formik}>
+<Form autoComplete="off" noValidate onSubmit={handleSubmit}>
+  <Stack spacing={3}>
+    <TextField
+      fullWidth
+      inputProps={{maxLength:10}}
+      
+      label="Mobile number"
+      {...getFieldProps('number')}
+      error={Boolean(touched.number && errors.number)}
+      helperText={touched.number && errors.number}
+    />
+
+    <LoadingButton
+      fullWidth
+      size="large"
+      
+      variant="contained"
+      loading={isSubmitting}
+      onClick={()=>{
+        
+        console.log('get otp')}}
+    >
+      Get OTP
+    </LoadingButton>
+    <TextField
+      fullWidth
+      
+      type={showPassword ? 'text' : 'password'}
+      label="OTP"
+      {...getFieldProps('password')}
+      inputProps={{
+        maxLength:6,
+        // endAdornment: (
+        //   <InputAdornment position="end">
+        //     <IconButton onClick={handleShowPassword} edge="end">
+        //       <Icon icon={showPassword ? eyeFill : eyeOffFill} />
+        //     </IconButton>
+        //   </InputAdornment>
+        // )
+        
+      }}
+      
+      error={Boolean(touched.password && errors.password)}
+      helperText={touched.password && errors.password}
+    />
+  </Stack>
+
+  <Stack direction="row" alignItems="center" justifyContent="flex-end" sx={{ my: 2 }}>
+    {/* <FormControlLabel
+      control={<Checkbox {...getFieldProps('remember')} checked={values.remember} />}
+      label="Remember me"
+    /> */}
+
+    <Link component={RouterLink} variant="subtitle2" to="#">
+    Resend OTP?
+    </Link>
+  </Stack>
+
+  <LoadingButton
+    fullWidth
+    size="large"
+    type="submit"
+    variant="contained"
+    loading={isSubmitting}
+  >
+   Sign In
+  </LoadingButton>
+</Form>
+</FormikProvider>
   );
 }
 

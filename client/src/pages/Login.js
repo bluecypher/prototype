@@ -42,17 +42,12 @@ const ContentStyle = styled('div')(({ theme }) => ({
 export default function Login() {
   return (
     <RootStyle title="Login">
-      {/* <AuthLayout>
-        Don’t have an account? &nbsp;
-        <Link underline="none" variant="subtitle2" component={RouterLink} to="/register">
-          Get started
-        </Link>
-      </AuthLayout> */}
+    
 
       <MHidden width="mdDown">
         <SectionStyle>
           <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
-            Hi, Welcome Back
+          Hello, Welcome Back
           </Typography>
           <img src="/static/illustrations/illustration_login.png" alt="login" />
         </SectionStyle>
@@ -62,24 +57,44 @@ export default function Login() {
         <ContentStyle>
           <Stack sx={{ mb: 5 }}>
             <Typography variant="h4" gutterBottom>
-              Sign in
+            Log in
             </Typography>
-            <Typography sx={{ color: 'text.secondary' }}>Enter your details below.</Typography>
+            <Typography sx={{ color: 'text.secondary' }}>Please provide your details below.</Typography>
           </Stack>
           
 
           <LoginForm />
 
-          <MHidden width="smUp">
-            <Typography variant="body2" align="center" sx={{ mt: 3 }}>
-              Don’t have an account?&nbsp;
-              <Link variant="subtitle2" component={RouterLink} to="register">
-                Get started
-              </Link>
-            </Typography>
-          </MHidden>
+        
         </ContentStyle>
       </Container>
+
+      {/* <MHidden width="mdDown">
+  <SectionStyle>
+    <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
+    नमस्ते, वापस स्वागत है
+    </Typography>
+    <img src="/static/illustrations/illustration_login.png" alt="login" />
+  </SectionStyle>
+</MHidden>
+
+<Container maxWidth="sm">
+  <ContentStyle>
+    <Stack sx={{ mb: 5 }}>
+      <Typography variant="h4" gutterBottom>
+      लॉग इन करें
+      </Typography>
+      <Typography sx={{ color: 'text.secondary' }}>नीचे अपना विवरण दर्ज करें।</Typography>
+    </Stack>
+    
+
+    <LoginForm />
+
+  
+  </ContentStyle>
+</Container> */}
     </RootStyle>
+
+
   );
 }

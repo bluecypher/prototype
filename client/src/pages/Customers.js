@@ -1,8 +1,10 @@
 import { filter } from 'lodash';
+import * as Yup from 'yup';
 import { Icon } from '@iconify/react';
 // import { sentenceCase } from 'change-case';
 import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
+import { useFormik, Form, FormikProvider } from 'formik';
 import plusFill from '@iconify/icons-eva/plus-fill';
 // import { Link as RouterLink } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
@@ -25,6 +27,7 @@ import {
   TablePagination,
   TextField,
   Alert,
+  Link,
   OutlinedInput,
 } from '@mui/material';
 
@@ -36,7 +39,7 @@ import SearchNotFound from '../components/SearchNotFound';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../components/_dashboard/user';
 
 //
-import USERLIST from '../_mocks_/user';
+
 
 const axios = require('axios');
 
@@ -57,19 +60,8 @@ const TABLE_HEAD = [
 // ----------------------------------------------------------------------
 
 
-const SearchStyle = styled(OutlinedInput)(({ theme }) => ({
-  width: 320,
-  height: 40,
-  transition: theme.transitions.create(['box-shadow', 'width'], {
-    easing: theme.transitions.easing.easeInOut,
-    duration: theme.transitions.duration.shorter
-  }),
-  '&.Mui-focused': { width: 320, boxShadow: theme.customShadows.z8 },
-  '& fieldset': {
-    borderWidth: `1px !important`,
-    borderColor: `${theme.palette.common.black} !important`
-  }
-}));
+
+
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -104,42 +96,57 @@ function applySortFilter(array, comparator, query) {
 export default function Customers() {
   const [USERLIST, setUSERLIST] = useState([]);
   const navigate = useNavigate();
-  const id = useSelector((state)=>state.profileReducer.id);
-  // const number = useSelector((state)=>state.profileReducer.number);
-  // const img = useSelector((state)=>state.profileReducer.img);
+  const id = useSelector((state) => state.profileReducer.id);
+
+
+  const AddSchema = Yup.object().shape({
+    name: Yup.string()
+      .min(2, 'Too Short!')
+      .max(50, 'Too Long!')
+      .required('Name is required'),
+
+    phone: Yup.string().required('Number is required'),
+
+
+  });
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  const onItemClick = (event,id) => {
+
+    
+    navigate(`/dashboard/customer/${id}`);
+  }
   useEffect(() => {
-    axios.post('http://localhost:5000/users/getCustomers', {  'id': id  })
+    axios.post('http://localhost:5000/users/getCustomersList', { 'id': id })
       .then((res) => {
-        
-        if(!Object.keys(cookies).length)
-        {
+
+        if (!Object.keys(cookies).length) {
           navigate('/sessionExpired')
         }
         else {
           // let uList = [];
           // uList = res.data.map(item => {
-             
+
           //   if (item.img) {
           //     if (item.img.data) {
           //       const bufferOriginal = Buffer.from(item.img.data);
           //       item.img = bufferOriginal.toString('utf8');
           //       // setImg(bufferOriginal.toString('utf8'));
           //     }
-              
+
           //   }
           //   return item;
           // });
-          console.log('res data:',res.data);
+          console.log('res data:', res.data);
           setUSERLIST(res.data);
-          
+
         }
-        })
+      })
       .catch((err) => {
         console.log('err', err);
       })
-  }, [error,success]);
+  }, [error, success, id]);
 
 
 
@@ -152,8 +159,8 @@ export default function Customers() {
   const [number, setNumber] = useState('');
   const [cName, setCName] = useState('');
   const [showAdd, setShowAdd] = useState(false);
-  
-  
+
+
 
   const [cookies, setCookies] = useCookies('');
   const handleRequestSort = (event, property) => {
@@ -225,35 +232,35 @@ export default function Customers() {
 
   };
 
-  const handleAdd = () => {
+  // const handleAdd = () => {
 
-    console.log('Add');
-    axios.post('http://localhost:5000/users/addCustomers', {
-      'number': number,
-      'id': id,
-      'name': cName
-    })
-      .then((res) => {
-        console.log(res);
-        if (res.data === 'Success') {
-          setNumber('');
-          setCName('');
-          setError(false);
-          setSuccess(true);
-          
 
-        }
+  //   axios.post('http://localhost:5000/users/addCustomers', {
+  //     'number': number,
+  //     'id': id,
+  //     'name': cName
+  //   })
+  //     .then((res) => {
+  //       console.log(res);
+  //       if (res.data === 'Success') {
+  //         setNumber('');
+  //         setCName('');
+  //         setError(false);
+  //         setSuccess(true);
 
-        else if (res.data === 'no_user') {
-          setSuccess(false);
-          setError(true);
-        }
 
-      })
-      .catch((err) => {
-        console.log('err', err);
-      })
-  }
+  //       }
+
+  //       else if (res.data === 'no_user') {
+  //         setSuccess(false);
+  //         setError(true);
+  //       }
+
+  //     })
+  //     .catch((err) => {
+  //       console.log('err', err);
+  //     })
+  // }
 
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
@@ -262,6 +269,51 @@ export default function Customers() {
 
   const isUserNotFound = false;
   // filteredUsers.length === 0;
+
+  const formik = useFormik({
+    initialValues: {
+      name: '',
+      phone: '',
+
+    },
+    validationSchema: AddSchema,
+    onSubmit: () => {
+      // console.log('imag', formik.values.name);
+      axios.post('http://localhost:5000/users/addCustomers', {
+        'number': formik.values.phone,
+        'id': id,
+        'name': formik.values.name
+      })
+        .then((res) => {
+          console.log(res);
+          if (res.data === 'Success') {
+            setNumber('');
+            formik.values.phone = '';
+            formik.values.name = '';
+            setCName('');
+            setError(false);
+            setSuccess(true);
+
+
+          }
+
+          else if (res.data === 'no_user') {
+            setSuccess(false);
+            setError(true);
+          }
+
+        })
+        .catch((err) => {
+          console.log('err', err);
+        })
+
+
+    }
+
+
+  });
+
+  const { touched, errors, isSubmitting, handleSubmit, getFieldProps } = formik;
 
   return (
     <Page title="Customers">
@@ -294,33 +346,45 @@ export default function Customers() {
             <Typography variant="h6" gutterBottom>
               Add a new Customer
             </Typography>
-            <Stack  spacing={2} >
-            <TextField
-                inputProps={{ maxLength: 40 }}
-                label="Name"
-                value={cName}
-                onChange={handleCName}
-              />
-              <TextField
-                inputProps={{ maxLength: 10 }}
-                label="Phone number"
-                value={number}
-                onChange={handleNumber}
-              />
+
+            <FormikProvider value={formik}>
+              <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
+                <Stack spacing={2} >
+                  <TextField
+                    inputProps={{ maxLength: 40 }}
+                    label="Name"
+                    value={cName}
+                    onChange={handleCName}
+                    {...getFieldProps('name')}
+                    error={Boolean(touched.name && errors.name)}
+                    helperText={touched.name && errors.name}
+                  />
+                  <TextField
+                    inputProps={{ maxLength: 10 }}
+                    label="Phone number"
+                    value={number}
+                    onChange={handleNumber}
+                    {...getFieldProps('phone')}
+                    error={Boolean(touched.phone && errors.phone)}
+                    helperText={touched.phone && errors.phone}
+                  />
 
 
-              <Button onClick={handleAdd}>Add</Button>
-            </Stack >
+                  <Button type="submit" >Add</Button>
+                </Stack >
+              </Form>
+            </FormikProvider>
+
             {
-              error && 
+              error &&
               <Stack m={2}>
-              <Alert severity="error">User does not exist!</Alert>
+                <Alert severity="error">User does not exist!</Alert>
               </Stack>
             }
             {
-              success && 
+              success &&
               <Stack m={2}>
-              <Alert severity="success">Customer added successfully!</Alert>
+                <Alert severity="success">Customer added successfully!</Alert>
               </Stack>
             }
           </Card>)
@@ -348,11 +412,12 @@ export default function Customers() {
                   {filteredUsers
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
-                      const { img, name, number  } = row;
+                      const {custId, img, name, number } = row;
                       const isItemSelected = selected.indexOf(name) !== -1;
 
                       return (
                         <TableRow
+                          key={custId}
                           hover
 
                           tabIndex={-1}
@@ -369,13 +434,19 @@ export default function Customers() {
                           <TableCell component="th" scope="row" padding="none">
                             <Stack direction="row" alignItems="center" spacing={2}>
                               <Avatar alt={name} src={img} />
-                              <Typography variant="subtitle2" >
-                                {name}
-                              </Typography>
+                              <Link
+                                component="button"
+                                variant="body2"
+                                onClick={(event) => onItemClick(event, custId)}
+                              >{name}
+                              </Link>
+                              {/* <Typography variant="subtitle2" >
+                                
+                              </Typography> */}
                             </Stack>
                           </TableCell>
                           {/* <TableCell align="left">{company}</TableCell> */}
-                          <TableCell align="left">9292838928</TableCell>
+                          <TableCell align="left">{number}</TableCell>
                           {/* <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
                           <TableCell align="left">
                             <Label

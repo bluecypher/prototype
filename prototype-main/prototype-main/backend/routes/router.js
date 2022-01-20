@@ -156,12 +156,12 @@ router.post("/addCustomers",  (req, res) => {
 
 });
 
-router.post("/getCustomers",  (req, res) => {
+router.post("/getCustomersList",  (req, res) => {
     const id = req.body.id;
     if(id)
     {
         console.log('here')
-    dao.getCustomers(id).then((resp) => {
+    dao.getCustomersList(id).then((resp) => {
         console.log("Getting Customers")
         res.status(200).send(resp);
     }).catch((err) => {
@@ -176,11 +176,13 @@ router.post("/getCustomers",  (req, res) => {
 router.post("/addWork",  (req, res) => {
     const custId = req.body.custId;
     const spId = req.body.spId;
+    const servId = req.body.servId;
     const date = req.body.date;
     const todos = req.body.todos;
+
     
     if (spId && custId) {
-        dao.addWork(spId,custId,date,todos).then((resp) => {
+        dao.addWork(spId,custId,date,todos,servId).then((resp) => {
             
             res.status(200).send(resp);
         }).catch((err) => {
@@ -245,10 +247,164 @@ router.post("/updateWork",  (req, res) => {
 router.post("/getUserServices",  (req, res) => {
     id = req.body.id;
     dao.getUserServices(id).then((resp) => {
-        console.log("Getting Services")
+        console.log("Getting Services", resp)
         res.status(200).send(resp);
     }).catch((err) => {
         res.status(404).send({ "Error": err });
     })
 })
+
+router.post("/getWorkDetails",  (req, res) => {
+    const workId = req.body.workId;
+    
+    
+    if (workId) {
+        
+        dao.getWorkDetails(workId).then((resp) => {
+            
+            res.status(200).send(resp);
+        }).catch((err) => {
+            res.status(404).send("Error");
+        })
+    }
+    else{
+        res.status(404).send('Not valid ID');
+    }
+
+
+
+});
+
+router.post("/getPaymentDetails",  (req, res) => {
+    const id = req.body.id;
+    
+    
+    if (id) {
+        
+        dao.getPaymentDetails(id).then((resp) => {
+           
+            res.status(200).send(resp);
+        }).catch((err) => {
+            res.status(404).send("Error");
+        })
+    }
+    else{
+        res.status(404).send('Not valid ID');
+    }
+
+
+
+});
+
+router.post("/uploadQR",  (req, res) => {
+    const id = req.body.id;
+    const qr = req.body.qr;
+    
+    if (id && qr) {
+        
+        dao.uploadQR(id,qr).then((resp) => {
+            
+            res.status(200).send(resp);
+        }).catch((err) => {
+            res.status(404).send("Error");
+        })
+    }
+    else{
+        res.status(404).send('Not valid ID');
+    }
+
+
+
+});
+
+router.post("/getCustomerDetails",  (req, res) => {
+    const spId = req.body.spId;
+    const custId = req.body.custId;
+    if(spId && custId)
+    {
+       var result =new Object();
+    dao.getCustomerInfo(spId,custId).then((resp) => {
+        // console.log("Getting Customers")
+        result.info = resp;
+        dao.getCustomerWork(spId,custId).then((resp) => {
+            // console.log("Getting Customers")
+            result.work = resp;
+            dao.getCustomerWorkHistory(spId,custId).then((resp) => {
+                // console.log("Getting Customers")
+                result.history = resp;
+                console.log("customer details:",result)
+                res.status(200).send(result);
+                
+            }).catch((err) => {
+                console.log("Error", err)
+                res.status(404).send({ "Error": err });
+            })
+            
+            
+        }).catch((err) => {
+            console.log("Error", err)
+            res.status(404).send({ "Error": err });
+        })
+        
+        
+    }).catch((err) => {
+        console.log("Error", err)
+        res.status(404).send({ "Error": err });
+    })
+    dao.getCustomerWork(spId,custId).then((resp) => {
+        // console.log("Getting Customers")
+        result.work = resp;
+        
+        
+    }).catch((err) => {
+        console.log("Error", err)
+        res.status(404).send({ "Error": err });
+    })
+    
+}
+
+
+});
+
+router.post("/workDoneToday",  (req, res) => {
+    const id = req.body.id;
+    
+    
+    if (id) {
+        
+        dao.workDoneToday(id).then((resp) => {
+            
+            res.status(200).send(resp);
+        }).catch((err) => {
+            res.status(404).send("Error");
+        })
+    }
+    else{
+        res.status(404).send('Not valid ID');
+    }
+
+
+
+});
+
+router.post("/workTillToday",  (req, res) => {
+    const id = req.body.id;
+    
+    
+    if (id) {
+        
+        dao.workTillToday(id).then((resp) => {
+            
+            res.status(200).send(resp);
+        }).catch((err) => {
+            res.status(404).send("Error");
+        })
+    }
+    else{
+        res.status(404).send('Not valid ID');
+    }
+
+
+
+});
 module.exports = router;

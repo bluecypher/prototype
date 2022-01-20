@@ -42,6 +42,16 @@ const sidebarConfig = [
     title: 'Edit Profile',
     path: '/register',
     icon: getIcon(personAddFill)
+  },
+  {
+    title: "Today's Work",
+    path: '/dashboard/todaysWork',
+    icon: getIcon(personAddFill)
+  },
+  {
+    title: 'Till Day Work',
+    path: '/dashboard/tillDaysWork',
+    icon: getIcon(personAddFill)
   }
 ];
 
