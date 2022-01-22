@@ -23,14 +23,14 @@ export default function WorkUpdate() {
     const { workId } = useParams();
     const [name, setName] = useState('');
     const [serv, setServ] = useState('');
-    const [grnt, setGrnt] = useState('');
+    const [grnt, setGrnt] = useState(0);
     const [amnt, setAmnt] = useState('');
     const [mop, setMop] = useState('');
     const [date, setDate] = useState('');
     const [nxtWork, setNxtWork] = useState('');
     const id = useSelector((state) => state.profileReducer.id);
     const [wDetails, setWDetails] = useState('');
-    const numbers = [3, 4, 5, 6, 8, 10, 12];
+    const numbers = [1, 3, 6, 9, 12];
     const navigate = useNavigate();
 
     const onSubmit = () =>{
@@ -43,7 +43,7 @@ export default function WorkUpdate() {
                 'serv': serv,
                 'amnt': amnt,
                 'wDetails': wDetails,
-
+                'wrnt' : grnt,
                 'pmtMethod': mop,
                 'nxtDate': date,
                 'nxtWork': nxtWork,
@@ -53,7 +53,14 @@ export default function WorkUpdate() {
                     console.log("response:", response)
                     if (response.data === "Success") {
 
-                        navigate('/dashboard/work', { replace: true });
+                        if(mop === 'Online')
+                        {
+                        navigate('/dashboard/payment', { replace: true });
+                        }
+                        else{
+                            navigate('/dashboard/work', { replace: true });
+                        }
+
                     }
                 })
                 .catch((e) => {
@@ -104,7 +111,7 @@ export default function WorkUpdate() {
                 'serv': serv,
                 'amnt': formik.values.amnt,
                 'wDetails': formik.values.wd,
-
+                'wrnt': grnt,
                 'pmtMethod': mop,
                 'nxtDate': date,
                 'nxtWork': formik.values.nxtWork,
@@ -113,8 +120,14 @@ export default function WorkUpdate() {
                 .then((response) => {
                     console.log("response:", response)
                     if (response.data === "Success") {
+                        if(mop === 'Online')
+                        {
+                        navigate('/dashboard/payment', { replace: true });
+                        }
+                        else{
+                            navigate('/dashboard/work', { replace: true });
+                        }
 
-                        navigate('/dashboard/work', { replace: true });
                     }
                 })
                 .catch((e) => {
@@ -175,14 +188,15 @@ export default function WorkUpdate() {
                                 helperText={touched.wd && errors.wd}
                             />
                             <FormControl>
-                                <InputLabel>Gaurantee</InputLabel>
+                                <InputLabel>Warranty</InputLabel>
 
                                 <Select
-
+                                    
                                     value={grnt}
-                                    label="Gaurantee"
+                                    label="Warranty"
                                     onChange={(e) => setGrnt(e.target.value)}
                                 >
+                                    <MenuItem value={0}>Not Applicable</MenuItem>
                                     {numbers.map((s, i) =>
                                         <MenuItem key={i} index={i} value={s}>{s} Months</MenuItem>
 

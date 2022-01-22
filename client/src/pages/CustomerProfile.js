@@ -46,9 +46,9 @@ export default function CustomerProfile() {
 
                     <Typography variant="h4">Customer Profile</Typography>
 
-                    <IconButton onClick={onEdit} size="large">
+                    {/* <IconButton onClick={onEdit} size="large">
                         <Icon icon={bxEdit} />
-                    </IconButton>
+                    </IconButton> */}
                 </Stack>
                 <Grid container spacing={3} >
 

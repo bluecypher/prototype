@@ -89,14 +89,7 @@ router.post("/updateDetails", (req, res) => {
 })
 
 
-router.get("/logout", (req, res) => {
-    const number = req.query.number;
-    dao.logout(number).then(() => {
-        console.log("Logged Out Successfully");
-        res.status(200).send("success");
 
-    })
-})
 
 router.post("/addMembers",  (req, res) => {
     const number = req.body.number;
@@ -231,7 +224,7 @@ router.post("/updateWork",  (req, res) => {
     const workId = req.body.workId;
     const name = req.body.name;
     const serv = req.body.serv;
-
+    const wrnt = req.body.wrnt;
     const amnt = req.body.amnt;
     const wDetails = req.body.wDetails;
     const pmtMethod = req.body.pmtMethod;
@@ -239,7 +232,7 @@ router.post("/updateWork",  (req, res) => {
     const nxtWork = req.body.nxtWork;
     
     if (workId) {
-        dao.updateWork(workId,name,serv,amnt,wDetails,pmtMethod,nxtDate,nxtWork).then((resp) => {
+        dao.updateWork(workId,name,serv,amnt,wDetails,pmtMethod,nxtDate,nxtWork,wrnt).then((resp) => {
             res.status(200).send(resp);
         }).catch((err) => {
             res.status(404).send("Error");
@@ -416,4 +409,17 @@ router.post("/workTillToday",  (req, res) => {
 
 
 });
+
+router.post("/deleteCustomers",  (req, res) => {
+    const oID = req.body.parent_id;
+    const tID = req.body.member_id;
+    dao.deleteCustomers(oID,tID).then((resp) => {
+        console.log("Deleting Customers")
+        res.status(200).send(resp);
+    }).catch((err) => {
+        res.status(404).send({ "Error": err });
+    })
+
+
+})
 module.exports = router;

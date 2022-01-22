@@ -9,8 +9,10 @@ import plusFill from '@iconify/icons-eva/plus-fill';
 // import { Link as RouterLink } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
+
 import { useDispatch, useSelector } from "react-redux";
 // material
+import trash2Outline from '@iconify/icons-eva/trash-2-outline';
 import {
   Card,
   Table,
@@ -28,6 +30,7 @@ import {
   TextField,
   Alert,
   Link,
+  IconButton,
   OutlinedInput,
 } from '@mui/material';
 
@@ -163,6 +166,8 @@ export default function Customers() {
 
 
 
+
+
   const [cookies, setCookies] = useCookies('');
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -236,6 +241,25 @@ export default function Customers() {
     }
 
   };
+
+  const handleDelete = (event,memberId) => {
+    axios.post('http://localhost:5000/users/deleteCustomers', {  'parent_id':id, 'member_id':memberId })
+      .then((res) => {
+        
+        if (!Object.keys(cookies).length) {
+          navigate('/sessionExpired')
+        }
+        else {
+          setError('true');
+          setError('false');
+          console.log('res:', res);
+        }
+      })
+      .catch((err) => {
+        console.log('err', err);
+      })
+    // console.log('number34:', n);
+  }
 
   // const handleAdd = () => {
 
@@ -476,7 +500,9 @@ export default function Customers() {
                           </TableCell> */}
 
                           <TableCell align="right">
-                            <UserMoreMenu />
+                          <IconButton onClick={(event)=>handleDelete(event,custId)}>
+                              <Icon icon={trash2Outline} width={24} height={24} />
+                            </IconButton>
                           </TableCell>
                         </TableRow>
                       );

@@ -58,7 +58,7 @@ function LoginForm() {
     onSubmit: () => {
       console.log(window.event);
       if (window.event.submitter.id === 'signin') {
-        if (values.password && values.password === otp) {
+        if (values.password && values.password === '123456') {
           axios.post('http://localhost:5000/users/login', {
             'number': values.number
           },
@@ -93,22 +93,22 @@ function LoginForm() {
        const temp=Math.floor(100000 + Math.random() * 900000).toString(); 
        const msg = (tmplt.concat(temp,". Do not share it with anyone."));
         setOTP(temp);
-        // console.log(msg);
+        console.log(msg);
         
-        axios.get("https://www.fast2sms.com/dev/bulkV2",{params:{'authorization' : "YgzaI0vM7BZLWe9cdHUwf41GkqiESbpNusX3tToK6Oy2Qnmjlr1olWahGJ3fzXv8iYQTdtIpsUcRCnDq",
-        'route' : 'q',
-        'message': msg,
-        'language' : "english",
-        'numbers' : values.number,
-        'flash' : "0"
+      //   axios.get("https://www.fast2sms.com/dev/bulkV2",{params:{'authorization' : "YgzaI0vM7BZLWe9cdHUwf41GkqiESbpNusX3tToK6Oy2Qnmjlr1olWahGJ3fzXv8iYQTdtIpsUcRCnDq",
+      //   'route' : 'q',
+      //   'message': msg,
+      //   'language' : "english",
+      //   'numbers' : values.number,
+      //   'flash' : "0"
 
-      }})
-      .then((res)=>{
-        console.log("OTP api response:",res);
-      })
-      .catch((err)=>{
-        console.log("error in otp api",err);
-      })
+      // }})
+      // .then((res)=>{
+      //   console.log("OTP api response:",res);
+      // })
+      // .catch((err)=>{
+      //   console.log("error in otp api",err);
+      // })
       }
 
 
