@@ -55,17 +55,11 @@ export default function AccountPopover() {
   const navigate = useNavigate(); 
   const handleLogout= ()=>{
     
-     axios.get('http://localhost:5000/users/logout',{params:{number}})
-     .then((res) => {
-       if(res.data === 'success')
-       {
-         
+     
+       
           navigate('/sessionExpired');
-       }
-     })
-     .catch((err)=>{
-       console.log('error',err);
-     })
+      
+    
     
   }
 

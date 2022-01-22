@@ -24,7 +24,7 @@ export default function CustomerProfile() {
     const [workHistory, setWorkHistory] = useState([]);
     const navigate = useNavigate();
     const onEdit = () => {
-        navigate('/register');
+        console.log('Edit');
     }
     useEffect(() => {
 

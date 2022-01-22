@@ -4,12 +4,13 @@ import menu2Fill from '@iconify/icons-eva/menu-2-fill';
 // material
 import { alpha, styled } from '@mui/material/styles';
 import { Link as RouterLink } from 'react-router-dom';
-import { Box, Stack, AppBar, Toolbar, IconButton,Link } from '@mui/material';
+import {  Stack, AppBar, Toolbar, IconButton,Link } from '@mui/material';
 // components
 import { MHidden } from '../../components/@material-extend';
 //
-import Searchbar from './Searchbar';
+// import Searchbar from './Searchbar';
 import AccountPopover from './AccountPopover';
+// import LanguagePopover from './LanguagePopover';
 import Logo from '../../components/Logo';
 import NotificationsPopover from './NotificationsPopover';
 

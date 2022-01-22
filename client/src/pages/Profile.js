@@ -93,7 +93,7 @@ export default function Profile() {
 
                                 {
                                     servData.map((item) => (
-                                        <Stack spacing={1}>
+                                        <Stack key={item.serv_id} spacing={1}>
                                             <Typography alignSelf='center' variant="subtitle2">{item.serv_name}</Typography>
                                         </Stack>
                                     ))

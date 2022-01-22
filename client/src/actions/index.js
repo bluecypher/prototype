@@ -6,6 +6,14 @@ export const addProfile=(data)=>({
     }
 });
 
+export const changeLanguage=(lang)=>({
+         
+    type: "CHANGE_LANGUAGE",
+    payload: {
+        lang
+    }
+});
+
 // export const deleteProfile=()=>({
          
 //     type: "DELETE_PROFILE",

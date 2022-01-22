@@ -189,6 +189,7 @@ const addMembers = (name, number, pNumber) => {
                         resolve("error");
                     }
                     console.log("row[0].user-mast_id: ",row[0].user_mast_id)
+
                     mapOwnertoTeam(name,pNumber,number,row[0].user_mast_id);
                     
                     resolve("success");
@@ -299,14 +300,15 @@ const deleteMembers = (oID,tID) => {
     });
 };
 
-const addCustomers = (name, number, id) => {
+const addCustomers = (name, number, id, add) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
         
-        db.query("INSERT INTO service_provider_customer_master(user_mast_id,cust_phone,cust_name,created_on,last_updated) VALUES(?,?,?,?,?)", [
+        db.query("INSERT INTO service_provider_customer_master(user_mast_id,cust_phone,cust_name,address1,created_on,last_updated) VALUES(?,?,?,?,?,?)", [
             id,
             number,
             name,
+            add,
             new Date(Date.now()),
             new Date(Date.now())
         ], (err, row) => {
@@ -317,7 +319,7 @@ const addCustomers = (name, number, id) => {
             }
             else{
                 console.log('ins cust error', err)
-                reject(err);
+                resolve(err);
             }
             
         });
@@ -625,6 +627,25 @@ const workTillToday = (id) => {
         })
     })
 }
+
+const getUserType = (number) => {
+    return new Promise((resolve,reject)=>{
+        const db = getconnection();
+        db.query('SELECT user_type FROM service_provider_master WHERE phone=?',[
+            number
+        ],(err,row)=>{
+            if(!err)
+            {
+                console.log('getusertype',row);
+                resolve(row[0]);
+            }
+            else{
+                reject(err);
+            }
+        })
+    })
+}
+
 module.exports = {
     getconnection,
     updateDetails,
@@ -651,4 +672,5 @@ module.exports = {
     getCustomerWorkHistory,
     workDoneToday,
     workTillToday,
+    getUserType,
 };

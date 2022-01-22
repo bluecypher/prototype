@@ -184,7 +184,7 @@ export default function WorkUpdate() {
                                     onChange={(e) => setGrnt(e.target.value)}
                                 >
                                     {numbers.map((s, i) =>
-                                        <MenuItem index={i} value={s}>{s} Months</MenuItem>
+                                        <MenuItem key={i} index={i} value={s}>{s} Months</MenuItem>
 
                                     )}
 

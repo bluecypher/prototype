@@ -107,14 +107,14 @@ function applySortFilter(array, comparator, query) {
 export default function User() {
   const [USERLIST, setUSERLIST] = useState([]);
   const navigate = useNavigate();
-  const id = useSelector((state) => state.profileReducer.id);
+  const profileData = useSelector((state) => state.profileReducer);
   // const number = useSelector((state)=>state.profileReducer.number);
   // const img = useSelector((state)=>state.profileReducer.img);
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
   useEffect(() => {
-    console.log('redux_id:', id);
-    axios.get('http://localhost:5000/users/getMembers', { params: { 'id': id} })
+    console.log('redux_id:', profileData);
+    axios.get('http://localhost:5000/users/getMembers', { params: { 'id': profileData.id} })
       .then((res) => {
         
         if (!Object.keys(cookies).length) {
@@ -142,7 +142,7 @@ export default function User() {
       .catch((err) => {
         console.log('err', err);
       })
-  }, [error, success]);
+  }, [error, success, profileData]);
 
 
 
@@ -175,7 +175,7 @@ export default function User() {
   };
 
   const handleDelete = (event,memberId) => {
-    axios.post('http://localhost:5000/users/deleteMembers', {  'parent_id':id, 'member_id':memberId })
+    axios.post('http://localhost:5000/users/deleteMembers', {  'parent_id':profileData.id, 'member_id':memberId })
       .then((res) => {
         
         if (!Object.keys(cookies).length) {
@@ -291,16 +291,11 @@ export default function User() {
           <Typography variant="h4" gutterBottom>
             My Team
           </Typography>
-          {
-            showAdd ?
-              // <Button
-              //   variant="contained"
-              //   onClick={handleNewMember}
-              // >
-                <Icon color="red" onClick={handleNewMember} icon={close} width={32} height={32} />
-                
-              // </Button>
-              :
+         
+         {
+            showAdd || profileData.user_type === 'M' ?
+              <></>
+            :
               <Button
                 variant="contained"
                 onClick={handleNewMember}
@@ -313,9 +308,12 @@ export default function User() {
         {
           showAdd &&
           (<Card sx={{ mb: 3, p: 2 }}>
+            <Stack direction="row" justifyContent="space-between" >
             <Typography variant="h6" gutterBottom>
               Add a new member
             </Typography>
+            <Icon color="red" onClick={handleNewMember} icon={close} width={22} height={22} />
+            </Stack>
             <Stack  spacing={2} >
               <TextField
                 inputProps={{ maxLength: 10 }}
@@ -376,7 +374,7 @@ export default function User() {
                       return (
                         <TableRow
                           hover
-
+                          key={memberId}
                           tabIndex={-1}
                           role="checkbox"
                           selected={isItemSelected}

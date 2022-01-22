@@ -10,6 +10,7 @@ import { addProfile } from '../actions/index';
 
 // components
 import Page from '../components/Page';
+import ConstLang from '../components/ConstLang';
 
 const axios = require('axios');
 
@@ -50,6 +51,7 @@ const DashboardApp = () => {
   const [cookies, setCookies] = useCookies('');
 
   const data = useSelector((state) => state.profileReducer);
+  const lang = useSelector((state)=> state.languageReducer);
   // const lname = useSelector((state) => state.profileReducer.lname);
   // const number = useSelector((state) => state.profileReducer.number);
   // const img = useSelector((state) => state.profileReducer.img);
@@ -60,7 +62,7 @@ const DashboardApp = () => {
     axios.get('http://localhost:5000/users/getData', { params: { 'number': localStorage.getItem('number') } })
 
       .then((res) => {
-        console.log('data', res.data[0]);
+        console.log('data', lang);
         if (Object.keys(cookies).length) {
           // console.log('data', cookies);
           let bufferOriginal = null;
@@ -103,12 +105,12 @@ const DashboardApp = () => {
 
 
     // foo();
-  },[]);
+  },[localStorage.getItem('number')]);
   return (
     <Page title="Dashboard">
       <Container maxWidth="xl">
         <Box sx={{ pb: 5 }}>
-          <Typography variant="h4">Hi, Welcome back</Typography>
+          <Typography variant="h4">Hi, Welcome Back</Typography>
         </Box>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3} align='center'>

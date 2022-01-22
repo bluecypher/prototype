@@ -1,9 +1,12 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from "react-redux";
+
 // material
 import { alpha } from '@mui/material/styles';
-import { Box, MenuItem, ListItemIcon, ListItemText, IconButton } from '@mui/material';
+import { Box, MenuItem, ListItemIcon, ListItemText, IconButton, Typography } from '@mui/material';
 // components
 import MenuPopover from '../../components/MenuPopover';
+import { changeLanguage } from '../../actions/index';
 
 // ----------------------------------------------------------------------
 
@@ -26,12 +29,31 @@ const LANGS = [
 export default function LanguagePopover() {
   const anchorRef = useRef(null);
   const [open, setOpen] = useState(false);
-
+  const [language, setLanguage] = useState({
+    value: 'en',
+    label: 'English',
+    icon: '/static/icons/ic_flag_en.svg'
+  });
+  useEffect(()=>{
+    setLanguage({
+      value: 'en',
+      label: 'English',
+      icon: '/static/icons/ic_flag_en.svg'
+    });
+  },[])
+  const dispatch = useDispatch();
   const handleOpen = () => {
     setOpen(true);
   };
 
-  const handleClose = () => {
+  const handleClose = (event,option) => {
+    
+    console.log('language',option);
+    if(option.value)
+    {
+      dispatch(changeLanguage(option.value));
+    setLanguage(option);
+    }
     setOpen(false);
   };
 
@@ -42,14 +64,15 @@ export default function LanguagePopover() {
         onClick={handleOpen}
         sx={{
           padding: 0,
-          width: 44,
-          height: 44,
+          width: 24,
+          height: 24,
           ...(open && {
             bgcolor: (theme) => alpha(theme.palette.primary.main, theme.palette.action.focusOpacity)
           })
         }}
       >
-        <img src={LANGS[0].icon} alt={LANGS[0].label} />
+        <img src="/static/icons/language.png" alt="language" />
+        <Typography varinat="h2">{language.value}</Typography>
       </IconButton>
 
       <MenuPopover open={open} onClose={handleClose} anchorEl={anchorRef.current}>
@@ -57,13 +80,14 @@ export default function LanguagePopover() {
           {LANGS.map((option) => (
             <MenuItem
               key={option.value}
-              selected={option.value === LANGS[0].value}
-              onClick={handleClose}
+              
+              selected={option.value === language.value}
+              onClick={(event)=>handleClose(event,option)}
               sx={{ py: 1, px: 2.5 }}
             >
-              <ListItemIcon>
+              {/* <ListItemIcon>
                 <Box component="img" alt={option.label} src={option.icon} />
-              </ListItemIcon>
+              </ListItemIcon> */}
               <ListItemText primaryTypographyProps={{ variant: 'body2' }}>
                 {option.label}
               </ListItemText>

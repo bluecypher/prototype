@@ -159,6 +159,7 @@ export default function Customers() {
   const [number, setNumber] = useState('');
   const [cName, setCName] = useState('');
   const [showAdd, setShowAdd] = useState(false);
+  const [add, setAdd] = useState('');
 
 
 
@@ -215,6 +216,10 @@ export default function Customers() {
 
   const handleCName = (event) => {
     setCName(event.target.value);
+  };
+
+  const handleAdd = (event) => {
+    setAdd(event.target.value);
   };
 
   const handleNewMember = () => {
@@ -274,6 +279,7 @@ export default function Customers() {
     initialValues: {
       name: '',
       phone: '',
+      address: '',
 
     },
     validationSchema: AddSchema,
@@ -282,22 +288,25 @@ export default function Customers() {
       axios.post('http://localhost:5000/users/addCustomers', {
         'number': formik.values.phone,
         'id': id,
-        'name': formik.values.name
+        'name': formik.values.name,
+        'add': formik.values.address,
       })
         .then((res) => {
           console.log(res);
           if (res.data === 'Success') {
             setNumber('');
-            formik.values.phone = '';
             formik.values.name = '';
+            formik.values.phone = '';
+            formik.values.address = '';
             setCName('');
+            setAdd('');
             setError(false);
             setSuccess(true);
 
 
           }
 
-          else if (res.data === 'no_user') {
+          else if (res.data.code === 'ER_DUP_ENTRY') {
             setSuccess(false);
             setError(true);
           }
@@ -368,6 +377,15 @@ export default function Customers() {
                     error={Boolean(touched.phone && errors.phone)}
                     helperText={touched.phone && errors.phone}
                   />
+                  <TextField
+                    inputProps={{ maxLength: 60 }}
+                    label="Address"
+                    value={add}
+                    onChange={handleAdd}
+                    {...getFieldProps('address')}
+                    error={Boolean(touched.address && errors.address)}
+                    helperText={touched.address && errors.address}
+                  />
 
 
                   <Button type="submit" >Add</Button>
@@ -378,7 +396,7 @@ export default function Customers() {
             {
               error &&
               <Stack m={2}>
-                <Alert severity="error">User does not exist!</Alert>
+                <Alert severity="error">A Customer with same number already exist in your list!!</Alert>
               </Stack>
             }
             {

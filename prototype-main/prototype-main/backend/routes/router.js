@@ -39,10 +39,18 @@ router.get("/getData",  (req, res) => {
 })
 
 router.get("/getServices",  (req, res) => {
+    const number = req.query.number;
     
     dao.getServices().then((resp) => {
+        var result =new Object();
         console.log("Getting Services")
-        res.status(200).send(resp);
+        result.services = resp;
+        dao.getUserType(number).then((resp)=>{
+            result.userType = resp;
+            console.log("result", result);
+            res.status(200).send(result);
+        })
+        
     }).catch((err) => {
         res.status(404).send({ "Error": err });
     })
@@ -139,9 +147,10 @@ router.post("/addCustomers",  (req, res) => {
     const number = req.body.number;
     const id = req.body.id;
     const name = req.body.name;
+    const add = req.body.add;
 
     if (id) {
-        dao.addCustomers(name, number, id).then((resp) => {
+        dao.addCustomers(name, number, id,add).then((resp) => {
             
             res.status(200).send(resp);
         }).catch((err) => {

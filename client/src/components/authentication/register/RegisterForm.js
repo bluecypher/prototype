@@ -19,17 +19,22 @@ export default function RegisterForm() {
   // let services;
   const [services, setServices] = useState([]);
   useEffect(() => {
-    axios.get("http://localhost:5000/users/getServices")
+    axios.get("http://localhost:5000/users/getServices",{params:{'number': localStorage.getItem('number')}})
       .then((res) => {
-        setServices(res.data);
-        const tm = new Date(Date.now())
-        console.log("datetike:", new Date(Date.now()));
+        setServices(res.data.services);
+        if(res.data.userType)
+        {
+        setUserType(res.data.userType.user_type);
+        }
+        // const tm = new Date(Date.now())
+        console.log("datetike:", res.data);
       })
   }, [])
   // const [showPassword, setShowPassword] = useState(false);
   const [image, setImage] = useState(null);
   const [fname, setFname] = useState('');
   const [lname, setLname] = useState('');
+  const [userType, setUserType] = useState('');
   const [selected, setSelected] = useState([]);
 
   const fileToDataUri = (file) => new Promise((resolve, reject) => {
@@ -181,14 +186,17 @@ export default function RegisterForm() {
 
 
           </Stack>
-          <TextField
+          { userType === 'M' ?
+            (<></>)
+            :
+            (<TextField
               fullWidth
               type="text"
               label="Email"
               {...getFieldProps('email')}
               error={Boolean(touched.email && errors.email)}
               helperText={touched.email && errors.email}
-            />
+            />)}
           <Stack spacing={1}>
             <Stack direction="row" spacing={6}>
               <Typography variant="h6">
@@ -218,7 +226,12 @@ export default function RegisterForm() {
             helperText={touched.add && errors.add}
           />
 
-          <TextField
+{ userType === 'M' ?
+            (<></>)
+            :
+            (
+              <Stack spacing ={2}>
+            <TextField
             fullWidth
             multiline
             type="text"
@@ -227,7 +240,7 @@ export default function RegisterForm() {
             error={Boolean(touched.add2 && errors.add2)}
             helperText={touched.add2 && errors.add2}
           />
-          <TextField
+            <TextField
             fullWidth
             type="text"
             label="Locality"
@@ -287,11 +300,11 @@ export default function RegisterForm() {
           <Typography variant="h6" >
             Services Provided
           </Typography>
-          {/* <Grid container spacing={1}>
+          <Grid container spacing={1}>
           {services.map( (s,i) => {
           const isItemSelected = selected.indexOf(s.serv_id) !== -1
           return(
-          <Stack direction="row" >
+          <Stack key={s.serv_id} direction="row" >
           <Checkbox
             checked = {isItemSelected}
             onChange={(event) => handleCheck(event,s.serv_id)}
@@ -303,7 +316,7 @@ export default function RegisterForm() {
           )
           }
           )}
-          </Grid> */}
+          </Grid>
           
           {/* <TextField
             fullWidth
@@ -324,6 +337,9 @@ export default function RegisterForm() {
             error={Boolean(touched.hghlts && errors.hghlts)}
             helperText={touched.hghlts && errors.hghlts}
           />
+          </Stack>
+          )
+        }
 
           <LoadingButton
             fullWidth

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useCookies } from 'react-cookie';
+// import { useCookies } from 'react-cookie';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { Icon } from '@iconify/react';
-import { Box, Grid, Container, Typography, Card, Avatar, Stack, Button, Link, IconButton } from '@mui/material';
-import { useDispatch, useSelector } from "react-redux";
+// import { Icon } from '@iconify/react';
+import {  Grid, Container, Typography, Card, Avatar, Stack, Button, } from '@mui/material';
+import { useSelector } from "react-redux";
 
 
 
@@ -96,10 +96,12 @@ export default function PaymentProfile() {
                                 <Typography variant="subtitle">
                                     Upload a new QR code
                                 </Typography>
-
+                               
                                 <input
                                     accept="image/*"
+                                    id="input-qr"
                                     type="file"
+                                    // style={{display: 'none'}}
                                     onChange={(event) => { fileChangeHandler(event.target.files[0] || null) }}
                                 />
                             </Stack>)
@@ -110,6 +112,10 @@ export default function PaymentProfile() {
 
                             <Typography variant="h6">Mobile number: {servData}</Typography>
 
+                            {/* <Stack direction="row" alignItems='center'>
+                            <Typography variant="h6">Take picture of the receipt</Typography>
+                            <input accept='image/*' id='icon-button-file' type='file' capture='environment'/>
+                            </Stack> */}
                             <Button
                                 sx={{ width: "50%", alignSelf: "center" }}
 
