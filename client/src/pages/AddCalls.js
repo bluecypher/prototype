@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useCookies } from 'react-cookie';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useSelector } from "react-redux";
-import { Box, Grid, Container, Typography, Stack, Button, FormControl, InputLabel, Select, MenuItem, TextField } from '@mui/material';
+import { Box, Grid, Link, Container, Typography, Stack, Button, FormControl, InputLabel, Select, MenuItem, TextField } from '@mui/material';
 import DatePicker from '@mui/lab/DatePicker';
 import TimePicker from '@mui/lab/TimePicker';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
@@ -97,10 +97,15 @@ export default function AddCalls() {
                         >
                             {
                                 custList.map((item, id) =>
-                                    <MenuItem index={item.custId} value={item.custId}>{item.name}</MenuItem>
+                                    <MenuItem key={item.custId} value={item.custId}>{item.name}</MenuItem>
                                 )
-
+                                
                             }
+                            <MenuItem value="Add Customer">
+                                <Link component={RouterLink} to="/dashboard/customers">
+                                    <Typography variant="subtitle2">+Add a new customer</Typography>
+                                </Link>
+                                </MenuItem>
 
 
 

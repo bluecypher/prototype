@@ -6,6 +6,7 @@ import { useFormik, Form, FormikProvider } from 'formik';
 // import InputLabel from '@mui/material/InputLabel';
 // import FormControl from '@mui/material/FormControl';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from "react-redux";
 // material
 import { Stack, TextField, Typography, Checkbox, Grid } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
@@ -16,6 +17,8 @@ const axios = require('axios');
 
 export default function RegisterForm() {
   const navigate = useNavigate();
+  const data = useSelector((state)=>state.profileReducer)
+  const [servData,setServData] = useState([]);
   // let services;
   const [services, setServices] = useState([]);
   useEffect(() => {
@@ -29,9 +32,29 @@ export default function RegisterForm() {
         // const tm = new Date(Date.now())
         console.log("datetike:", res.data);
       })
+      axios.post('http://localhost:5000/users/getUserServices', { 'id': data.id })
+            .then((res) => {
+                // console.log("result", res);
+                
+                let temp = res.data;
+                
+                temp = temp.map((item)=>{
+                  
+                  item = item.serv_id;
+                  
+                  return item;
+
+                })
+                setSelected(temp);
+                console.log("result", temp);
+                
+            })
+            .catch((err) => {
+                console.log("Error", err);
+            })
   }, [])
   // const [showPassword, setShowPassword] = useState(false);
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState(data.img);
   const [fname, setFname] = useState('');
   const [lname, setLname] = useState('');
   const [userType, setUserType] = useState('');
@@ -116,18 +139,17 @@ export default function RegisterForm() {
 
   const formik = useFormik({
     initialValues: {
-      fname: '',
-      lname: '',
-      email: '',
-      add: '',
-      add2: '',
-      locality: '',
-      city: '',
-      pin: '',
-      state: '',
-      ent: '',
-      service: '',
-      hghlts: ''
+      fname: data.fname,
+      lname: data.lname,
+      email: data.email,
+      add: data.add1,
+      add2: data.add2,
+      locality: data.locality,
+      city: data.city,
+      pin: data.pin,
+      state: data.state,
+      ent: data.ent,
+      hghlts: data.hghlts
     },
     validationSchema:
      (userType==='M') ?

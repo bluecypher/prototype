@@ -36,11 +36,7 @@ const sidebarConfig = [
   //   path: '/dashboard/blog',
   //   icon: getIcon(fileTextFill)
   // },
-  {
-    title: 'login',
-    path: '/login',
-    icon: getIcon("carbon:login")
-  },
+  
   {
     title: 'Edit Profile',
     path: '/register',
@@ -55,7 +51,12 @@ const sidebarConfig = [
     title: 'Till Day Work',
     path: '/dashboard/tillDaysWork',
     icon: getIcon("bytesize:work")
-  }
+  },
+  {
+    title: 'logout',
+    path: '/sessionExpired',
+    icon: getIcon("ri:logout-box-line")
+  },
 ];
 
 export default sidebarConfig;

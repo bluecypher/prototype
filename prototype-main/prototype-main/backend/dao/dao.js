@@ -171,17 +171,30 @@ const updateDetails = (data) => {
 const addServices = (user_id, serv_ids) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
-        for (var i = 0; i < serv_ids.length; i++) {
-            db.query("INSERT INTO service_provider_detail(user_mast_id,serv_id,created_on,last_updated) VALUES(?,?,?,?)",
-                [
-                    user_id,
-                    serv_ids[i],
-                    new Date(Date.now()),
-                    new Date(Date.now())
-                ])
-        }
-        resolve();
-        db.end();
+        db.query("DELETE FROM service_provider_detail WHERE user_mast_id=?",[
+            user_id
+        ],
+        (err,row)=>{
+            if(!err)
+            {
+                for (var i = 0; i < serv_ids.length; i++) {
+                    db.query("INSERT INTO service_provider_detail(user_mast_id,serv_id,created_on,last_updated) VALUES(?,?,?,?)",
+                        [
+                            user_id,
+                            serv_ids[i],
+                            new Date(Date.now()),
+                            new Date(Date.now())
+                        ])
+                }
+                resolve();
+            }
+            else{
+                console.log(err);
+                reject(err);
+            }
+        })
+        
+        // db.end();
     });
 
 };
