@@ -108,12 +108,13 @@ export default function Customers() {
       .max(50, 'Too Long!')
       .required('Name is required'),
 
-    phone: Yup.string().required('Number is required'),
+    phone: Yup.number('Mobile number must be numeric.').min(1000000000,'Please enter a valid number.').required('Number is required'),
 
 
   });
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [refresh, setRefresh] = useState(false);
 
   const onItemClick = (event,id) => {
 
@@ -149,7 +150,7 @@ export default function Customers() {
       .catch((err) => {
         console.log('err', err);
       })
-  }, [error, success, id]);
+  }, [error, success, id,refresh]);
 
 
 
@@ -243,6 +244,7 @@ export default function Customers() {
   };
 
   const handleDelete = (event,memberId) => {
+    console.log(id,' ', memberId);
     axios.post('http://localhost:5000/users/deleteCustomers', {  'parent_id':id, 'member_id':memberId })
       .then((res) => {
         
@@ -250,8 +252,8 @@ export default function Customers() {
           navigate('/sessionExpired')
         }
         else {
-          setError('true');
-          setError('false');
+          setRefresh('true');
+          setRefresh('false');
           console.log('res:', res);
         }
       })

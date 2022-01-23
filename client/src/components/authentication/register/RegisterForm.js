@@ -101,6 +101,19 @@ export default function RegisterForm() {
 
   });
 
+  const RegisterSchema2 = Yup.object().shape({
+    fname: Yup.string()
+      .min(2, 'Too Short!')
+      .max(50, 'Too Long!')
+      .required('First name is required'),
+
+    add: Yup.string().required('Address is required'),
+
+    
+
+
+  });
+
   const formik = useFormik({
     initialValues: {
       fname: '',
@@ -116,11 +129,17 @@ export default function RegisterForm() {
       service: '',
       hghlts: ''
     },
-    validationSchema: RegisterSchema,
-    onSubmit: () => {
+    validationSchema:
+     (userType==='M') ?
+    RegisterSchema2
+    :
+    RegisterSchema
+    ,
+    // validator: () => {},
+    onSubmit: (values) => {
       // console.log('imag', formik.values.name);
       const nm = localStorage.getItem('number');
-      console.log('number:', nm);
+      // console.log('number:', values);
       axios.post('http://localhost:5000/users/updateDetails', {
         'fname': formik.values.fname,
         'lname': formik.values.lname,
@@ -350,6 +369,7 @@ export default function RegisterForm() {
           >
             Update
           </LoadingButton>
+          {/* {JSON.stringify(errors)} */}
         </Stack>
       </Form>
     </FormikProvider>

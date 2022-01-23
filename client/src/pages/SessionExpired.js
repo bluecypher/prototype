@@ -26,9 +26,11 @@ export default function SessionExpired() {
     const [cookies,setCookie,removeCookie] = useCookies();
 
     useEffect(()=>{
+      console.log('sess')
+      removeCookie('token', { path: '/' });
         localStorage.removeItem('number');
          localStorage.removeItem('persist:root');
-        removeCookie('token');
+        
     },[])
   return (
     <RootStyle title="Session Expired">

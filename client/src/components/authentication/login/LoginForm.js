@@ -32,6 +32,8 @@ function LoginForm() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [otp, setOTP] = useState('');
+  const [inputOtp, setInputOtp] = useState('');
+  const [showSubmit, setShowSubmit] = useState(false);
   const [error, setError] = useState(false);
   const [cookies, setCookie] = useCookies('');
   const [tmplt,setTmplt] = useState('Dear user, OTP to login to Sahayak is ');
@@ -40,6 +42,39 @@ function LoginForm() {
     number: Yup.number('Mobile number must be numeric.').min(1000000000, 'Too Short. Please enter a valid number.').required('Mobile number is required'),
     // password: Yup.string().required('OTP is required')
   });
+  const handleSubmit2 =() =>{
+    if (inputOtp === '123456') {
+      axios.post('http://localhost:5000/users/login', {
+        'number': values.number
+      },
+        {
+          'access-control-allow-origin': '*'
+        })
+        .then((response) => {
+          console.log(response)
+          if (response.data.res === "success") {
+
+            localStorage.setItem('number', values.number);
+            setCookie("token", response.data.jwToken, { path: '/', expires: new Date(Date.now() + 1000 * 60 * 60*2) });
+
+            if (response.data.status === 'F') {
+              navigate('/dashboard', { replace: true });
+            }
+            else {
+              navigate('/register', { replace: true });
+            }
+          }
+        })
+        .catch((e) => {
+          console.log("Error", e);
+        })
+    }
+    else{
+      setError(true);
+      console.log('less than 6');
+    }
+  }
+  
   useEffect(() => {
     console.log(data);
     if (cookies.token && data.number) {
@@ -56,43 +91,12 @@ function LoginForm() {
     },
     validationSchema: LoginSchema,
     onSubmit: () => {
-      console.log(window.event);
-      if (window.event.submitter.id === 'signin') {
-        if (values.password && values.password === '123456') {
-          axios.post('http://localhost:5000/users/login', {
-            'number': values.number
-          },
-            {
-              'access-control-allow-origin': '*'
-            })
-            .then((response) => {
-              console.log(response)
-              if (response.data.res === "success") {
-
-                localStorage.setItem('number', values.number);
-                setCookie("token", response.data.jwToken, { path: '/', expires: new Date(Date.now() + 1000 * 60 * 60*2) });
-
-                if (response.data.status === 'F') {
-                  navigate('/dashboard', { replace: true });
-                }
-                else {
-                  navigate('/register', { replace: true });
-                }
-              }
-            })
-            .catch((e) => {
-              console.log("Error", e);
-            })
-        }
-        else{
-          setError(true);
-          console.log('less than 6');
-        }
-      }
-      else {
+      // console.log(event);
+      
        const temp=Math.floor(100000 + Math.random() * 900000).toString(); 
        const msg = (tmplt.concat(temp,". Do not share it with anyone."));
         setOTP(temp);
+        setShowSubmit(true);
         console.log(msg);
         
       //   axios.get("https://www.fast2sms.com/dev/bulkV2",{params:{'authorization' : "YgzaI0vM7BZLWe9cdHUwf41GkqiESbpNusX3tToK6Oy2Qnmjlr1olWahGJ3fzXv8iYQTdtIpsUcRCnDq",
@@ -109,17 +113,14 @@ function LoginForm() {
       // .catch((err)=>{
       //   console.log("error in otp api",err);
       // })
-      }
-
-
     }
   });
 
   const { errors, touched, values, isSubmitting, handleSubmit, getFieldProps } = formik;
 
-  const handleShowPassword = () => {
-    setShowPassword((show) => !show);
-  };
+  // const handleShowPassword = () => {
+  //   setShowPassword((show) => !show);
+  // };
 
   return (
     // <FormikProvider value={formik}>
@@ -193,9 +194,11 @@ function LoginForm() {
     //   </Form>
     // </FormikProvider>
 
-    <FormikProvider value={formik}>
+    <Stack spacing={3}>
+        
+          <FormikProvider value={formik}>
       <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
-        <Stack spacing={3}>
+      <Stack spacing={3}>
           <TextField
             fullWidth
             inputProps={{ maxLength: 10 }}
@@ -212,18 +215,23 @@ function LoginForm() {
             size="large"
             type="submit"
             variant="contained"
-            
+            disabled={showSubmit}
           // loading={isSubmitting}
 
           >
             Get OTP
           </LoadingButton>
+          </Stack>
+             </Form>
+    </FormikProvider>
+    { showSubmit &&
+         <Stack spacing={3}>
           <TextField
             fullWidth
 
             type={showPassword ? 'text' : 'password'}
             label="OTP"
-            {...getFieldProps('password')}
+            // {...getFieldProps('password')}
             inputProps={{
               maxLength: 6,
               // endAdornment: (
@@ -235,9 +243,11 @@ function LoginForm() {
               // )
 
             }}
+            value={inputOtp}
+            onChange={(event)=>setInputOtp(event.target.value)}
 
-            error={Boolean(touched.password && errors.password)}
-            helperText={touched.password && errors.password}
+            // error={Boolean(touched.password && errors.password)}
+            // helperText={touched.password && errors.password}
           />
           {
               error &&
@@ -245,7 +255,8 @@ function LoginForm() {
                 <Alert severity="error">OTP does not match!</Alert>
               </Stack>
             }
-        </Stack>
+             
+       
 
         <Stack direction="row" alignItems="center" justifyContent="flex-end" sx={{ my: 2 }}>
           {/* <FormControlLabel
@@ -264,12 +275,14 @@ function LoginForm() {
           size="large"
           type="submit"
           variant="contained"
+          onClick={handleSubmit2}
         // loading={isSubmitting}
         >
           Sign In
         </LoadingButton>
-      </Form>
-    </FormikProvider>
+        </Stack>
+}
+      </Stack>
   );
 }
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 // import { useCookies } from 'react-cookie';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 // import { Icon } from '@iconify/react';
-import {  Grid, Container, Typography, Card, Avatar, Stack, Button, } from '@mui/material';
+import { Grid, Container, Typography, Card, Avatar, Stack, Button,Alert, } from '@mui/material';
 import { useSelector } from "react-redux";
 
 
@@ -19,6 +19,7 @@ export default function PaymentProfile() {
     const data = useSelector((state) => state.profileReducer);
     const [servData, setServData] = useState('');
     const [QR, setQR] = useState('');
+    const [error, setError] = useState(false);
     const [image, setImage] = useState('');
     const navigate = useNavigate();
 
@@ -44,21 +45,29 @@ export default function PaymentProfile() {
     }
 
     const onSave = () => {
+        if(image)
+        {
+            setError(false);
         axios.post('http://localhost:5000/users/uploadQR', { 'id': data.id, 'qr': image })
             .then((res) => {
-                
+
                 setQR('');
             })
             .catch((err) => {
                 console.log("Error: ", err);
             })
+        }
+        else
+        {
+            setError(true);
+        }
     }
 
     useEffect(() => {
 
         axios.post('http://localhost:5000/users/getPaymentDetails', { 'id': data.id })
             .then((res) => {
-                
+
                 let bufferOriginal = null;
                 if (res.data[0]) {
 
@@ -73,7 +82,7 @@ export default function PaymentProfile() {
             .catch((err) => {
                 console.log("Error", err);
             })
-    }, [data.id,QR])
+    }, [data.id, QR])
     return (
         <Page title="Payment Profile">
             <Container maxWidth="xl">
@@ -86,25 +95,25 @@ export default function PaymentProfile() {
 
                             {
                                 QR ?
-                                    <Avatar src={QR} sx={{ width: 200, height: 200, alignSelf: 'center' }} alt="photoURL" variant="square"/>
+                                    <Avatar src={QR} sx={{ width: 200, height: 200, alignSelf: 'center' }} alt="photoURL" variant="square" />
                                     :
-                                    <Avatar sx={{ width: 200, height: 200, alignSelf: 'center' }} alt="photoURL" variant="square"/>
+                                    <Avatar sx={{ width: 200, height: 200, alignSelf: 'center' }} alt="photoURL" variant="square" />
                             }
                             {
-                                data.user_type==='O' &&
-                            (<Stack alignItems='center'>
-                                <Typography variant="subtitle">
-                                    Upload a new QR code
-                                </Typography>
-                               
-                                <input
-                                    accept="image/*"
-                                    id="input-qr"
-                                    type="file"
-                                    // style={{display: 'none'}}
-                                    onChange={(event) => { fileChangeHandler(event.target.files[0] || null) }}
-                                />
-                            </Stack>)
+                                data.user_type === 'O' &&
+                                (<Stack alignItems='center'>
+                                    <Typography variant="subtitle">
+                                        Upload a new QR code
+                                    </Typography>
+
+                                    <input
+                                        accept="image/*"
+                                        id="input-qr"
+                                        type="file"
+                                        // style={{display: 'none'}}
+                                        onChange={(event) => { fileChangeHandler(event.target.files[0] || null) }}
+                                    />
+                                </Stack>)
                             }
 
 
@@ -116,15 +125,22 @@ export default function PaymentProfile() {
                             <Typography variant="h6">Take picture of the receipt</Typography>
                             <input accept='image/*' id='icon-button-file' type='file' capture='environment'/>
                             </Stack> */}
-                            <Button
-                                sx={{ width: "50%", alignSelf: "center" }}
+                            {
+                                data.user_type === 'O' &&
+                                <Button
+                                    sx={{ width: "50%", alignSelf: "center" }}
 
-                                size="large"
-                                type="submit"
-                                variant="contained"
-                                onClick={onSave}>
-                                Save
-                            </Button>
+                                    size="large"
+                                    type="submit"
+                                    variant="contained"
+                                    onClick={onSave}>
+                                    Save
+                                </Button>
+                            }
+                            {
+                                error &&
+                                <Alert severity="error">Please choose a QR to upload first!</Alert>
+                            }
                         </Stack>
                     </Grid>
                 </Grid>

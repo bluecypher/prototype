@@ -161,7 +161,7 @@ const updateDetails = (data) => {
                     )
                 }
             })
-        db.end();
+        // db.end();
 
     });
 };
@@ -499,7 +499,7 @@ const getPaymentDetails = (id) => {
                         ],
                             (err, row) => {
                                 if (!err) {
-                                    console.log(row);
+                                    console.log('ownerid',row);
                                     resolve(getQRCode(row[0].owner_id));
                                 }
                                 else {
@@ -514,7 +514,7 @@ const getPaymentDetails = (id) => {
                     reject(err)
                 }
             });
-        db.end();
+        // db.end();
     });
 };
 
@@ -545,9 +545,11 @@ const uploadQR = (id, qr) => {
         ],
             (err, row) => {
                 if (!err) {
+                    console.log('qr row',row)
                     resolve("Success");
                 }
                 else {
+                    console.log('qr err',err)
                     reject(err);
                 }
             });
@@ -673,9 +675,11 @@ const deleteCustomers = (oID, tID) => {
             [oID, tID,],
             (err, row) => {
                 if (!err) {
+                    console.log(row);
                     resolve("success");
                 }
                 else {
+                    console.log(err);
                     reject(err);
                 }
             });

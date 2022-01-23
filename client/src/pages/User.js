@@ -1,10 +1,12 @@
 import { filter } from 'lodash';
+import * as Yup from 'yup';
 import { Icon } from '@iconify/react';
 // import { sentenceCase } from 'change-case';
 import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import plusFill from '@iconify/icons-eva/plus-fill';
 // import { Link as RouterLink } from 'react-router-dom';
+import { useFormik, Form, FormikProvider } from 'formik';
 import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
@@ -111,12 +113,23 @@ export default function User() {
   // const number = useSelector((state)=>state.profileReducer.number);
   // const img = useSelector((state)=>state.profileReducer.img);
   const [error, setError] = useState(false);
+  const [refresh, setRefresh] = useState(false);
   const [success, setSuccess] = useState(false);
+  const AddSchema = Yup.object().shape({
+    name: Yup.string()
+      .min(2, 'Too Short!')
+      .max(50, 'Too Long!')
+      .required('Name is required'),
+
+    phone: Yup.number('Mobile number must be numeric.').min(1000000000, 'Please enter a valid number.').required('Number is required'),
+
+
+  });
   useEffect(() => {
     console.log('redux_id:', profileData);
-    axios.get('http://localhost:5000/users/getMembers', { params: { 'id': profileData.id} })
+    axios.get('http://localhost:5000/users/getMembers', { params: { 'id': profileData.id } })
       .then((res) => {
-        
+
         if (!Object.keys(cookies).length) {
           navigate('/sessionExpired')
         }
@@ -134,15 +147,15 @@ export default function User() {
           //   }
           //   return item;
           // });
-          console.log('res data:',res.data);
+          console.log('res data:', res.data);
           setUSERLIST(res.data);
-          
+
         }
       })
       .catch((err) => {
         console.log('err', err);
       })
-  }, [error, success, profileData]);
+  }, [error, success, profileData, refresh]);
 
 
 
@@ -174,16 +187,16 @@ export default function User() {
     setSelected([]);
   };
 
-  const handleDelete = (event,memberId) => {
-    axios.post('http://localhost:5000/users/deleteMembers', {  'parent_id':profileData.id, 'member_id':memberId })
+  const handleDelete = (event, memberId) => {
+    axios.post('http://localhost:5000/users/deleteMembers', { 'parent_id': profileData.id, 'member_id': memberId })
       .then((res) => {
-        
+
         if (!Object.keys(cookies).length) {
           navigate('/sessionExpired')
         }
         else {
-          setError('true');
-          setError('false');
+          setRefresh('true');
+          setRefresh('false');
           console.log('res:', res);
         }
       })
@@ -246,35 +259,35 @@ export default function User() {
 
   };
 
-  const handleAdd = () => {
+  // const handleAdd = () => {
 
-    console.log('Add');
-    axios.post('http://localhost:5000/users/addMembers', {
-      'number': number,
-      'name': tName,
-      'pNumber': localStorage.getItem('number')
-    })
-      .then((res) => {
-        console.log(res);
-        if (res.data === 'success') {
-          setNumber('');
-          setTName('');
-          setError(false);
-          setSuccess(true);
+  //   console.log('Add');
+  //   axios.post('http://localhost:5000/users/addMembers', {
+  //     'number': number,
+  //     'name': tName,
+  //     'pNumber': localStorage.getItem('number')
+  //   })
+  //     .then((res) => {
+  //       console.log(res);
+  //       if (res.data === 'success') {
+  //         setNumber('');
+  //         setTName('');
+  //         setError(false);
+  //         setSuccess(true);
 
 
-        }
+  //       }
 
-        else if (res.data === 'no_user') {
-          setSuccess(false);
-          setError(true);
-        }
+  //       else if (res.data === 'no_user') {
+  //         setSuccess(false);
+  //         setError(true);
+  //       }
 
-      })
-      .catch((err) => {
-        console.log('err', err);
-      })
-  }
+  //     })
+  //     .catch((err) => {
+  //       console.log('err', err);
+  //     })
+  // }
 
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
@@ -284,6 +297,54 @@ export default function User() {
   const isUserNotFound = false;
   // filteredUsers.length === 0;
 
+  const formik = useFormik({
+    initialValues: {
+      name: '',
+      phone: '',
+
+
+    },
+    validationSchema: AddSchema,
+    onSubmit: () => {
+      // console.log('imag', formik.values.name);
+      console.log('Add');
+      axios.post('http://localhost:5000/users/addMembers', {
+        'number': formik.values.phone,
+        'name': formik.values.name,
+        'pNumber': localStorage.getItem('number')
+      })
+        .then((res) => {
+          console.log(res);
+          if (res.data === 'success') {
+            formik.values.name = '';
+            formik.values.phone = '';
+            setNumber('');
+            setTName('');
+            
+            setError(false);
+            setSuccess(true);
+
+
+          }
+
+          else if (res.data === 'no_user') {
+            setSuccess(false);
+            setError(true);
+          }
+
+        })
+        .catch((err) => {
+          console.log('err', err);
+        })
+
+
+    }
+
+
+  });
+
+  const { touched, errors, isSubmitting, handleSubmit, getFieldProps } = formik;
+
   return (
     <Page title="My Team">
       <Container>
@@ -291,11 +352,11 @@ export default function User() {
           <Typography variant="h4" gutterBottom>
             My Team
           </Typography>
-         
-         {
+
+          {
             showAdd || profileData.user_type === 'M' ?
               <></>
-            :
+              :
               <Button
                 variant="contained"
                 onClick={handleNewMember}
@@ -309,94 +370,107 @@ export default function User() {
           showAdd &&
           (<Card sx={{ mb: 3, p: 2 }}>
             <Stack direction="row" justifyContent="space-between" >
-            <Typography variant="h6" gutterBottom>
-              Add a new member
-            </Typography>
-            <Icon color="red" onClick={handleNewMember} icon={close} width={22} height={22} />
+              <Typography variant="h6" gutterBottom>
+                Add a new member
+              </Typography>
+              <Icon color="red" onClick={handleNewMember} icon={close} width={22} height={22} />
             </Stack>
-            <Stack  spacing={2} >
-              <TextField
-                inputProps={{ maxLength: 10 }}
-                label="Phone number"
-                value={number}
-                onChange={handleNumber}
-              />
-
-              <TextField
-                inputProps={{ maxLength: 50 }}
-                label="Name"
-                value={tName}
-                onChange={handleTName}
-              />
-
-              <Button onClick={handleAdd}>Add</Button>
-            </Stack >
-            {
-              error &&
-              <Stack m={2}>
-                <Alert severity="error">User does not exist!</Alert>
-              </Stack>
-            }
-            {
-              success &&
-              <Stack m={2}>
-                <Alert severity="success">Member added successfully!</Alert>
-              </Stack>
-            }
-          </Card>)
-        }
-        <Card>
-          <UserListToolbar
-            numSelected={selected.length}
-            filterName={filterName}
-            onFilterName={handleFilterByName}
-          />
-
-          <Scrollbar>
-            <TableContainer sx={{ minWidth: { xs: 400, md: 800 } }}>
-              <Table>
-                <UserListHead
-                  order={order}
-                  orderBy={orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={USERLIST.length}
-                  numSelected={selected.length}
-                  onRequestSort={handleRequestSort}
-                  onSelectAllClick={handleSelectAllClick}
+            <FormikProvider value={formik}>
+              <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
+              <Stack spacing={2} >
+                <TextField
+                  inputProps={{ maxLength: 10 }}
+                  label="Phone number"
+                  value={number}
+                  onChange={handleNumber}
+                  {...getFieldProps('phone')}
+                  error={Boolean(touched.phone && errors.phone)}
+                  helperText={touched.phone && errors.phone}
                 />
-                <TableBody>
-                  {filteredUsers
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row) => {
-                      const { img, name, number, memberId } = row;
-                      const isItemSelected = selected.indexOf(name) !== -1;
 
-                      return (
-                        <TableRow
-                          hover
-                          key={memberId}
-                          tabIndex={-1}
-                          role="checkbox"
-                          selected={isItemSelected}
-                          aria-checked={isItemSelected}
-                        >
-                          <TableCell padding="checkbox">
-                            <Checkbox
-                              checked={isItemSelected}
-                              onChange={(event) => handleClick(event, name)}
-                            />
-                          </TableCell>
-                          <TableCell component="th" scope="row" padding="none">
-                            <Stack direction="row" alignItems="center" spacing={2}>
-                              <Avatar alt={name} src={img} />
-                              <Typography variant="subtitle2" >
-                                {name}
-                              </Typography>
-                            </Stack>
-                          </TableCell>
-                          {/* <TableCell align="left">{company}</TableCell> */}
-                          <TableCell align="left">{number}</TableCell>
-                          {/* <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
+                <TextField
+                  inputProps={{ maxLength: 50 }}
+                  label="Name"
+                  value={tName}
+                  onChange={handleTName}
+                  {...getFieldProps('name')}
+                  error={Boolean(touched.name && errors.name)}
+                  helperText={touched.name && errors.name}
+                />
+
+                <Button 
+                
+                type="submit"
+                >Add</Button>
+              </Stack >
+            </Form>
+          </FormikProvider>
+              {
+          error &&
+          <Stack m={2}>
+            <Alert severity="error">User does not exist!</Alert>
+          </Stack>
+        }
+        {
+          success &&
+          <Stack m={2}>
+            <Alert severity="success">Member added successfully!</Alert>
+          </Stack>
+        }
+      </Card>)
+        }
+      <Card>
+        <UserListToolbar
+          numSelected={selected.length}
+          filterName={filterName}
+          onFilterName={handleFilterByName}
+        />
+
+        <Scrollbar>
+          <TableContainer sx={{ minWidth: { xs: 400, md: 800 } }}>
+            <Table>
+              <UserListHead
+                order={order}
+                orderBy={orderBy}
+                headLabel={TABLE_HEAD}
+                rowCount={USERLIST.length}
+                numSelected={selected.length}
+                onRequestSort={handleRequestSort}
+                onSelectAllClick={handleSelectAllClick}
+              />
+              <TableBody>
+                {filteredUsers
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row) => {
+                    const { img, name, number, memberId } = row;
+                    const isItemSelected = selected.indexOf(name) !== -1;
+
+                    return (
+                      <TableRow
+                        hover
+                        key={memberId}
+                        tabIndex={-1}
+                        role="checkbox"
+                        selected={isItemSelected}
+                        aria-checked={isItemSelected}
+                      >
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            checked={isItemSelected}
+                            onChange={(event) => handleClick(event, name)}
+                          />
+                        </TableCell>
+                        <TableCell component="th" scope="row" padding="none">
+                          <Stack direction="row" alignItems="center" spacing={2}>
+                            <Avatar alt={name} src={img} />
+                            <Typography variant="subtitle2" >
+                              {name}
+                            </Typography>
+                          </Stack>
+                        </TableCell>
+                        {/* <TableCell align="left">{company}</TableCell> */}
+                        <TableCell align="left">{number}</TableCell>
+                        {/* <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
                           <TableCell align="left">
                             <Label
                               variant="ghost"
@@ -406,45 +480,45 @@ export default function User() {
                             </Label>
                           </TableCell> */}
 
-                          <TableCell align="right">
-                            {/* <UserMoreMenu /> */}
-                            <IconButton onClick={(event)=>handleDelete(event,memberId)}>
-                              <Icon icon={trash2Outline} width={24} height={24} />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  {emptyRows > 0 && (
-                    <TableRow style={{ height: 53 * emptyRows }}>
-                      <TableCell colSpan={6} />
-                    </TableRow>
-                  )}
-                </TableBody>
-                {isUserNotFound && (
-                  <TableBody>
-                    <TableRow>
-                      <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                        <SearchNotFound searchQuery={filterName} />
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
+                        <TableCell align="right">
+                          {/* <UserMoreMenu /> */}
+                          <IconButton onClick={(event) => handleDelete(event, memberId)}>
+                            <Icon icon={trash2Outline} width={24} height={24} />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                {emptyRows > 0 && (
+                  <TableRow style={{ height: 53 * emptyRows }}>
+                    <TableCell colSpan={6} />
+                  </TableRow>
                 )}
-              </Table>
-            </TableContainer>
-          </Scrollbar>
+              </TableBody>
+              {isUserNotFound && (
+                <TableBody>
+                  <TableRow>
+                    <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+                      <SearchNotFound searchQuery={filterName} />
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              )}
+            </Table>
+          </TableContainer>
+        </Scrollbar>
 
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={USERLIST.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </Card>
-      </Container>
-    </Page>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={USERLIST.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </Card>
+    </Container>
+    </Page >
   );
 }

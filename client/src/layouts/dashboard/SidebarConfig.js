@@ -6,6 +6,9 @@ import fileTextFill from '@iconify/icons-eva/file-text-fill';
 import lockFill from '@iconify/icons-eva/lock-fill';
 import personAddFill from '@iconify/icons-eva/person-add-fill';
 import alertTriangleFill from '@iconify/icons-eva/alert-triangle-fill';
+// import customer from '@iconify/ant-design-icons/raphael:customer';
+
+
 
 
 // ----------------------------------------------------------------------
@@ -26,7 +29,7 @@ const sidebarConfig = [
   {
     title: 'Customers',
     path: '/dashboard/customers',
-    icon: getIcon(shoppingBagFill)
+    icon: getIcon("raphael:customer")
   },
   // {
   //   title: 'blog',
@@ -36,22 +39,22 @@ const sidebarConfig = [
   {
     title: 'login',
     path: '/login',
-    icon: getIcon(lockFill)
+    icon: getIcon("carbon:login")
   },
   {
     title: 'Edit Profile',
     path: '/register',
-    icon: getIcon(personAddFill)
+    icon: getIcon("clarity:note-edit-line" )
   },
   {
     title: "Today's Work",
     path: '/dashboard/todaysWork',
-    icon: getIcon(personAddFill)
+    icon: getIcon("ic:outline-work")
   },
   {
     title: 'Till Day Work',
     path: '/dashboard/tillDaysWork',
-    icon: getIcon(personAddFill)
+    icon: getIcon("bytesize:work")
   }
 ];
 

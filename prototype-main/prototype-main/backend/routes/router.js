@@ -308,7 +308,7 @@ router.post("/uploadQR",  (req, res) => {
             
             res.status(200).send(resp);
         }).catch((err) => {
-            res.status(404).send("Error");
+            res.status(404).send(err);
         })
     }
     else{
