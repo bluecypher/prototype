@@ -189,18 +189,25 @@ const addMembers = (name, number, pNumber) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
 
-        db.query("select user_mast_id from service_provider_master where phone=?", [number], (err, row) => {
+        db.query("select user_mast_id,user_type from service_provider_master where phone=?", [number], (err, row) => {
             if (row && row.length) {
                 try {
                     if (err) {
                         console.log(err);
                         resolve("error");
                     }
-                    console.log("row[0].user-mast_id: ", row[0].user_mast_id)
+                    else {
+                        if (row[0].user_type === 'M') {
+                            console.log("row[0].user-mast_id: ", row[0].user_mast_id)
 
-                    mapOwnertoTeam(name, pNumber, number, row[0].user_mast_id);
+                            mapOwnertoTeam(name, pNumber, number, row[0].user_mast_id);
 
-                    resolve("success");
+                            resolve("success");
+                        }
+                        else {
+                            resolve("user_is_owner")
+                        }
+                    }
                 } catch (err) {
                     console.log(err);
                     reject("err");
@@ -213,13 +220,11 @@ const addMembers = (name, number, pNumber) => {
                     new Date(Date.now()),
                     new Date(Date.now())
                 ], (err, row) => {
-                    if(!err)
-                    {
-                        console.log('insert member ',row)
-                    mapOwnertoTeam(name, pNumber, number, row.insertId);
+                    if (!err) {
+                        console.log('insert member ', row)
+                        mapOwnertoTeam(name, pNumber, number, row.insertId);
                     }
-                    else
-                    {
+                    else {
                         console.log(err);
                         reject(err);
                     }
@@ -380,7 +385,7 @@ const addWork = (spId, custId, date, todos, servId) => {
             }
         }
         );
-        
+
     });
 };
 
@@ -402,7 +407,7 @@ const getTodaysWork = (id) => {
     });
 };
 
-const updateWork = (workId, name, serv, amnt, wDetails, pmtMethod, nxtDate, nxtWork,wrnt) => {
+const updateWork = (workId, name, serv, amnt, wDetails, pmtMethod, nxtDate, nxtWork, wrnt) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
 
@@ -421,9 +426,8 @@ const updateWork = (workId, name, serv, amnt, wDetails, pmtMethod, nxtDate, nxtW
                     , ((err, row) => {
                         if (!err) {
                             // console.log('result',row[0]);
-                            if(nxtDate)
-                            {
-                            addWork(row[0].service_provider_id, row[0].cust_mast_id, nxtDate, nxtWork);
+                            if (nxtDate) {
+                                addWork(row[0].service_provider_id, row[0].cust_mast_id, nxtDate, nxtWork);
                             }
                         }
                         else {
@@ -499,7 +503,7 @@ const getPaymentDetails = (id) => {
                         ],
                             (err, row) => {
                                 if (!err) {
-                                    console.log('ownerid',row);
+                                    console.log('ownerid', row);
                                     resolve(getQRCode(row[0].owner_id));
                                 }
                                 else {
@@ -545,11 +549,11 @@ const uploadQR = (id, qr) => {
         ],
             (err, row) => {
                 if (!err) {
-                    console.log('qr row',row)
+                    console.log('qr row', row)
                     resolve("Success");
                 }
                 else {
-                    console.log('qr err',err)
+                    console.log('qr err', err)
                     reject(err);
                 }
             });

@@ -327,7 +327,7 @@ export default function User() {
 
           }
 
-          else if (res.data === 'no_user') {
+          else if (res.data === 'user_is_owner') {
             setSuccess(false);
             setError(true);
           }
@@ -408,7 +408,7 @@ export default function User() {
               {
           error &&
           <Stack m={2}>
-            <Alert severity="error">User does not exist!</Alert>
+            <Alert severity="error">This user already exists as owner. Cannot add him/her as team member.</Alert>
           </Stack>
         }
         {
