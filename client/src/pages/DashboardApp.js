@@ -10,7 +10,7 @@ import { addProfile } from '../actions/index';
 
 // components
 import Page from '../components/Page';
-import ConstLang from '../components/ConstLang';
+// import ConstLang from '../components/ConstLang';
 
 const axios = require('axios');
 
@@ -48,7 +48,7 @@ const DashboardApp = () => {
   // const [name, setName] = useState('');
   // const [img, setImg] = useState();
   // const [number, setNumber] = useState('');
-  const [cookies, setCookies] = useCookies('');
+  const [cookies, setCookie] = useCookies('');
 
   const data = useSelector((state) => state.profileReducer);
   const lang = useSelector((state)=> state.languageReducer);
@@ -59,7 +59,7 @@ const DashboardApp = () => {
   useEffect(() => {
     //  function foo() {
     // setNumber(localStorage.getItem('number'));
-    axios.get('http://localhost:5000/users/getData', { params: { 'number': localStorage.getItem('number') } })
+    axios.get('/users/getData', { params: { 'number': localStorage.getItem('number') } })
 
       .then((res) => {
         console.log('data', lang);
@@ -90,8 +90,10 @@ const DashboardApp = () => {
             res.data[0].user_type
 
           ]));
-
-
+          const fullName = `${res.data[0].first_name} ${res.data[0].last_name}`;
+          const obj = JSON.stringify({'number':localStorage.getItem('number'),'name':fullName,'image':bufferOriginal ? bufferOriginal.toString('utf8') : null});
+          console.log(obj);
+          localStorage.setItem('prev_user',obj);
         }
         else {
           navigate('/sessionExpired')
@@ -102,6 +104,11 @@ const DashboardApp = () => {
       .catch((err) => {
         console.log('err', typeof err);
       });
+      function greet() {
+        console.log('Welcome!');
+        navigate('/dashboard/work');
+       }
+       setTimeout(greet, 2000);
 
 
     // foo();
@@ -124,14 +131,14 @@ const DashboardApp = () => {
             </RootStyle>
           </Grid>
           <Grid item xs={12} sm={6} md={6}>
-            <Stack sx={{ justifyContent: 'center', marginTop: 5 }} spacing={2}>
+            <Stack sx={{ justifyContent: 'center', alignItems:'center', marginTop: 5 }} spacing={2}>
               <Typography variant="h4">{data.fname} {data.lname}</Typography>
               <Typography variant="h4">{data.number}</Typography>
 
             </Stack>
           </Grid>
 
-          <Grid item xs={12} md={6} lg={8}>
+          {/* <Grid item xs={12} md={6} lg={8}>
             <Link component={RouterLink} to="/dashboard/work">
               <Button
                 fullWidth
@@ -143,7 +150,7 @@ const DashboardApp = () => {
                 Proceed
               </Button>
             </Link>
-          </Grid>
+          </Grid> */}
           {/* 
           <Grid item xs={12} sm={6} md={3}>
             <AppItemOrders />

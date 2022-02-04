@@ -16,42 +16,46 @@ import Page from '../components/Page';
 
 export default function AddCalls() {
     const [selectedService, setSelectedService] = useState("");
+    const [selectedMember, setSelectedMember] = useState("");
     const [services, setServices] = useState([]);
     const [custList, setCustList] = useState([]);
+    const [USERLIST, setUSERLIST] = useState([]);
     const [cookies, setCookies] = useCookies();
     const id = useSelector((state) => state.profileReducer.id);
     const navigate = useNavigate();
     useEffect(() => {
         console.log("id is", id)
-        axios.post('http://localhost:5000/users/getCustomersList/', { 'id': id })
-            .then((res) => {
-                if (!Object.keys(cookies).length) {
-                    navigate('/sessionExpired')
-                }
-                else {
-                    console.log('res data:', res.data);
-                    setCustList(res.data);
+        if (!Object.keys(cookies).length) {
+            navigate('/sessionExpired')
+        }
+        else {
 
-                }
-            })
-            .catch((err) => {
-                console.log('err', err);
-            })
 
-        axios.post('http://localhost:5000/users/getUserServices/', { 'id': id })
-            .then((res) => {
-                if (!Object.keys(cookies).length) {
-                    navigate('/sessionExpired')
-                }
-                else {
-                    console.log('res data:', res.data);
+            axios.post('/users/getUserServices/', { 'id': id })
+                .then((res) => {
+                    console.log('services:', res.data);
                     setServices(res.data);
-
-                }
-            })
-            .catch((err) => {
-                console.log('err', err);
-            })
+                })
+                .catch((err) => {
+                    console.log('err', err);
+                })
+            axios.post('/users/getCustomersList/', { 'id': id })
+                .then((res) => {
+                    console.log('customers:', res.data);
+                    setCustList(res.data);
+                })
+                .catch((err) => {
+                    console.log('err', err);
+                })
+            axios.get('/users/getMembers', { params: { 'id': id } })
+                .then((res) => {
+                    console.log('get members:', res.data);
+                    setUSERLIST(res.data);
+                })
+                .catch((err) => {
+                    console.log('err', err);
+                })
+        }
     }, [id])
 
     const [selectedCustId, setSelectedCustId] = useState('');
@@ -60,13 +64,12 @@ export default function AddCalls() {
     const [todo, setTodo] = useState('');
 
     const onSave = () => {
-        if(time)
-        {
+        if (time) {
             date.setHours(time.getHours());
             date.setMinutes(time.getMinutes());
         }
-        
-        axios.post('http://localhost:5000/users/addWork/', { 'custId': selectedCustId, 'spId': id, 'date': date, 'todos': todo, 'servId':selectedService })
+
+        axios.post('/users/addWork/', { 'custId': selectedCustId, 'spId': id, 'date': date, 'todos': todo, 'servId': selectedService, 'asgnTo': selectedMember })
             .then((res) => {
                 console.log("res:", res.data);
                 if (res.data === "Success") {
@@ -99,13 +102,15 @@ export default function AddCalls() {
                                 custList.map((item, id) =>
                                     <MenuItem key={item.custId} value={item.custId}>{item.name}</MenuItem>
                                 )
-                                
+
                             }
+                            <Link component={RouterLink} to="/dashboard/customers">
                             <MenuItem value="Add Customer">
-                                <Link component={RouterLink} to="/dashboard/customers">
+                                
                                     <Typography variant="subtitle2">+Add a new customer</Typography>
-                                </Link>
-                                </MenuItem>
+                                
+                            </MenuItem>
+                            </Link>
 
 
 
@@ -127,7 +132,7 @@ export default function AddCalls() {
                     </LocalizationProvider>
 
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
-                        
+
                         <TimePicker
                             label="Select Time(Optional)"
                             inputVariant="outlined"
@@ -140,8 +145,26 @@ export default function AddCalls() {
                             }}
                             renderInput={(params) => <TextField {...params} />}
                         />
-                        
+
                     </LocalizationProvider>
+
+                    <FormControl>
+                        <InputLabel>Assign to</InputLabel>
+
+                        <Select
+
+                            value={selectedMember}
+                            label="Service Provided"
+                            onChange={(e) => setSelectedMember(e.target.value)}
+                        >
+                            {USERLIST.map((s, i) =>
+                                <MenuItem key={s.memberId} value={s.memberId}>{s.name}</MenuItem>
+
+                            )}
+                            <MenuItem value={0}>Self</MenuItem>
+
+                        </Select>
+                    </FormControl>
 
                     <FormControl>
                         <InputLabel>Service</InputLabel>
@@ -153,7 +176,7 @@ export default function AddCalls() {
                             onChange={(e) => setSelectedService(e.target.value)}
                         >
                             {services.map((s, i) =>
-                                <MenuItem index={s.serv_id} value={s.serv_id}>{s.serv_name}</MenuItem>
+                                <MenuItem key={s.serv_id} value={s.serv_id}>{s.serv_name}</MenuItem>
 
                             )}
 

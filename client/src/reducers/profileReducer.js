@@ -39,7 +39,27 @@ const profileReducer = (state = initialData, action) => {
                 ent: data[12],
                 id: data[13],
                 user_type: data[14],
-                
+
+            }
+        }
+        case 'DELETE_PROFILE': {
+            return {
+                fname: '',
+                lname: '',
+                number: '',
+                img: '',
+                email: '',
+                add1: '',
+                add2: '',
+                city: '',
+                pin: '',
+                state: '',
+                locality: '',
+                hghlts: '',
+                ent: '',
+                id: '',
+                user_type: '',
+                qr_code: '',
             }
         }
 

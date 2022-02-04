@@ -53,7 +53,7 @@ const axios = require('axios');
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', alignRight: false },
 
-  { id: 'number', label: 'Mobile number', alignRight: false },
+  { id: 'number', },
   { id: '' }
 ];
 
@@ -96,11 +96,11 @@ function applySortFilter(array, comparator, query) {
 }
 
 // let filteredUsers=[];
-export default function Customers() {
+export default function Customers({foo}) {
   const [USERLIST, setUSERLIST] = useState([]);
   const navigate = useNavigate();
   const id = useSelector((state) => state.profileReducer.id);
-
+  const prevPage = useSelector((state) => state.navReducer.prev);
 
   const AddSchema = Yup.object().shape({
     name: Yup.string()
@@ -122,7 +122,8 @@ export default function Customers() {
     navigate(`/dashboard/customer/${id}`);
   }
   useEffect(() => {
-    axios.post('http://localhost:5000/users/getCustomersList', { 'id': id })
+    console.log("props",prevPage);
+    axios.post('/users/getCustomersList', { 'id': id })
       .then((res) => {
 
         if (!Object.keys(cookies).length) {
@@ -245,15 +246,15 @@ export default function Customers() {
 
   const handleDelete = (event,memberId) => {
     console.log(id,' ', memberId);
-    axios.post('http://localhost:5000/users/deleteCustomers', {  'parent_id':id, 'member_id':memberId })
+    axios.post('/users/deleteCustomers', {  'parent_id':id, 'member_id':memberId })
       .then((res) => {
         
         if (!Object.keys(cookies).length) {
           navigate('/sessionExpired')
         }
         else {
-          setRefresh('true');
-          setRefresh('false');
+          setRefresh(true);
+          setRefresh(false);
           console.log('res:', res);
         }
       })
@@ -266,7 +267,7 @@ export default function Customers() {
   // const handleAdd = () => {
 
 
-  //   axios.post('http://localhost:5000/users/addCustomers', {
+  //   axios.post('/users/addCustomers', {
   //     'number': number,
   //     'id': id,
   //     'name': cName
@@ -311,7 +312,7 @@ export default function Customers() {
     validationSchema: AddSchema,
     onSubmit: () => {
       // console.log('imag', formik.values.name);
-      axios.post('http://localhost:5000/users/addCustomers', {
+      axios.post('/users/addCustomers', {
         'number': formik.values.phone,
         'id': id,
         'name': formik.values.name,
@@ -326,6 +327,8 @@ export default function Customers() {
             formik.values.address = '';
             setCName('');
             setAdd('');
+            setRefresh(true);
+            setRefresh(false);
             setError(false);
             setSuccess(true);
 
@@ -441,7 +444,7 @@ export default function Customers() {
           />
 
           <Scrollbar>
-            <TableContainer sx={{ minWidth: { xs: 400, md: 800 } }}>
+            <TableContainer sx={{ minWidth: { xs: 300, md: 800 } }}>
               <Table>
                 <UserListHead
                   order={order}
@@ -477,7 +480,7 @@ export default function Customers() {
                           </TableCell>
                           <TableCell component="th" scope="row" padding="none">
                             <Stack direction="row" alignItems="center" spacing={2}>
-                              <Avatar alt={name} src={img} />
+                              <Avatar alt={name} src={img} sx={{width:32, height:32}}/>
                               <Link
                                 component="button"
                                 variant="body2"
@@ -490,7 +493,11 @@ export default function Customers() {
                             </Stack>
                           </TableCell>
                           {/* <TableCell align="left">{company}</TableCell> */}
-                          <TableCell align="left">{number}</TableCell>
+                          <TableCell align="left">
+                            
+                            <Link href={`tel:${number}`}><Icon icon="ph:phone-call-light" width={24} height={24}/></Link>
+                            
+                            </TableCell>
                           {/* <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
                           <TableCell align="left">
                             <Label
@@ -501,7 +508,7 @@ export default function Customers() {
                             </Label>
                           </TableCell> */}
 
-                          <TableCell align="right">
+                          <TableCell align="left">
                           <IconButton onClick={(event)=>handleDelete(event,custId)}>
                               <Icon icon={trash2Outline} width={24} height={24} />
                             </IconButton>

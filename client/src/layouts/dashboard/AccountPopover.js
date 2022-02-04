@@ -22,7 +22,7 @@ const MENU_OPTIONS = [
   {
     label: 'Home',
     icon: homeFill,
-    linkTo: '/dashboard'
+    linkTo: '/dashboard/work'
   },
   {
     label: 'Profile',

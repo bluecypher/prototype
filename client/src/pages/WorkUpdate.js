@@ -9,7 +9,7 @@ import { Link as RouterLink, useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 // material
 // import { styled } from '@mui/material/styles';
-import { Box, Button, Typography, Container, Stack, TextField, FormControl, InputLabel, Select, MenuItem, FormLabel, RadioGroup, FormControlLabel, Radio } from '@mui/material';
+import { Box, Button, Typography, Container, Stack, TextField, FormControl, InputLabel, Select, MenuItem, FormLabel, RadioGroup, FormControlLabel, Radio, Alert } from '@mui/material';
 import DatePicker from '@mui/lab/DatePicker';
 
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
@@ -24,56 +24,59 @@ export default function WorkUpdate() {
     const [name, setName] = useState('');
     const [serv, setServ] = useState('');
     const [grnt, setGrnt] = useState(0);
-    const [amnt, setAmnt] = useState('');
+    // const [amont, setAmont] = useState('');
+    const [error, setError] = useState('');
     const [mop, setMop] = useState('');
     const [date, setDate] = useState('');
     const [nxtWork, setNxtWork] = useState('');
     const id = useSelector((state) => state.profileReducer.id);
-    const [wDetails, setWDetails] = useState('');
+    const [wDetails, setWDetails] = useState('wdetails');
     const numbers = [1, 3, 6, 9, 12];
     const navigate = useNavigate();
 
-    const onSubmit = () =>{
-        console.log('imajsdjg',amnt, wDetails);
+    // const onSubmit = () =>{
+    //     console.log('imajsdjg',amnt, wDetails);
 
-            axios.post('http://localhost:5000/users/updateWork', {
-                'workId': workId,
+    //         axios.post('/users/updateWork', {
+    //             'workId': workId,
 
-                'name': name,
-                'serv': serv,
-                'amnt': amnt,
-                'wDetails': wDetails,
-                'wrnt' : grnt,
-                'pmtMethod': mop,
-                'nxtDate': date,
-                'nxtWork': nxtWork,
+    //             'name': name,
+    //             'serv': serv,
+    //             'amnt': amnt,
+    //             'wDetails': wDetails,
+    //             'wrnt' : grnt,
+    //             'pmtMethod': mop,
+    //             'nxtDate': date,
+    //             'nxtWork': nxtWork,
 
-            })
-                .then((response) => {
-                    console.log("response:", response)
-                    if (response.data === "Success") {
+    //         })
+    //             .then((response) => {
+    //                 console.log("response:", response)
+    //                 if (response.data === "Success") {
 
-                        if(mop === 'Online')
-                        {
-                        navigate('/dashboard/payment', { replace: true });
-                        }
-                        else{
-                            navigate('/dashboard/work', { replace: true });
-                        }
+    //                     if(mop === 'Online')
+    //                     {
+    //                     navigate('/dashboard/payment', { replace: true });
+    //                     }
+    //                     else{
+    //                         navigate('/dashboard/work', { replace: true });
+    //                     }
 
-                    }
-                })
-                .catch((e) => {
-                    console.log("Error", e);
-                })
-    }
+    //                 }
+    //             })
+    //             .catch((e) => {
+    //                 console.log("Error", e);
+    //             })
+    // }
 
     useEffect(()=>{
-        axios.post('http://localhost:5000/users/getWorkDetails',{'workId':workId})
+        console.log(workId);
+        axios.post('/users/getWorkDetails',{'workId':workId})
         .then((res)=>{
             console.log("result",res);
             setName(res.data[0].cust_name);
             setServ(res.data[0].serv_name);
+            setWDetails(res.data[0].work_desc);
         })
         .catch((err)=>{
             console.log("error",err);
@@ -83,28 +86,34 @@ export default function WorkUpdate() {
 
     const handleMopChange = (event) => {
         setMop(event.target.value);
-
+        if(event.target.value==='No')
+        {
+            formik.setFieldValue('amnt',0);
+            
+        }
     }
 
     const RegisterSchema = Yup.object().shape({
         
-        amnt: Yup.string().required('Amount is required'),
+        amnt: Yup.number().required('Amount is required').typeError('Amount must be a number'),
 
 
     });
 
     const formik = useFormik({
+        enableReinitialize:true,
         initialValues: {
             
             amnt: '',
-            wd: '',
+            wd: wDetails,
             nxtWork: '',
         },
         validationSchema: RegisterSchema,
         onSubmit: () => {
-            console.log('imag', amnt, wDetails);
-
-            axios.post('http://localhost:5000/users/updateWork', {
+            console.log('imag', wDetails);
+            if(mop)
+            {
+            axios.post('/users/updateWork', {
                 'workId': workId,
 
                 'name': name,
@@ -122,7 +131,7 @@ export default function WorkUpdate() {
                     if (response.data === "Success") {
                         if(mop === 'Online')
                         {
-                        navigate('/dashboard/payment', { replace: true });
+                        navigate(`/dashboard/payment/${workId}`, { replace: true });
                         }
                         else{
                             navigate('/dashboard/work', { replace: true });
@@ -133,6 +142,11 @@ export default function WorkUpdate() {
                 .catch((e) => {
                     console.log("Error", e);
                 })
+            }
+            else
+            {
+                setError(true);
+            }
 
 
         }
@@ -180,9 +194,8 @@ export default function WorkUpdate() {
                                 multiline
                                 minRows='2'
                                 type="text"
-                                label="Work details"
-                                value={wDetails}
-                                onChange={(e) => setWDetails(e.target.value)}
+                                label="Work Done"
+                                
                                 {...getFieldProps('wd')}
                                 error={Boolean(touched.wd && errors.wd)}
                                 helperText={touched.wd && errors.wd}
@@ -205,35 +218,44 @@ export default function WorkUpdate() {
                                 </Select>
                             </FormControl>
 
-                            <TextField
-                                fullWidth
-                                value={amnt}
-                                onChange={(e) => {
-                                    console.log('change')
-                                    setAmnt(e.target.value)}}
-                                label="Amount"
-                                {...getFieldProps('amnt')}
-                                error={Boolean(touched.amnt && errors.amnt)}
-                                helperText={touched.amnt && errors.amnt}
-                            />
-
                             <FormControl component="fieldset">
                                 <FormLabel component="legend">Payment method</FormLabel>
                                 <RadioGroup
                                     value={mop}
-                                    onChange={(event) => handleMopChange(event)}
+                                    onChange={(event) => {handleMopChange(event)}}
                                     name="radio-buttons-group"
                                 >
                                     <Stack direction='row' spacing={2}>
                                     <FormControlLabel value="Online" control={<Radio />} label="Online Payment" />
                                     <FormControlLabel value="Cash" control={<Radio />} label="Cash Payment" />
+                                    <FormControlLabel value="No" control={<Radio />} label="No Payment" />
                                     </Stack>
 
                                 </RadioGroup>
                             </FormControl>
+
+                            <TextField
+                                fullWidth
+                                // value={amnt}
+                                // onChange={(e) => {
+                                //     console.log('change')
+                                //     setAmnt(e.target.value)}}
+                                label="Amount"
+                                inputProps={{
+                                    disabled: mop==='No',
+                                }}
+                                {...getFieldProps('amnt')}
+                                error={Boolean(touched.amnt && errors.amnt)}
+                                helperText={touched.amnt && errors.amnt}
+                            />
+                            {
+                                error &&
+                                <Alert severity="error">Please choose a payment method</Alert>
+                            }
+                            
                             <LocalizationProvider dateAdapter={AdapterDateFns}>
                                 <DatePicker
-                                    label="Next Call"
+                                    label="Next Visit"
                                     value={date}
                                     onChange={(newValue) => {
                                         console.log("date:", newValue);

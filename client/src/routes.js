@@ -15,12 +15,14 @@ import Customers from './pages/Customers';
 import NotFound from './pages/Page404';
 import SessionExpired from './pages/SessionExpired';
 import AddCalls from './pages/AddCalls';
+import EditCalls from './pages/EditCalls';
 import WorkUpdate from './pages/WorkUpdate';
 import Profile from './pages/Profile';
 import PaymentProfile from './pages/PaymentProfile';
 import CustomerProfile from './pages/CustomerProfile';
 import WorkToday from './pages/WorkToday';
 import WorkTillDay from './pages/WorkTillDay';
+import PaymentPage from './pages/PaymentPage';
 
 // ----------------------------------------------------------------------
 
@@ -35,7 +37,7 @@ export default function Router() {
         { path: 'app', element: <DashboardApp/> },
         { path: 'work', element: <WorkDashboard />},
         { path: 'user', element: <User /> },
-        { path: 'customers', element: <Customers /> },
+        { path: 'customers', element: <Customers/>  },
         { path: 'products', element: <Products /> },
         { path: 'blog', element: <Blog /> },
         { path: 'newCalls', element: <AddCalls /> },
@@ -45,6 +47,8 @@ export default function Router() {
         { path: 'payment', element: <PaymentProfile/>},
         { path: 'todaysWork', element: <WorkToday/>},
         { path: 'tillDaysWork', element: <WorkTillDay/>},
+        { path: 'editCalls/:workId', element: <EditCalls/>},
+        { path: 'payment/:workId', element: <PaymentPage/>},
       ]
     },
     {

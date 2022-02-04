@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { Box, Grid, Container, Typography, Card, Stack, Button, CardHeader, Link } from '@mui/material';
 import axios from 'axios';
 // components
-
+import { Icon } from '@iconify/react';
 import Page from '../components/Page';
 
 import {
@@ -24,8 +24,9 @@ import {
 
 export default function DashboardApp() {
   const navigate = useNavigate();
+  
   const [cookies, setCookies] = useCookies();
-  const id = useSelector((state) => state.profileReducer.id);
+  const data = useSelector((state) => state.profileReducer);
   const [workList, setWorkList] = useState([]);
   useEffect(() => {
 
@@ -34,14 +35,14 @@ export default function DashboardApp() {
 
     }
     else {
-      console.log('ud', id);
-      axios.post('http://localhost:5000/users/getTodaysWork', { 'id': id })
+      console.log('ud', data.id);
+      axios.post('/users/getTodaysWork', { 'id': data.id })
         .then((res) => {
           console.log('res.data', res.data);
           setWorkList(res.data);
         })
     }
-  }, [id])
+  }, [data.id])
   const addCalls = () => {
     // console.log("click")
     navigate("/dashboard/newcalls");
@@ -50,6 +51,9 @@ export default function DashboardApp() {
 
     
     navigate(`/dashboard/work/${id}`);
+  }
+  const editCalls = (event,id) => {
+    navigate(`/dashboard/editCalls/${id}`);
   }
   return (
     <Page title="Dashboard">
@@ -70,17 +74,38 @@ export default function DashboardApp() {
 
               <Box sx={{ mx: 2 }} dir="ltr">
 
-                <Stack sx={{ justifyContent: 'space-between', margin: 2, paddingHorizontal: 2 }} spacing={2}>
+                <Stack sx={{ justifyContent: 'space-between', my: 2,}} spacing={2}>
                   {workList.length > 0 ?
                     workList.map((item) => (
                       <Stack key={item.work_id} justifyContent='space-between' direction='row' spacing={{ xs: 2, lg: 5 }}>
-                        <Typography variant="subtitle2">{item.name}</Typography>
-                        <Typography variant="subtitle2">{item.addr}</Typography>
                         <Link
                           component="button"
                           variant="body2"
                           onClick={(event)=>onPhoneClick(event,item.work_id)}
-                        >{item.cust_phone}</Link>
+                        >
+                        <Typography variant="subtitle2">{item.name}</Typography>
+                        </Link>
+                        <Typography variant="subtitle2">{item.addr}</Typography>
+                        {/* <Link
+                          component="button"
+                          variant="body2"
+                          onClick={(event)=>onPhoneClick(event,item.work_id)}
+                        >{item.cust_phone}</Link> */}
+                        <Link href={`tel:${item.cust_phone}`}><Icon icon="ph:phone-call-light" width={24} height={24}/></Link>
+                        
+                        {
+                          data.user_type==='O'?
+
+                          <Link
+                          component="button"
+                          variant="body2"
+                          onClick={(event)=>editCalls(event,item.work_id)}
+                        >
+                        <Icon icon="lucide:pencil" width={21} height={21}/>
+                        </Link>
+                        :
+                        <></>
+                        }
                       </Stack>
                     ))
                     :

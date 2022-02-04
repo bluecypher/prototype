@@ -171,29 +171,28 @@ const updateDetails = (data) => {
 const addServices = (user_id, serv_ids) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
-        db.query("DELETE FROM service_provider_detail WHERE user_mast_id=?",[
+        db.query("DELETE FROM service_provider_detail WHERE user_mast_id=?", [
             user_id
         ],
-        (err,row)=>{
-            if(!err)
-            {
-                for (var i = 0; i < serv_ids.length; i++) {
-                    db.query("INSERT INTO service_provider_detail(user_mast_id,serv_id,created_on,last_updated) VALUES(?,?,?,?)",
-                        [
-                            user_id,
-                            serv_ids[i],
-                            new Date(Date.now()),
-                            new Date(Date.now())
-                        ])
+            (err, row) => {
+                if (!err) {
+                    for (var i = 0; i < serv_ids.length; i++) {
+                        db.query("INSERT INTO service_provider_detail(user_mast_id,serv_id,created_on,last_updated) VALUES(?,?,?,?)",
+                            [
+                                user_id,
+                                serv_ids[i],
+                                new Date(Date.now()),
+                                new Date(Date.now())
+                            ])
+                    }
+                    resolve();
                 }
-                resolve();
-            }
-            else{
-                console.log(err);
-                reject(err);
-            }
-        })
-        
+                else {
+                    console.log(err);
+                    reject(err);
+                }
+            })
+
         // db.end();
     });
 
@@ -210,16 +209,17 @@ const addMembers = (name, number, pNumber) => {
                         resolve("error");
                     }
                     else {
-                        if (row[0].user_type === 'M') {
-                            console.log("row[0].user-mast_id: ", row[0].user_mast_id)
+                        // if (row[0].user_type === 'M') {
+                        //     console.log("row[0].user-mast_id: ", row[0].user_mast_id)
 
-                            mapOwnertoTeam(name, pNumber, number, row[0].user_mast_id);
+                        //     mapOwnertoTeam(name, pNumber, number, row[0].user_mast_id);
 
-                            resolve("success");
-                        }
-                        else {
-                            resolve("user_is_owner")
-                        }
+                        //     resolve("success");
+                        // }
+                        // else {
+                        //     resolve("user_is_owner")
+                        // }
+                        resolve("user_exists");
                     }
                 } catch (err) {
                     console.log(err);
@@ -375,16 +375,17 @@ const getCustomersList = (id) => {
     });
 };
 
-const addWork = (spId, custId, date, todos, servId) => {
+const addWork = (spId, custId, date, todos, servId, asgnTo) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
 
-        db.query("INSERT INTO service_provider_work_list(service_provider_id,work_type,work_plan_date,cust_mast_id,work_desc,created_on,last_updated) VALUES(?,?,?,?,?,?,?)", [
+        db.query("INSERT INTO service_provider_work_list(service_provider_id,work_type,work_plan_date,cust_mast_id,work_desc,assign_to,created_on,last_updated) VALUES(?,?,?,?,?,?,?,?)", [
             spId,
             servId,
             new Date(date),
             custId,
             todos,
+            asgnTo?asgnTo:spId,
             new Date(Date.now()),
             new Date(Date.now())
         ], (err, row) => {
@@ -406,7 +407,7 @@ const getTodaysWork = (id) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
 
-        db.query("SELECT spwl.work_list_id AS work_id, spcm.cust_name AS name, spcm.address1 AS addr, spcm.cust_phone  FROM service_provider_work_list spwl INNER JOIN service_provider_customer_master spcm USING(cust_mast_id) WHERE spwl.service_provider_id=? AND Date(spwl.work_plan_date)=curdate() AND spwl.work_comp_date IS NULL", [id], (err, row) => {
+        db.query("SELECT spwl.work_list_id AS work_id, spcm.cust_name AS name, spcm.address1 AS addr, spcm.cust_phone  FROM service_provider_work_list spwl INNER JOIN service_provider_customer_master spcm USING(cust_mast_id) WHERE (spwl.service_provider_id=? OR spwl.assign_to=?) AND Date(spwl.work_plan_date)=curdate() AND spwl.work_comp_date IS NULL", [id,id], (err, row) => {
             if (!err) {
                 console.log('row', row);
                 resolve(row);
@@ -420,44 +421,68 @@ const getTodaysWork = (id) => {
     });
 };
 
-const updateWork = (workId, name, serv, amnt, wDetails, pmtMethod, nxtDate, nxtWork, wrnt) => {
+const updateWork = (workId, name, serv, amnt, wDetails, pmtMethod, nxtDate, nxtWork, wrnt, custId, spId, servId, date, todos, asgnTo) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
+        if (pmtMethod) {
+            db.query("UPDATE service_provider_work_list SET work_desc=?,payment_mode=?,amount=?,gaurantee=?,work_comp_date=?,last_updated=? WHERE work_list_id=?", [
 
-        db.query("UPDATE service_provider_work_list SET work_desc=?,payment_mode=?,amount=?,gaurantee=?,work_comp_date=?,last_updated=? WHERE work_list_id=?", [
-
-            wDetails,
-            pmtMethod[0],
-            parseFloat(amnt),
-            wrnt,
-            new Date(Date.now()),
-            new Date(Date.now()),
-            workId
-        ], (err, row) => {
-            if (!err) {
-                db.query("SELECT service_provider_id,cust_mast_id FROM service_provider_work_list WHERE work_list_id=?", [workId]
-                    , ((err, row) => {
-                        if (!err) {
-                            // console.log('result',row[0]);
-                            if (nxtDate) {
-                                addWork(row[0].service_provider_id, row[0].cust_mast_id, nxtDate, nxtWork);
+                wDetails,
+                pmtMethod[0],
+                parseFloat(amnt),
+                wrnt,
+                new Date(Date.now()),
+                new Date(Date.now()),
+                workId
+            ], (err, row) => {
+                if (!err) {
+                    db.query("SELECT service_provider_id,cust_mast_id FROM service_provider_work_list WHERE work_list_id=?", [workId]
+                        , ((err, row) => {
+                            if (!err) {
+                                // console.log('result',row[0]);
+                                console.log('update work')
+                                if (nxtDate) {
+                                    addWork(row[0].service_provider_id, row[0].cust_mast_id, nxtDate, nxtWork);
+                                }
                             }
-                        }
-                        else {
-                            console.log('error', err);
-                            reject(err);
-                        }
-                    }));
+                            else {
+                                console.log('error', err);
+                                reject(err);
+                            }
+                        }));
 
 
-                resolve("Success");
+                    resolve("Success");
+                }
+                else {
+                    console.log('error add work:', err);
+                    reject(err);
+                }
             }
-            else {
-                console.log('error add work:', err);
-                reject(err);
-            }
+            );
         }
-        );
+        else {
+            db.query("UPDATE service_provider_work_list SET service_provider_id=?,work_type=?,work_plan_date=?,cust_mast_id=?,work_desc=?,assign_to=?,last_updated=? WHERE work_list_id=?", [
+                spId,
+                servId,
+                new Date(date),
+                custId,
+                todos,
+                asgnTo,
+                new Date(Date.now()),
+                workId
+            ], (err, row) => {
+                if (!err) {
+                    console.log('edit call')
+                    resolve("Success");
+                }
+                else{
+                    console.log('edit call error',err);
+                    reject(err);
+                }
+            }
+            );
+        }
         // db.end();
     });
 };
@@ -482,7 +507,7 @@ const getUserServices = (id) => {
 const getWorkDetails = (workId) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
-        db.query("SELECT spcm.cust_name,sm.serv_name FROM service_provider_work_list spwl INNER JOIN service_master sm ON spwl.work_type=sm.serv_id INNER JOIN service_provider_customer_master spcm ON spwl.cust_mast_id=spcm.cust_mast_id WHERE spwl.work_list_id=?", [
+        db.query("SELECT spcm.cust_name,sm.serv_name,spwl.work_desc,spwl.work_type,spwl.cust_mast_id,spwl.assign_to,spwl.work_plan_date FROM service_provider_work_list spwl INNER JOIN service_master sm ON spwl.work_type=sm.serv_id INNER JOIN service_provider_customer_master spcm ON spwl.cust_mast_id=spcm.cust_mast_id WHERE spwl.work_list_id=?", [
             workId
         ],
             (err, row) => {

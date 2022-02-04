@@ -161,6 +161,7 @@ export default function NavSection({ navConfig, ...other }) {
     <Box {...other}>
       <List disablePadding>
         {navConfig.map((item) => (
+          
           <NavItem key={item.title} item={item} active={match} />
         ))}
       </List>

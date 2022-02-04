@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 // material
 import { useCookies } from 'react-cookie';
 import { styled } from '@mui/material/styles';
@@ -8,7 +9,7 @@ import { Box, Button, Typography, Container } from '@mui/material';
 // components
 import { MotionContainer, varBounceIn } from '../components/animate';
 import Page from '../components/Page';
-
+import { deleteProfile } from '../actions/index';
 // ----------------------------------------------------------------------
 
 const RootStyle = styled(Page)(({ theme }) => ({
@@ -24,11 +25,13 @@ const RootStyle = styled(Page)(({ theme }) => ({
 export default function SessionExpired() {
 
     const [cookies,setCookie,removeCookie] = useCookies();
-
+    const dispatch = useDispatch();
     useEffect(()=>{
       console.log('sess')
+      dispatch(deleteProfile());
       removeCookie('token', { path: '/' });
         localStorage.removeItem('number');
+
          localStorage.removeItem('persist:root');
         
     },[])

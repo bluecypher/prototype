@@ -30,7 +30,8 @@ import {
   Alert,
   OutlinedInput,
   IconButton,
-  TextField
+  TextField,
+  Link
 } from '@mui/material';
 
 // components
@@ -52,7 +53,7 @@ const axios = require('axios');
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', alignRight: false },
 
-  { id: 'number', label: 'Mobile number', alignRight: false },
+  { id: 'number', },
   { id: '' }
 ];
 
@@ -127,7 +128,7 @@ export default function User() {
   });
   useEffect(() => {
     console.log('redux_id:', profileData);
-    axios.get('http://localhost:5000/users/getMembers', { params: { 'id': profileData.id } })
+    axios.get('/users/getMembers', { params: { 'id': profileData.id } })
       .then((res) => {
 
         if (!Object.keys(cookies).length) {
@@ -188,15 +189,15 @@ export default function User() {
   };
 
   const handleDelete = (event, memberId) => {
-    axios.post('http://localhost:5000/users/deleteMembers', { 'parent_id': profileData.id, 'member_id': memberId })
+    axios.post('/users/deleteMembers', { 'parent_id': profileData.id, 'member_id': memberId })
       .then((res) => {
 
         if (!Object.keys(cookies).length) {
           navigate('/sessionExpired')
         }
         else {
-          setRefresh('true');
-          setRefresh('false');
+          setRefresh(true);
+          setRefresh(false);
           console.log('res:', res);
         }
       })
@@ -262,7 +263,7 @@ export default function User() {
   // const handleAdd = () => {
 
   //   console.log('Add');
-  //   axios.post('http://localhost:5000/users/addMembers', {
+  //   axios.post('/users/addMembers', {
   //     'number': number,
   //     'name': tName,
   //     'pNumber': localStorage.getItem('number')
@@ -308,7 +309,7 @@ export default function User() {
     onSubmit: () => {
       // console.log('imag', formik.values.name);
       console.log('Add');
-      axios.post('http://localhost:5000/users/addMembers', {
+      axios.post('/users/addMembers', {
         'number': formik.values.phone,
         'name': formik.values.name,
         'pNumber': localStorage.getItem('number')
@@ -320,14 +321,15 @@ export default function User() {
             formik.values.phone = '';
             setNumber('');
             setTName('');
-            
+            setRefresh(true);
+            setRefresh(false);
             setError(false);
             setSuccess(true);
 
 
           }
 
-          else if (res.data === 'user_is_owner') {
+          else if (res.data === 'user_exists') {
             setSuccess(false);
             setError(true);
           }
@@ -408,7 +410,7 @@ export default function User() {
               {
           error &&
           <Stack m={2}>
-            <Alert severity="error">This user already exists as owner. Cannot add him/her as team member.</Alert>
+            <Alert severity="error">Cannot add this number as it already exists!</Alert>
           </Stack>
         }
         {
@@ -427,7 +429,7 @@ export default function User() {
         />
 
         <Scrollbar>
-          <TableContainer sx={{ minWidth: { xs: 400, md: 800 } }}>
+          <TableContainer sx={{ minWidth: { xs: 300, md: 800 } }}>
             <Table>
               <UserListHead
                 order={order}
@@ -462,14 +464,17 @@ export default function User() {
                         </TableCell>
                         <TableCell component="th" scope="row" padding="none">
                           <Stack direction="row" alignItems="center" spacing={2}>
-                            <Avatar alt={name} src={img} />
+                            <Avatar alt={name} src={img} sx={{width:32, height:32}}/>
                             <Typography variant="subtitle2" >
                               {name}
                             </Typography>
                           </Stack>
                         </TableCell>
                         {/* <TableCell align="left">{company}</TableCell> */}
-                        <TableCell align="left">{number}</TableCell>
+                        <TableCell align="left">
+                        <Link href={`tel:${number}`}><Icon icon="ph:phone-call-light" width={24} height={24}/></Link>
+                            
+                        </TableCell>
                         {/* <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
                           <TableCell align="left">
                             <Label
@@ -480,8 +485,8 @@ export default function User() {
                             </Label>
                           </TableCell> */}
 
-                        <TableCell align="right">
-                          {/* <UserMoreMenu /> */}
+                        <TableCell align="left">
+                          {/* <UserMoreMenu handleDelete={(event)=>handleDelete(event,memberId)} memberId={memberId}/> */}
                           <IconButton onClick={(event) => handleDelete(event, memberId)}>
                             <Icon icon={trash2Outline} width={24} height={24} />
                           </IconButton>

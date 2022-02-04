@@ -13,7 +13,7 @@ import {
   Stack,
   Alert,
   TextField,
-
+  Icon
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
@@ -35,8 +35,9 @@ function LoginForm() {
   const [inputOtp, setInputOtp] = useState('');
   const [showSubmit, setShowSubmit] = useState(false);
   const [error, setError] = useState(false);
+  
   const [cookies, setCookie] = useCookies('');
-  const [tmplt,setTmplt] = useState('Dear user, OTP to login to Sahayak is ');
+  const [tmplt,setTmplt] = useState('OTP to login to Sahayak is ');
   const data = useSelector((state)=>state.profileReducer);
   const LoginSchema = Yup.object().shape({
     number: Yup.number('Mobile number must be numeric.').min(1000000000, 'Too Short. Please enter a valid number.').required('Mobile number is required'),
@@ -44,7 +45,7 @@ function LoginForm() {
   });
   const handleSubmit2 =() =>{
     if (inputOtp === '123456') {
-      axios.post('http://localhost:5000/users/login', {
+      axios.post('/users/login', {
         'number': values.number
       },
         {
@@ -55,7 +56,7 @@ function LoginForm() {
           if (response.data.res === "success") {
 
             localStorage.setItem('number', values.number);
-            setCookie("token", response.data.jwToken, { path: '/', expires: new Date(Date.now() + 1000 * 60 * 60*2) });
+            setCookie("token", response.data.jwToken, { path: '/', expires: new Date(Date.now() + 1000 * 60 ) });
 
             if (response.data.status === 'F') {
               navigate('/dashboard', { replace: true });
@@ -76,12 +77,12 @@ function LoginForm() {
   }
   
   useEffect(() => {
-    console.log(data);
+    console.log('number',data.number);
     if (cookies.token && data.number) {
 
       navigate('/dashboard', { replace: true });
     }
-  }, [])
+  }, [data])
 
   const formik = useFormik({
     initialValues: {
@@ -100,7 +101,8 @@ function LoginForm() {
         console.log(msg);
         
       //   axios.get("https://www.fast2sms.com/dev/bulkV2",{params:{'authorization' : "YgzaI0vM7BZLWe9cdHUwf41GkqiESbpNusX3tToK6Oy2Qnmjlr1olWahGJ3fzXv8iYQTdtIpsUcRCnDq",
-      //   'route' : 'q',
+      //   'route' : 'v3',
+      //   'sender_id' : 'Cghpet',
       //   'message': msg,
       //   'language' : "english",
       //   'numbers' : values.number,
@@ -208,7 +210,9 @@ function LoginForm() {
             error={Boolean(touched.number && errors.number)}
             helperText={touched.number && errors.number}
           />
-
+          {/* <a href="tel:7070024384">7070024384</a> */}
+          {/* <Link href={`tel:${call}`} >call</Link> */}
+          
           <LoadingButton
             id="otp"
             fullWidth

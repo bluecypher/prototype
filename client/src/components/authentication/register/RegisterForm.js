@@ -8,58 +8,106 @@ import { useFormik, Form, FormikProvider } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from "react-redux";
 // material
-import { Stack, TextField, Typography, Checkbox, Grid } from '@mui/material';
+import { Stack, TextField, Typography, Checkbox, Grid, MenuItem, Button } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // import { number } from 'prop-types';
+import PINCODE from '../../../utils/pincode';
 
 const axios = require('axios');
 // ----------------------------------------------------------------------
 
 export default function RegisterForm() {
+  // let sgstns = [{
+  //   "A": "Abul Fazal EnclaveI SO",
+  //   "B": "110025",
+  //   "C": "SOUTH DELHI",
+  //   "D": "Delhi"
+  // },
+  // {
+  //   "A": "Air Force Station Tugalkabad SO",
+  //   "B": "110080",
+  //   "C": "SOUTH DELHI",
+  //   "D": "Delhi"
+  // },];
   const navigate = useNavigate();
-  const data = useSelector((state)=>state.profileReducer)
-  const [servData,setServData] = useState([]);
+  const data = useSelector((state) => state.profileReducer)
+  // const [servData,setServData] = useState([]);
   // let services;
   const [services, setServices] = useState([]);
   useEffect(() => {
-    axios.get("http://localhost:5000/users/getServices",{params:{'number': localStorage.getItem('number')}})
+    // console.log(PINCODE);
+    axios.get("/users/getServices", { params: { 'number': localStorage.getItem('number') } })
       .then((res) => {
         setServices(res.data.services);
-        if(res.data.userType)
-        {
-        setUserType(res.data.userType.user_type);
+        if (res.data.userType) {
+          setUserType(res.data.userType.user_type);
         }
         // const tm = new Date(Date.now())
         console.log("datetike:", res.data);
       })
-      axios.post('http://localhost:5000/users/getUserServices', { 'id': data.id })
-            .then((res) => {
-                // console.log("result", res);
-                
-                let temp = res.data;
-                
-                temp = temp.map((item)=>{
-                  
-                  item = item.serv_id;
-                  
-                  return item;
+    axios.post('/users/getUserServices', { 'id': data.id })
+      .then((res) => {
+        console.log("result", res.data);
+        let temp = res.data;
+        temp = temp.map((item) => {
 
-                })
-                setSelected(temp);
-                console.log("result", temp);
-                
-            })
-            .catch((err) => {
-                console.log("Error", err);
-            })
-  }, [])
+          item = item.serv_id;
+
+          return item;
+
+        })
+        setSelected(temp);
+
+
+      })
+      .catch((err) => {
+        console.log("Error", err);
+      })
+  }, [data.id])
   // const [showPassword, setShowPassword] = useState(false);
   const [image, setImage] = useState(data.img);
   const [fname, setFname] = useState('');
   const [lname, setLname] = useState('');
   const [userType, setUserType] = useState('');
   const [selected, setSelected] = useState([]);
+  const [sgstns, setSgstns] = useState([]);
 
+  // function suggestLocality() {
+  //   console.log('fshf',formik.values.pin.length);
+  //   if(formik.values.pin.length>5)
+  //   {
+  //     // const pn = formik.values.pin;
+  //     // const temp = PINCODE;
+
+  //     // for(let i=0; i<temp.length; i+=1)
+  //     // {
+  //     //   let pinSgstn = [];
+  //     //   if(temp[i].B.startsWith(pn))
+  //     //   {
+  //     //     pinSgstn = pinSgstn.concat(temp[i]);
+  //     //     console.log('pin suggestions',pinSgstn);
+  //     //   }
+  //     //   if(i===temp.length-1)
+  //     //   {
+  //     //     setSgstns(pinSgstn);
+  //     //   }
+
+  //     // } 
+  //     setSgstns([{
+  //         "A": "Abul Fazal EnclaveI SO",
+  //         "B": "110025",
+  //         "C": "SOUTH DELHI",
+  //         "D": "Delhi"
+  //       },
+  //       {
+  //         "A": "Air Force Station Tugalkabad SO",
+  //         "B": "110080",
+  //         "C": "SOUTH DELHI",
+  //         "D": "Delhi"
+  //       }]);
+  //     // console.log('pin suggestions',sgstns);
+  //   }
+  // }
   const fileToDataUri = (file) => new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -82,7 +130,7 @@ export default function RegisterForm() {
     console.log('image:', image);
   }
 
-  const handleCheck = (e,id) => {
+  const handleCheck = (e, id) => {
     const selectedIndex = selected.indexOf(id);
     let newSelected = [];
     if (selectedIndex === -1) {
@@ -106,7 +154,10 @@ export default function RegisterForm() {
 
 
 
-
+  const onCancel = ()=>{
+    navigate('/dashboard/work');
+    console.log('cancel')
+  } 
 
 
   const RegisterSchema = Yup.object().shape({
@@ -132,7 +183,7 @@ export default function RegisterForm() {
 
     add: Yup.string().required('Address is required'),
 
-    
+
 
 
   });
@@ -152,17 +203,17 @@ export default function RegisterForm() {
       hghlts: data.hghlts
     },
     validationSchema:
-     (userType==='M') ?
-    RegisterSchema2
-    :
-    RegisterSchema
+      (userType === 'M') ?
+        RegisterSchema2
+        :
+        RegisterSchema
     ,
     // validator: () => {},
     onSubmit: (values) => {
       // console.log('imag', formik.values.name);
       const nm = localStorage.getItem('number');
       // console.log('number:', values);
-      axios.post('http://localhost:5000/users/updateDetails', {
+      axios.post('/users/updateDetails', {
         'fname': formik.values.fname,
         'lname': formik.values.lname,
         'email': formik.values.email,
@@ -223,11 +274,11 @@ export default function RegisterForm() {
               helperText={touched.lname && errors.lname}
             />
 
-            
+
 
 
           </Stack>
-          { userType === 'M' ?
+          {userType === 'M' ?
             (<></>)
             :
             (<TextField
@@ -267,62 +318,70 @@ export default function RegisterForm() {
             helperText={touched.add && errors.add}
           />
 
-{ userType === 'M' ?
+          {userType === 'M' ?
             (<></>)
             :
             (
-              <Stack spacing ={2}>
-            <TextField
-            fullWidth
-            multiline
-            type="text"
-            label="Address line 2"
-            {...getFieldProps('add2')}
-            error={Boolean(touched.add2 && errors.add2)}
-            helperText={touched.add2 && errors.add2}
-          />
-            <TextField
-            fullWidth
-            type="text"
-            label="Locality"
-            {...getFieldProps('locality')}
-            error={Boolean(touched.locality && errors.locality)}
-            helperText={touched.locality && errors.locality}
-          />
+              <Stack spacing={2}>
+                <TextField
+                  fullWidth
+                  multiline
+                  type="text"
+                  label="Address line 2"
+                  {...getFieldProps('add2')}
+                  error={Boolean(touched.add2 && errors.add2)}
+                  helperText={touched.add2 && errors.add2}
+                />
+                <TextField
+                  fullWidth
+                  type="text"
+                  label="Locality"
+                  {...getFieldProps('locality')}
+                  error={Boolean(touched.locality && errors.locality)}
+                  helperText={touched.locality && errors.locality}
+                />
 
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-            <TextField
-              fullWidth
-              label="City"
-              {...getFieldProps('city')}
-              error={Boolean(touched.city && errors.city)}
-              helperText={touched.city && errors.city}
-            />
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                  <TextField
+                    fullWidth
+                    label="City"
+                    {...getFieldProps('city')}
+                    error={Boolean(touched.city && errors.city)}
+                    helperText={touched.city && errors.city}
+                  />
 
-            <TextField
-              fullWidth
-              label="PIN"
-              inputProps={{maxLength:6}}
-              {...getFieldProps('pin')}
-              error={Boolean(touched.pin && errors.pin)}
-              helperText={touched.pin && errors.pin}
-            />
-          </Stack>
-          <TextField
-            fullWidth
-            label="State"
-            {...getFieldProps('state')}
-            error={Boolean(touched.state && errors.state)}
-            helperText={touched.state && errors.state}
-          />
-          <TextField
-            fullWidth
-            label="Enterprise"
-            {...getFieldProps('ent')}
-            error={Boolean(touched.ent && errors.ent)}
-            helperText={touched.ent && errors.ent}
-          />
-          {/* <FormControl>
+                  <TextField
+                    fullWidth
+                    label="PIN"
+
+                    inputProps={{ maxLength: 6 }}
+                    {...getFieldProps('pin')}
+                    error={Boolean(touched.pin && errors.pin)}
+                    helperText={touched.pin && errors.pin}
+                  />
+                  {/* {
+              sgstns.length !==0 ?
+               sgstns.map((item,index)=><MenuItem key={index} value={index}>item.A</MenuItem>
+               )
+              :
+              <></>
+            } */}
+                </Stack>
+                <TextField
+                  fullWidth
+                  label="State"
+                  {...getFieldProps('state')}
+                  error={Boolean(touched.state && errors.state)}
+                  helperText={touched.state && errors.state}
+                />
+                <TextField
+                  fullWidth
+                  label="Enterprise"
+                  {...getFieldProps('ent')}
+                  error={Boolean(touched.ent && errors.ent)}
+                  helperText={touched.ent && errors.ent}
+                />
+                {/* <FormControl>
             <InputLabel>Service Provided</InputLabel>
 
             <Select
@@ -338,28 +397,28 @@ export default function RegisterForm() {
               
             </Select>
           </FormControl> */}
-          <Typography variant="h6" >
-            Services Provided
-          </Typography>
-          <Grid container spacing={1}>
-          {services.map( (s,i) => {
-          const isItemSelected = selected.indexOf(s.serv_id) !== -1
-          return(
-          <Stack key={s.serv_id} direction="row" >
-          <Checkbox
-            checked = {isItemSelected}
-            onChange={(event) => handleCheck(event,s.serv_id)}
-          />
-          <Typography alignSelf='center' variant="subtitle2" >
-            {s.serv_name}
-          </Typography>
-          </Stack>
-          )
-          }
-          )}
-          </Grid>
-          
-          {/* <TextField
+                <Typography variant="h6" >
+                  Services Provided
+                </Typography>
+                <Grid container spacing={1}>
+                  {services.map((s, i) => {
+                    const isItemSelected = selected.indexOf(s.serv_id) !== -1
+                    return (
+                      <Stack key={s.serv_id} direction="row" >
+                        <Checkbox
+                          checked={isItemSelected}
+                          onChange={(event) => handleCheck(event, s.serv_id)}
+                        />
+                        <Typography alignSelf='center' variant="subtitle2" >
+                          {s.serv_name}
+                        </Typography>
+                      </Stack>
+                    )
+                  }
+                  )}
+                </Grid>
+
+                {/* <TextField
             fullWidth
             type="text"
             label="Service Provided"
@@ -368,29 +427,36 @@ export default function RegisterForm() {
             helperText={touched.service && errors.service}
           /> */}
 
-          <TextField
-            fullWidth
-            multiline
-            minRows='2'
-            type="text"
-            label="Highlights"
-            {...getFieldProps('hghlts')}
-            error={Boolean(touched.hghlts && errors.hghlts)}
-            helperText={touched.hghlts && errors.hghlts}
-          />
-          </Stack>
-          )
-        }
+                <TextField
+                  fullWidth
+                  multiline
+                  minRows='2'
+                  type="text"
+                  label="Highlights"
+                  {...getFieldProps('hghlts')}
+                  error={Boolean(touched.hghlts && errors.hghlts)}
+                  helperText={touched.hghlts && errors.hghlts}
+                />
+              </Stack>
+            )
+          }
 
           <LoadingButton
             fullWidth
             size="large"
             type="submit"
             variant="contained"
-            
+
           >
             Update
           </LoadingButton>
+          {
+            data.id &&
+          <Button variant="outlined" color="error" onClick={onCancel}>
+            Cancel
+          </Button>
+          
+          }
           {/* {JSON.stringify(errors)} */}
         </Stack>
       </Form>

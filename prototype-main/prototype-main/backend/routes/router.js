@@ -181,10 +181,10 @@ router.post("/addWork",  (req, res) => {
     const servId = req.body.servId;
     const date = req.body.date;
     const todos = req.body.todos;
-
+    const asgnTo  =req.body.asgnTo;
     
     if (spId && custId) {
-        dao.addWork(spId,custId,date,todos,servId).then((resp) => {
+        dao.addWork(spId,custId,date,todos,servId,asgnTo).then((resp) => {
             
             res.status(200).send(resp);
         }).catch((err) => {
@@ -230,9 +230,16 @@ router.post("/updateWork",  (req, res) => {
     const pmtMethod = req.body.pmtMethod;
     const nxtDate = req.body.nxtDate;
     const nxtWork = req.body.nxtWork;
+
+    const custId = req.body.custId;
+    const spId = req.body.spId;
+    const servId = req.body.servId;
+    const date = req.body.date;
+    const todos = req.body.todos;
+    const asgnTo  =req.body.asgnTo;
     
     if (workId) {
-        dao.updateWork(workId,name,serv,amnt,wDetails,pmtMethod,nxtDate,nxtWork,wrnt).then((resp) => {
+        dao.updateWork(workId,name,serv,amnt,wDetails,pmtMethod,nxtDate,nxtWork,wrnt,custId,spId,servId,date,todos,asgnTo).then((resp) => {
             res.status(200).send(resp);
         }).catch((err) => {
             res.status(404).send("Error");
@@ -266,6 +273,7 @@ router.post("/getWorkDetails",  (req, res) => {
             
             res.status(200).send(resp);
         }).catch((err) => {
+            console.log(err)
             res.status(404).send("Error");
         })
     }

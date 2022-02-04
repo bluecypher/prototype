@@ -28,7 +28,7 @@ export default function CustomerProfile() {
     }
     useEffect(() => {
 
-        axios.post('http://localhost:5000/users/getCustomerDetails', { 'custId': custId, 'spId': data.id })
+        axios.post('/users/getCustomerDetails', { 'custId': custId, 'spId': data.id })
             .then((res) => {
                 console.log("result", res);
                 setCustInfo(res.data.info[0]);
