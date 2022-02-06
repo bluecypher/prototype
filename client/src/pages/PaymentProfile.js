@@ -48,7 +48,7 @@ export default function PaymentProfile() {
         if(image)
         {
             setError(false);
-        axios.post('/users/uploadQR', { 'id': data.id, 'qr': image })
+        axios.post('http://localhost:5000/users/uploadQR', { 'id': data.id, 'qr': image })
             .then((res) => {
 
                 setQR('');
@@ -65,7 +65,7 @@ export default function PaymentProfile() {
 
     useEffect(() => {
 
-        axios.post('/users/getPaymentDetails', { 'id': data.id })
+        axios.post('http://localhost:5000/users/getPaymentDetails', { 'id': data.id })
             .then((res) => {
 
                 let bufferOriginal = null;

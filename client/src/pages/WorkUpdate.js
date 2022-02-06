@@ -27,7 +27,7 @@ export default function WorkUpdate() {
     // const [amont, setAmont] = useState('');
     const [error, setError] = useState('');
     const [mop, setMop] = useState('');
-    const [date, setDate] = useState('');
+    const [date, setDate] = useState(null);
     const [nxtWork, setNxtWork] = useState('');
     const id = useSelector((state) => state.profileReducer.id);
     const [wDetails, setWDetails] = useState('wdetails');
@@ -37,7 +37,7 @@ export default function WorkUpdate() {
     // const onSubmit = () =>{
     //     console.log('imajsdjg',amnt, wDetails);
 
-    //         axios.post('/users/updateWork', {
+    //         axios.post('http://localhost:5000/users/updateWork', {
     //             'workId': workId,
 
     //             'name': name,
@@ -71,7 +71,7 @@ export default function WorkUpdate() {
 
     useEffect(()=>{
         console.log(workId);
-        axios.post('/users/getWorkDetails',{'workId':workId})
+        axios.post('http://localhost:5000/users/getWorkDetails',{'workId':workId})
         .then((res)=>{
             console.log("result",res);
             setName(res.data[0].cust_name);
@@ -113,7 +113,7 @@ export default function WorkUpdate() {
             console.log('imag', wDetails);
             if(mop)
             {
-            axios.post('/users/updateWork', {
+            axios.post('http://localhost:5000/users/updateWork', {
                 'workId': workId,
 
                 'name': name,
@@ -263,6 +263,7 @@ export default function WorkUpdate() {
 
                                     }}
                                     renderInput={(params) => <TextField {...params} />}
+                                    inputFormat='dd/MM/yyyy'
                                 />
                             </LocalizationProvider>
 

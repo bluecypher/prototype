@@ -45,7 +45,8 @@ export default function AccountPopover() {
   const name = useSelector((state)=> state.profileReducer.name)
   const number = useSelector((state)=> state.profileReducer.number)
   const img = useSelector((state)=> state.profileReducer.img)
-  const [cookies, setCookie, removeCookie] = useCookies('');
+  const logo = useSelector((state)=> state.profileReducer.entLogo)
+  // const [cookies, setCookie, removeCookie] = useCookies('');
   const handleOpen = () => {
     setOpen(true);
   };
@@ -85,7 +86,7 @@ export default function AccountPopover() {
           })
         }}
       >
-        <Avatar src={img} alt="photoURL" />
+        <Avatar src={logo} alt="photoURL" />
       </IconButton>
 
       <MenuPopover

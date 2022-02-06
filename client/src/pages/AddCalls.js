@@ -31,7 +31,7 @@ export default function AddCalls() {
         else {
 
 
-            axios.post('/users/getUserServices/', { 'id': id })
+            axios.post('http://localhost:5000/users/getUserServices/', { 'id': id })
                 .then((res) => {
                     console.log('services:', res.data);
                     setServices(res.data);
@@ -39,7 +39,7 @@ export default function AddCalls() {
                 .catch((err) => {
                     console.log('err', err);
                 })
-            axios.post('/users/getCustomersList/', { 'id': id })
+            axios.post('http://localhost:5000/users/getCustomersList/', { 'id': id })
                 .then((res) => {
                     console.log('customers:', res.data);
                     setCustList(res.data);
@@ -47,7 +47,7 @@ export default function AddCalls() {
                 .catch((err) => {
                     console.log('err', err);
                 })
-            axios.get('/users/getMembers', { params: { 'id': id } })
+            axios.get('http://localhost:5000/users/getMembers', { params: { 'id': id } })
                 .then((res) => {
                     console.log('get members:', res.data);
                     setUSERLIST(res.data);
@@ -69,7 +69,7 @@ export default function AddCalls() {
             date.setMinutes(time.getMinutes());
         }
 
-        axios.post('/users/addWork/', { 'custId': selectedCustId, 'spId': id, 'date': date, 'todos': todo, 'servId': selectedService, 'asgnTo': selectedMember })
+        axios.post('http://localhost:5000/users/addWork/', { 'custId': selectedCustId, 'spId': id, 'date': date, 'todos': todo, 'servId': selectedService, 'asgnTo': selectedMember })
             .then((res) => {
                 console.log("res:", res.data);
                 if (res.data === "Success") {
@@ -128,6 +128,7 @@ export default function AddCalls() {
 
                             }}
                             renderInput={(params) => <TextField {...params} />}
+                            inputFormat='dd/MM/yyyy'
                         />
                     </LocalizationProvider>
 

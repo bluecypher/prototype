@@ -128,7 +128,7 @@ export default function User() {
   });
   useEffect(() => {
     console.log('redux_id:', profileData);
-    axios.get('/users/getMembers', { params: { 'id': profileData.id } })
+    axios.get('http://localhost:5000/users/getMembers', { params: { 'id': profileData.id } })
       .then((res) => {
 
         if (!Object.keys(cookies).length) {
@@ -189,7 +189,7 @@ export default function User() {
   };
 
   const handleDelete = (event, memberId) => {
-    axios.post('/users/deleteMembers', { 'parent_id': profileData.id, 'member_id': memberId })
+    axios.post('http://localhost:5000/users/deleteMembers', { 'parent_id': profileData.id, 'member_id': memberId })
       .then((res) => {
 
         if (!Object.keys(cookies).length) {
@@ -263,7 +263,7 @@ export default function User() {
   // const handleAdd = () => {
 
   //   console.log('Add');
-  //   axios.post('/users/addMembers', {
+  //   axios.post('http://localhost:5000/users/addMembers', {
   //     'number': number,
   //     'name': tName,
   //     'pNumber': localStorage.getItem('number')
@@ -309,7 +309,7 @@ export default function User() {
     onSubmit: () => {
       // console.log('imag', formik.values.name);
       console.log('Add');
-      axios.post('/users/addMembers', {
+      axios.post('http://localhost:5000/users/addMembers', {
         'number': formik.values.phone,
         'name': formik.values.name,
         'pNumber': localStorage.getItem('number')

@@ -24,7 +24,7 @@ export default function Profile() {
         navigate('/register');
     }
     useEffect(() => {
-        axios.post('/users/getUserServices', { 'id': data.id })
+        axios.post('http://localhost:5000/users/getUserServices', { 'id': data.id })
             .then((res) => {
                 console.log("result", res);
                 setServData(res.data);

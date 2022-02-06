@@ -59,10 +59,10 @@ const DashboardApp = () => {
   useEffect(() => {
     //  function foo() {
     // setNumber(localStorage.getItem('number'));
-    axios.get('/users/getData', { params: { 'number': localStorage.getItem('number') } })
+    axios.get('http://localhost:5000/users/getData', { params: { 'number': localStorage.getItem('number') } })
 
       .then((res) => {
-        console.log('data', lang);
+        console.log('data', res.data);
         if (Object.keys(cookies).length) {
           // console.log('data', cookies);
           let bufferOriginal = null;
@@ -72,7 +72,14 @@ const DashboardApp = () => {
               // setImg(bufferOriginal.toString('utf8'));
             }
           }
-          // console.log('img data', bufferOriginal.toString('utf8'));
+          let logoBuffer = null;
+          if (res.data[0].ent_logo) {
+            if (res.data[0].ent_logo.data) {
+              logoBuffer = Buffer.from(res.data[0].ent_logo.data);
+              // setImg(bufferOriginal.toString('utf8'));
+            }
+          }
+          console.log('img data', logoBuffer.toString('utf8'));
           dispatch(addProfile([res.data[0].first_name,
             res.data[0].last_name,
             localStorage.getItem('number'), 
@@ -87,7 +94,8 @@ const DashboardApp = () => {
             res.data[0].highlights,
             res.data[0].enterprise,
             res.data[0].user_mast_id,
-            res.data[0].user_type
+            res.data[0].user_type,
+            logoBuffer ? logoBuffer.toString('utf8') : null,
 
           ]));
           const fullName = `${res.data[0].first_name} ${res.data[0].last_name}`;

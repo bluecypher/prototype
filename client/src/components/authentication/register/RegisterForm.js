@@ -36,7 +36,7 @@ export default function RegisterForm() {
   const [services, setServices] = useState([]);
   useEffect(() => {
     // console.log(PINCODE);
-    axios.get("/users/getServices", { params: { 'number': localStorage.getItem('number') } })
+    axios.get("http://localhost:5000/users/getServices", { params: { 'number': localStorage.getItem('number') } })
       .then((res) => {
         setServices(res.data.services);
         if (res.data.userType) {
@@ -45,7 +45,7 @@ export default function RegisterForm() {
         // const tm = new Date(Date.now())
         console.log("datetike:", res.data);
       })
-    axios.post('/users/getUserServices', { 'id': data.id })
+    axios.post('http://localhost:5000/users/getUserServices', { 'id': data.id })
       .then((res) => {
         console.log("result", res.data);
         let temp = res.data;
@@ -66,13 +66,14 @@ export default function RegisterForm() {
   }, [data.id])
   // const [showPassword, setShowPassword] = useState(false);
   const [image, setImage] = useState(data.img);
+  const [logo, setLogo] = useState(data.entLogo);
   const [fname, setFname] = useState('');
   const [lname, setLname] = useState('');
   const [userType, setUserType] = useState('');
   const [selected, setSelected] = useState([]);
   const [sgstns, setSgstns] = useState([]);
 
-  // function suggestLocality() {
+  // const suggestLocality =()=> {
   //   console.log('fshf',formik.values.pin.length);
   //   if(formik.values.pin.length>5)
   //   {
@@ -93,19 +94,20 @@ export default function RegisterForm() {
   //     //   }
 
   //     // } 
-  //     setSgstns([{
-  //         "A": "Abul Fazal EnclaveI SO",
-  //         "B": "110025",
-  //         "C": "SOUTH DELHI",
-  //         "D": "Delhi"
-  //       },
-  //       {
-  //         "A": "Air Force Station Tugalkabad SO",
-  //         "B": "110080",
-  //         "C": "SOUTH DELHI",
-  //         "D": "Delhi"
-  //       }]);
-  //     // console.log('pin suggestions',sgstns);
+  //     // setSgstns([{
+  //     //     "A": "Abul Fazal EnclaveI SO",
+  //     //     "B": "110025",
+  //     //     "C": "SOUTH DELHI",
+  //     //     "D": "Delhi"
+  //     //   },
+  //     //   {
+  //     //     "A": "Air Force Station Tugalkabad SO",
+  //     //     "B": "110080",
+  //     //     "C": "SOUTH DELHI",
+  //     //     "D": "Delhi"
+  //     //   }]);
+      
+  //     console.log('pin suggestions',sgstns);
   //   }
   // }
   const fileToDataUri = (file) => new Promise((resolve, reject) => {
@@ -128,6 +130,20 @@ export default function RegisterForm() {
       })
 
     console.log('image:', image);
+  }
+
+  const LogoChangeHandler=(file) => {
+    if (!file) {
+      setLogo('');
+      return;
+    }
+
+    fileToDataUri(file)
+      .then(dataUri => {
+        setLogo(dataUri)
+      })
+
+    console.log('image:', logo);
   }
 
   const handleCheck = (e, id) => {
@@ -154,10 +170,10 @@ export default function RegisterForm() {
 
 
 
-  const onCancel = ()=>{
+  const onCancel = () => {
     navigate('/dashboard/work');
     console.log('cancel')
-  } 
+  }
 
 
   const RegisterSchema = Yup.object().shape({
@@ -213,7 +229,7 @@ export default function RegisterForm() {
       // console.log('imag', formik.values.name);
       const nm = localStorage.getItem('number');
       // console.log('number:', values);
-      axios.post('/users/updateDetails', {
+      axios.post('http://localhost:5000/users/updateDetails', {
         'fname': formik.values.fname,
         'lname': formik.values.lname,
         'email': formik.values.email,
@@ -226,7 +242,7 @@ export default function RegisterForm() {
         'pin': formik.values.pin,
         'state': formik.values.state,
         'ent': formik.values.ent,
-
+        'entLogo': logo,
         'services': selected,
         'hghlts': formik.values.hghlts
       })
@@ -353,19 +369,20 @@ export default function RegisterForm() {
                   <TextField
                     fullWidth
                     label="PIN"
-
+                    
+                    
                     inputProps={{ maxLength: 6 }}
                     {...getFieldProps('pin')}
                     error={Boolean(touched.pin && errors.pin)}
                     helperText={touched.pin && errors.pin}
                   />
-                  {/* {
-              sgstns.length !==0 ?
-               sgstns.map((item,index)=><MenuItem key={index} value={index}>item.A</MenuItem>
-               )
-              :
-              <></>
-            } */}
+                  {
+              // sgstns.length >0 ?
+              //  sgstns.map((item,index)=><Typography key={index} value={index}>item.A</Typography>
+              //  )
+              // :
+              // <></>
+            }
                 </Stack>
                 <TextField
                   fullWidth
@@ -381,6 +398,24 @@ export default function RegisterForm() {
                   error={Boolean(touched.ent && errors.ent)}
                   helperText={touched.ent && errors.ent}
                 />
+                <Stack spacing={1}>
+                  <Stack direction="row" spacing={6}>
+                    <Typography variant="h6">
+                      Upload Enterprise Logo
+                    </Typography>
+                    {
+                      logo &&
+                      (<img width="30" height="30" src={logo} alt="avatar" />)
+                    }
+                  </Stack>
+                  <input
+                    accept="image/*"
+                    type="file"
+                    onChange={(event) => { LogoChangeHandler(event.target.files[0] || null) }}
+                  />
+
+
+                </Stack>
                 {/* <FormControl>
             <InputLabel>Service Provided</InputLabel>
 
@@ -452,10 +487,10 @@ export default function RegisterForm() {
           </LoadingButton>
           {
             data.id &&
-          <Button variant="outlined" color="error" onClick={onCancel}>
-            Cancel
-          </Button>
-          
+            <Button variant="outlined" color="error" sx={{ border: 1.5 }} onClick={onCancel}>
+              Cancel
+            </Button>
+
           }
           {/* {JSON.stringify(errors)} */}
         </Stack>

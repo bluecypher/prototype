@@ -45,7 +45,7 @@ function LoginForm() {
   });
   const handleSubmit2 =() =>{
     if (inputOtp === '123456') {
-      axios.post('/users/login', {
+      axios.post('http://localhost:5000/users/login', {
         'number': values.number
       },
         {

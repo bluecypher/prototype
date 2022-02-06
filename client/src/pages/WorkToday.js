@@ -20,7 +20,7 @@ export default function WorkToday() {
     const navigate = useNavigate();
     useEffect(() => {
         // console.log("id is", id)
-        axios.post('/users/workDoneToday/', { 'id': id })
+        axios.post('http://localhost:5000/users/workDoneToday/', { 'id': id })
             .then((res) => {
                 if (!Object.keys(cookies).length) {
                     navigate('/sessionExpired')

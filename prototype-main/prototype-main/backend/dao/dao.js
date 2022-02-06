@@ -33,7 +33,7 @@ const getData = (number) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
 
-        db.query("select user_mast_id,email,phone,first_name,last_name,photo,address1,address2,city,pin,state,locality_of_work,highlights,enterprise,user_type from service_provider_master where phone =?", [number], (err, row) => {
+        db.query("select user_mast_id,email,phone,first_name,last_name,photo,address1,address2,city,pin,state,locality_of_work,highlights,enterprise,user_type,ent_logo from service_provider_master where phone =?", [number], (err, row) => {
             if (!err) {
                 resolve(row);
                 console.log(row[0]);
@@ -99,7 +99,7 @@ const updateDetails = (data) => {
             (err, row) => {
                 if (row && row.length) {
                     db.query(
-                        "UPDATE service_provider_master SET status=?,email=?,phone=?,first_name=?,last_name=?,address1=?,address2=?,city=?,pin=?,state=?,photo=?,locality_of_work=?,highlights=?,enterprise=?,last_updated=? where phone =?",
+                        "UPDATE service_provider_master SET status=?,email=?,phone=?,first_name=?,last_name=?,address1=?,address2=?,city=?,pin=?,state=?,photo=?,locality_of_work=?,highlights=?,enterprise=?,ent_logo=?,last_updated=? where phone =?",
                         [
                             'F',
                             data.email,
@@ -115,6 +115,7 @@ const updateDetails = (data) => {
                             data.locality,
                             data.hghlts,
                             data.ent,
+                            data.entLogo,
                             new Date(Date.now()),
                             data.number
 
@@ -130,7 +131,7 @@ const updateDetails = (data) => {
                     );
                 }
                 else {
-                    db.query("INSERT INTO service_provider_master(status,email,phone,first_name,last_name,address1,address2,city,pin,state,photo,locality_of_work,highlights,user_type,enterprise,created_on,last_updated) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                    db.query("INSERT INTO service_provider_master(status,email,phone,first_name,last_name,address1,address2,city,pin,state,photo,locality_of_work,highlights,user_type,enterprise,ent_logo,created_on,last_updated) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                         [
                             'F',
                             data.email,
@@ -147,6 +148,7 @@ const updateDetails = (data) => {
                             data.hghlts,
                             'O',
                             data.ent,
+                            data.entLogo,
                             new Date(Date.now()),
                             new Date(Date.now())
                         ],
@@ -379,13 +381,14 @@ const addWork = (spId, custId, date, todos, servId, asgnTo) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
 
-        db.query("INSERT INTO service_provider_work_list(service_provider_id,work_type,work_plan_date,cust_mast_id,work_desc,assign_to,created_on,last_updated) VALUES(?,?,?,?,?,?,?,?)", [
+        db.query("INSERT INTO service_provider_work_list(service_provider_id,work_type,work_plan_date,cust_mast_id,work_desc,assign_to,status,created_on,last_updated) VALUES(?,?,?,?,?,?,?,?,?)", [
             spId,
             servId,
             new Date(date),
             custId,
             todos,
             asgnTo?asgnTo:spId,
+            'O',
             new Date(Date.now()),
             new Date(Date.now())
         ], (err, row) => {
@@ -403,11 +406,11 @@ const addWork = (spId, custId, date, todos, servId, asgnTo) => {
     });
 };
 
-const getTodaysWork = (id) => {
+const getTodaysWork = (id, date) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
 
-        db.query("SELECT spwl.work_list_id AS work_id, spcm.cust_name AS name, spcm.address1 AS addr, spcm.cust_phone  FROM service_provider_work_list spwl INNER JOIN service_provider_customer_master spcm USING(cust_mast_id) WHERE (spwl.service_provider_id=? OR spwl.assign_to=?) AND Date(spwl.work_plan_date)=curdate() AND spwl.work_comp_date IS NULL", [id,id], (err, row) => {
+        db.query("SELECT spwl.work_list_id AS work_id, spcm.cust_name AS name, spcm.address1 AS addr, spcm.cust_phone, spwl.status  FROM service_provider_work_list spwl INNER JOIN service_provider_customer_master spcm USING(cust_mast_id) WHERE (spwl.service_provider_id=? OR spwl.assign_to=?) AND DATE(spwl.work_plan_date)=DATE(?)", [id,id,date], (err, row) => {
             if (!err) {
                 console.log('row', row);
                 resolve(row);
@@ -425,7 +428,7 @@ const updateWork = (workId, name, serv, amnt, wDetails, pmtMethod, nxtDate, nxtW
     return new Promise((resolve, reject) => {
         const db = getconnection();
         if (pmtMethod) {
-            db.query("UPDATE service_provider_work_list SET work_desc=?,payment_mode=?,amount=?,gaurantee=?,work_comp_date=?,last_updated=? WHERE work_list_id=?", [
+            db.query("UPDATE service_provider_work_list SET work_desc=?,payment_mode=?,amount=?,gaurantee=?,work_comp_date=?,last_updated=?,status=? WHERE work_list_id=?", [
 
                 wDetails,
                 pmtMethod[0],
@@ -433,6 +436,7 @@ const updateWork = (workId, name, serv, amnt, wDetails, pmtMethod, nxtDate, nxtW
                 wrnt,
                 new Date(Date.now()),
                 new Date(Date.now()),
+                'C',
                 workId
             ], (err, row) => {
                 if (!err) {

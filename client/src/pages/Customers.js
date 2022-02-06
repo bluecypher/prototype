@@ -123,7 +123,7 @@ export default function Customers({foo}) {
   }
   useEffect(() => {
     console.log("props",prevPage);
-    axios.post('/users/getCustomersList', { 'id': id })
+    axios.post('http://localhost:5000/users/getCustomersList', { 'id': id })
       .then((res) => {
 
         if (!Object.keys(cookies).length) {
@@ -246,7 +246,7 @@ export default function Customers({foo}) {
 
   const handleDelete = (event,memberId) => {
     console.log(id,' ', memberId);
-    axios.post('/users/deleteCustomers', {  'parent_id':id, 'member_id':memberId })
+    axios.post('http://localhost:5000/users/deleteCustomers', {  'parent_id':id, 'member_id':memberId })
       .then((res) => {
         
         if (!Object.keys(cookies).length) {
@@ -267,7 +267,7 @@ export default function Customers({foo}) {
   // const handleAdd = () => {
 
 
-  //   axios.post('/users/addCustomers', {
+  //   axios.post('http://localhost:5000/users/addCustomers', {
   //     'number': number,
   //     'id': id,
   //     'name': cName
@@ -312,7 +312,7 @@ export default function Customers({foo}) {
     validationSchema: AddSchema,
     onSubmit: () => {
       // console.log('imag', formik.values.name);
-      axios.post('/users/addCustomers', {
+      axios.post('http://localhost:5000/users/addCustomers', {
         'number': formik.values.phone,
         'id': id,
         'name': formik.values.name,
@@ -388,6 +388,15 @@ export default function Customers({foo}) {
             <FormikProvider value={formik}>
               <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
                 <Stack spacing={2} >
+                <TextField
+                    inputProps={{ maxLength: 10 }}
+                    label="Phone number"
+                    value={number}
+                    onChange={handleNumber}
+                    {...getFieldProps('phone')}
+                    error={Boolean(touched.phone && errors.phone)}
+                    helperText={touched.phone && errors.phone}
+                  />
                   <TextField
                     inputProps={{ maxLength: 40 }}
                     label="Name"
@@ -397,15 +406,7 @@ export default function Customers({foo}) {
                     error={Boolean(touched.name && errors.name)}
                     helperText={touched.name && errors.name}
                   />
-                  <TextField
-                    inputProps={{ maxLength: 10 }}
-                    label="Phone number"
-                    value={number}
-                    onChange={handleNumber}
-                    {...getFieldProps('phone')}
-                    error={Boolean(touched.phone && errors.phone)}
-                    helperText={touched.phone && errors.phone}
-                  />
+                  
                   <TextField
                     inputProps={{ maxLength: 60 }}
                     label="Address"

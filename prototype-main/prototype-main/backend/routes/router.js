@@ -201,11 +201,11 @@ router.post("/addWork",  (req, res) => {
 
 router.post("/getTodaysWork",  (req, res) => {
     const spId = req.body.id;
+    const date = req.body.date;
     
-    
-    if (spId) {
-        
-        dao.getTodaysWork(spId).then((resp) => {
+    if (spId && date) {
+        console.log(date)
+        dao.getTodaysWork(spId,date).then((resp) => {
             
             res.status(200).send(resp);
         }).catch((err) => {

@@ -15,6 +15,7 @@ const initialData = {
     id: '',
     user_type: '',
     qr_code: '',
+    entLogo: '',
 }
 
 
@@ -39,6 +40,7 @@ const profileReducer = (state = initialData, action) => {
                 ent: data[12],
                 id: data[13],
                 user_type: data[14],
+                entLogo: data[15],
 
             }
         }
@@ -60,6 +62,7 @@ const profileReducer = (state = initialData, action) => {
                 id: '',
                 user_type: '',
                 qr_code: '',
+                entLogo: '',
             }
         }
 

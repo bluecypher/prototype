@@ -41,7 +41,7 @@ export default function EditCalls() {
         }
         else {
 
-            axios.post('/users/getUserServices/', { 'id': id })
+            axios.post('http://localhost:5000/users/getUserServices/', { 'id': id })
                 .then((res) => {
                     console.log('services:', res.data);
                     setServices(res.data);
@@ -49,7 +49,7 @@ export default function EditCalls() {
                 .catch((err) => {
                     console.log('err', err);
                 })
-            axios.post('/users/getCustomersList/', { 'id': id })
+            axios.post('http://localhost:5000/users/getCustomersList/', { 'id': id })
                 .then((res) => {
                     console.log('customers:', res.data);
                     setCustList(res.data);
@@ -58,7 +58,7 @@ export default function EditCalls() {
                     console.log('err', err);
                 })
 
-            axios.post('/users/getWorkDetails', { 'workId': workId })
+            axios.post('http://localhost:5000/users/getWorkDetails', { 'workId': workId })
                 .then((res) => {
                     console.log("work details", res);
                     setSelectedService(res.data[0].work_type);
@@ -85,7 +85,7 @@ export default function EditCalls() {
                 .catch((err) => {
                     console.log("error", err);
                 })
-            axios.get('/users/getMembers', { params: { 'id': id } })
+            axios.get('http://localhost:5000/users/getMembers', { params: { 'id': id } })
                 .then((res) => {
                     console.log('get members:', res.data);
                     setUSERLIST(res.data);
@@ -108,7 +108,7 @@ export default function EditCalls() {
             date.setMinutes(time.getMinutes());
         }
 
-        axios.post('/users/updateWork/', { 'custId': selectedCustId, 'spId': id, 'date': date, 'todos': todo, 'servId': selectedService, 'asgnTo': selectedMember, 'workId': workId })
+        axios.post('http://localhost:5000/users/updateWork/', { 'custId': selectedCustId, 'spId': id, 'date': date, 'todos': todo, 'servId': selectedService, 'asgnTo': selectedMember, 'workId': workId })
             .then((res) => {
                 console.log("res:", res.data);
                 if (res.data === "Success") {
@@ -175,6 +175,7 @@ export default function EditCalls() {
 
                             }}
                             renderInput={(params) => <TextField {...params} />}
+                            inputFormat='dd/MM/yyyy'
                         />
                     </LocalizationProvider>
 

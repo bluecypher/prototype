@@ -51,7 +51,7 @@ export default function PaymentPage() {
 
     useEffect(() => {
 
-        axios.post('/users/getPaymentDetails', { 'id': data.id })
+        axios.post('http://localhost:5000/users/getPaymentDetails', { 'id': data.id })
             .then((res) => {
 
                 let bufferOriginal = null;
