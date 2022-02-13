@@ -1,13 +1,17 @@
 import { useState, useEffect } from 'react';
+import * as Yup from 'yup';
 import { useCookies } from 'react-cookie';
-import { useNavigate, Link as RouterLink, useParams, useLocation } from 'react-router-dom';
+import { useNavigate, useParams} from 'react-router-dom';
+import { useFormik, Form, FormikProvider } from 'formik';
 // import { history } from 'react-router';
 import { useSelector, useDispatch } from "react-redux";
-import { Box, Grid, Link, Container, Typography, Stack, Button, FormControl, InputLabel, Select, MenuItem, TextField } from '@mui/material';
-import DatePicker from '@mui/lab/DatePicker';
-import TimePicker from '@mui/lab/TimePicker';
+import { Box, Container, Typography, Stack, Button, Modal, Card, Alert, FormControl, InputLabel, Select, MenuItem, TextField } from '@mui/material';
+import DatePicker from '@mui/lab/MobileDatePicker';
+import TimePicker from '@mui/lab/MobileTimePicker';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import { Icon } from '@iconify/react';
+import close from '@iconify/icons-ant-design/close-circle-outlined';
 import axios from 'axios';
 // components
 import { changePrev } from '../actions/index';
@@ -23,17 +27,20 @@ export default function EditCalls() {
     const [services, setServices] = useState([]);
     const [custList, setCustList] = useState([]);
     const [USERLIST, setUSERLIST] = useState([]);
+    const [showAdd, setShowAdd] = useState(false);
+    const [error, setError] = useState(false);
+    const [success, setSuccess] = useState(false);
+    const [refresh, setRefresh] = useState(false);
     // const [redirect, setRedirect] = useState(false);
     const [cookies, setCookies] = useCookies();
     const id = useSelector((state) => state.profileReducer.id);
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const loc = useLocation();
     // const toCustomer = () => {
 
     //     navigate('/dashboard/customers');
     // }
-    const history = useLocation();
+    
     useEffect(() => {
         console.log("loc is", id)
         if (!Object.keys(cookies).length) {
@@ -63,17 +70,15 @@ export default function EditCalls() {
                     console.log("work details", res);
                     setSelectedService(res.data[0].work_type);
                     if (res.data[0].assign_to) {
-                        if(res.data[0].assign_to===id)
-                        {
-                            console.log('selmem',0);
+                        if (res.data[0].assign_to === id) {
+                            console.log('selmem', 0);
                             setSelectedMember(0);
                         }
-                        else
-                        {
-                            console.log('selmem',res.data[0].assign_to);
+                        else {
+                            console.log('selmem', res.data[0].assign_to);
                             setSelectedMember(res.data[0].assign_to);
                         }
-                        
+
                     }
                     setSelectedCustId(res.data[0].cust_mast_id);
                     setDate(new Date(res.data[0].work_plan_date));
@@ -95,12 +100,40 @@ export default function EditCalls() {
                 })
             dispatch(changePrev("editCalls"));
         }
-    }, [id])
+    }, [id, refresh])
 
     const [selectedCustId, setSelectedCustId] = useState('');
     const [date, setDate] = useState(new Date());
     const [time, setTime] = useState(new Date());
     const [todo, setTodo] = useState('');
+    const handleNewMember = () => {
+        // console.log('filtered:',filteredUsers)
+        if (showAdd) {
+            setShowAdd(false);
+            setError(false);
+            setSuccess(false);
+            
+        }
+        else {
+            setShowAdd(true);
+            setError(false);
+            setSuccess(false);
+            formik2.values.name = '';
+            formik2.values.phone = '';
+            formik2.values.address = '';
+        }
+
+    };
+    const AddSchema = Yup.object().shape({
+        name: Yup.string()
+            .min(2, 'Too Short!')
+            .max(50, 'Too Long!')
+            .required('Name is required'),
+
+        phone: Yup.number('Mobile number must be numeric.').min(1000000000, 'Please enter a valid number.').required('Number is required').typeError('Mobile number must be numeric.'),
+
+
+    });
 
     const onSave = () => {
         if (time) {
@@ -120,20 +153,141 @@ export default function EditCalls() {
             })
         console.log("clickks", date);
     }
+    const formik2 = useFormik({
+        initialValues: {
+            name: '',
+            phone: '',
+            address: '',
+
+        },
+        validationSchema: AddSchema,
+        onSubmit: () => {
+            // console.log('imag', formik.values.name);
+            axios.post('http://localhost:5000/users/addCustomers', {
+                'number': formik2.values.phone,
+                'id': id,
+                'name': formik2.values.name,
+                'add': formik2.values.address,
+            })
+                .then((res) => {
+                    console.log(res);
+                    if (res.data === 'Success') {
+                        // setNumber('');
+                        formik2.values.name = '';
+                        formik2.values.phone = '';
+                        formik2.values.address = '';
+
+                        setRefresh(true);
+                        setRefresh(false);
+                        setError(false);
+                        setSuccess(true);
+
+
+                    }
+
+                    else if (res.data.code === 'ER_DUP_ENTRY') {
+                        setSuccess(false);
+                        setError(true);
+                    }
+
+                })
+                .catch((err) => {
+                    console.log('err', err);
+                })
+
+
+        }
+
+
+    });
+
+    const { touched, errors, isSubmitting, handleSubmit, getFieldProps } = formik2;
+
     return (
         <Page title="Edit Calls">
             <Container maxWidth="xl">
                 <Box sx={{ pb: 5 }}>
-                    <Typography variant="h4">Edit call</Typography>
+                    <Typography variant="h4">Edit Call</Typography>
                 </Box>
+                <Modal
+                    open={showAdd}
+                    onClose={handleNewMember}
 
+                >
+                    <Card sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: '90%',
+
+                        p: 3,
+                    }}>
+                        <Stack direction="row" justifyContent="space-between">
+
+
+                            <Typography variant="h6" gutterBottom>
+                                Add a new Customer
+                            </Typography>
+                            <Icon color="red" onClick={handleNewMember} icon={close} width={24} height={24} />
+                        </Stack>
+                        <FormikProvider value={formik2}>
+                            <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
+                                <Stack spacing={2} >
+                                    <TextField
+                                        inputProps={{ maxLength: 10 }}
+                                        label="Phone number"
+                                        // value={number}
+                                        // onChange={handleNumber}
+                                        size="small"
+                                        {...getFieldProps('phone')}
+                                        error={Boolean(touched.phone && errors.phone)}
+                                        helperText={touched.phone && errors.phone}
+                                    />
+                                    <TextField
+                                        inputProps={{ maxLength: 40 }}
+                                        label="Name"
+                                        size="small"
+                                        // value={cName}
+                                        // onChange={handleCName}
+                                        {...getFieldProps('name')}
+                                        error={Boolean(touched.name && errors.name)}
+                                        helperText={touched.name && errors.name}
+                                    />
+
+                                    <TextField
+                                        inputProps={{ maxLength: 60 }}
+                                        label="Address"
+                                        size="small"
+                                        // value={add}
+                                        // onChange={handleAdd}
+                                        {...getFieldProps('address')}
+                                        error={Boolean(touched.address && errors.address)}
+                                        helperText={touched.address && errors.address}
+                                    />
+
+
+                                    <Button type="submit" >Add</Button>
+                                </Stack >
+                            </Form>
+                        </FormikProvider>
+
+                        {
+                            error &&
+                            <Stack m={2}>
+                                <Alert severity="error">A Customer with same number already exist in your list!!</Alert>
+                            </Stack>
+                        }
+                        {
+                            success &&
+                            <Stack m={2}>
+                                <Alert severity="success">Customer added successfully!</Alert>
+                            </Stack>
+                        }
+                    </Card>
+                </Modal>
                 <Box sx={{ pb: 5 }} width={{ xs: '95%', sm: '50%' }}>
-                    {/* { redirect?
-                    
-                <RouterLink to={{pathname:"/dashboard/customers", state: {prev: 'EditCalls'} }} />
-                    :
-                    <></>
-                    } */}
+
                     <FormControl fullWidth>
                         <InputLabel>Select customer</InputLabel>
 
@@ -149,15 +303,9 @@ export default function EditCalls() {
                                 )
 
                             }
-                            <Link component={RouterLink} to={{ pathname: "/dashboard/customers" }}>
-                                {/* <Link onClick={()=>{console.log("click")}}>  */}
-                                <MenuItem value="Add Customer">
-
-
-                                    <Typography variant="subtitle2">+Add a new customer</Typography>
-
-                                </MenuItem>
-                            </Link>
+                            <Button onClick={handleNewMember}>
+                                <Typography variant="subtitle2">+Add a new customer</Typography>
+                            </Button>
 
 
 

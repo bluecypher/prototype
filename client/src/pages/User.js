@@ -7,9 +7,9 @@ import { useCookies } from 'react-cookie';
 import plusFill from '@iconify/icons-eva/plus-fill';
 // import { Link as RouterLink } from 'react-router-dom';
 import { useFormik, Form, FormikProvider } from 'formik';
-import { styled } from '@mui/material/styles';
+// import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import trash2Outline from '@iconify/icons-eva/trash-2-outline';
 import close from '@iconify/icons-ant-design/close-circle-outlined';
 // material
@@ -28,7 +28,6 @@ import {
   TableContainer,
   TablePagination,
   Alert,
-  OutlinedInput,
   IconButton,
   TextField,
   Link
@@ -39,7 +38,10 @@ import Page from '../components/Page';
 // import Label from '../components/Label';
 import Scrollbar from '../components/Scrollbar';
 import SearchNotFound from '../components/SearchNotFound';
-import { UserListHead, UserListToolbar, UserMoreMenu } from '../components/_dashboard/user';
+import { UserListHead, UserListToolbar,
+  //  UserMoreMenu 
+  } from '../components/_dashboard/user';
+// import data from '@iconify/icons-eva/menu-2-fill';
 
 //
 // import USERLIST from '../_mocks_/user';
@@ -63,19 +65,19 @@ const TABLE_HEAD = [
 // ----------------------------------------------------------------------
 
 
-const SearchStyle = styled(OutlinedInput)(({ theme }) => ({
-  width: 320,
-  height: 40,
-  transition: theme.transitions.create(['box-shadow', 'width'], {
-    easing: theme.transitions.easing.easeInOut,
-    duration: theme.transitions.duration.shorter
-  }),
-  '&.Mui-focused': { width: 320, boxShadow: theme.customShadows.z8 },
-  '& fieldset': {
-    borderWidth: `1px !important`,
-    borderColor: `${theme.palette.common.black} !important`
-  }
-}));
+// const SearchStyle = styled(OutlinedInput)(({ theme }) => ({
+//   width: 320,
+//   height: 40,
+//   transition: theme.transitions.create(['box-shadow', 'width'], {
+//     easing: theme.transitions.easing.easeInOut,
+//     duration: theme.transitions.duration.shorter
+//   }),
+//   '&.Mui-focused': { width: 320, boxShadow: theme.customShadows.z8 },
+//   '& fieldset': {
+//     borderWidth: `1px !important`,
+//     borderColor: `${theme.palette.common.black} !important`
+//   }
+// }));
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -122,7 +124,7 @@ export default function User() {
       .max(50, 'Too Long!')
       .required('Name is required'),
 
-    phone: Yup.number('Mobile number must be numeric.').min(1000000000, 'Please enter a valid number.').required('Number is required'),
+    phone: Yup.number('Mobile number must be numeric.').min(1000000000, 'Please enter a valid number.').required('Number is required').typeError('Mobile number must be numeric.'),
 
 
   });
@@ -189,6 +191,7 @@ export default function User() {
   };
 
   const handleDelete = (event, memberId) => {
+    
     axios.post('http://localhost:5000/users/deleteMembers', { 'parent_id': profileData.id, 'member_id': memberId })
       .then((res) => {
 
@@ -307,12 +310,13 @@ export default function User() {
     },
     validationSchema: AddSchema,
     onSubmit: () => {
-      // console.log('imag', formik.values.name);
-      console.log('Add');
+      
+      
       axios.post('http://localhost:5000/users/addMembers', {
         'number': formik.values.phone,
         'name': formik.values.name,
-        'pNumber': localStorage.getItem('number')
+        'pNumber': localStorage.getItem('number'),
+        'ent_id': profileData.ent_id,
       })
         .then((res) => {
           console.log(res);
@@ -345,7 +349,7 @@ export default function User() {
 
   });
 
-  const { touched, errors, isSubmitting, handleSubmit, getFieldProps } = formik;
+  const { touched, errors, handleSubmit, getFieldProps } = formik;
 
   return (
     <Page title="My Team">

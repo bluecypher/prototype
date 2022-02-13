@@ -3,14 +3,14 @@ import { useState, useEffect } from 'react';
 import { useFormik, Form, FormikProvider } from 'formik';
 // import { useCookies } from 'react-cookie';
 
-import { useSelector } from "react-redux";
+// import { useSelector } from "react-redux";
 
-import { Link as RouterLink, useParams, useNavigate } from 'react-router-dom';
+import {  useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 // material
 // import { styled } from '@mui/material/styles';
 import { Box, Button, Typography, Container, Stack, TextField, FormControl, InputLabel, Select, MenuItem, FormLabel, RadioGroup, FormControlLabel, Radio, Alert } from '@mui/material';
-import DatePicker from '@mui/lab/DatePicker';
+import DatePicker from '@mui/lab/MobileDatePicker';
 
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
@@ -29,7 +29,7 @@ export default function WorkUpdate() {
     const [mop, setMop] = useState('');
     const [date, setDate] = useState(null);
     const [nxtWork, setNxtWork] = useState('');
-    const id = useSelector((state) => state.profileReducer.id);
+    // const id = useSelector((state) => state.profileReducer.id);
     const [wDetails, setWDetails] = useState('wdetails');
     const numbers = [1, 3, 6, 9, 12];
     const navigate = useNavigate();

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 // import { useCookies } from 'react-cookie';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { Icon } from '@iconify/react';
-import { Box, Grid, Container, Typography, Avatar, Stack, Button, Link, IconButton } from '@mui/material';
+import { Box, Grid, Container, Typography, Avatar, Stack, Link, IconButton } from '@mui/material';
 import {  useSelector } from "react-redux";
 
 import bxEdit from '@iconify/icons-eva/edit-2-outline';
@@ -76,6 +76,10 @@ export default function Profile() {
                             <Stack direction="row" justifyContent="space-between" spacing={2}>
                                 <Typography variant="h6">Email:    </Typography>
                                 <Typography variant="subtitle2">{data.email}  </Typography>
+                            </Stack>
+                            <Stack direction="row" justifyContent="space-between" spacing={2}>
+                                <Typography variant="h6">Enterprise:    </Typography>
+                                <Typography variant="subtitle2">{data.ent}  </Typography>
                             </Stack>
                             <hr />
                             <Stack direction="row" justifyContent="space-between" spacing={2}>

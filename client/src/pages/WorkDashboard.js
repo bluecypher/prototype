@@ -3,14 +3,14 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import { useSelector } from 'react-redux';
-import { Box, Grid, Container, Typography, Card, Stack, Button, CardHeader, Link, TextField, TableBody, TableRow, TableCell, TableContainer, Table } from '@mui/material';
+import { Box, Grid, Container, Typography, Card, Stack, Button, CardHeader, Link, TextField } from '@mui/material';
 import axios from 'axios';
-import DatePicker from '@mui/lab/DatePicker';
+import DatePicker from '@mui/lab/MobileDatePicker';
 
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import { format } from 'date-fns';
-import frLocale from 'date-fns/locale/fr';
+// import frLocale from 'date-fns/locale/fr';
 // components
 import { Icon } from '@iconify/react';
 
@@ -69,12 +69,16 @@ export default function DashboardApp() {
     <Page title="Dashboard">
       <Container maxWidth="xl">
         <Box sx={{ pb: 5 }}>
-          <Typography variant="h4">Work Dashboard</Typography>
+          <Stack direction="row" alignItems="center" justifyContent="space-between">
+            <Typography variant="h4">Work Dashboard</Typography>
+            <Stack alignItems="flex-end">
+              <Button alignSelf="right" onClick={addCalls}><Typography variant="h6">+Add calls</Typography></Button>
+            </Stack>
+          </Stack>
         </Box>
-        <Stack  alignItems="center">
+        <Stack sx={{ pb: 1 }} alignItems="center">
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
-
               label="Select Date"
               value={date}
               onChange={(newValue) => {
@@ -83,12 +87,11 @@ export default function DashboardApp() {
 
               }}
 
-              renderInput={(params) => {
-                console.log(params);
-                return (<TextField size="small" {...params} />)
-              }}
+              renderInput={(params) => 
+                // console.log(params);
+                <TextField size="small" {...params} />}
               inputFormat='dd MMM, yyyy'
-              onMonthChange={console.log('sc')}
+              // onMonthChange={console.log('sc')}
             />
           </LocalizationProvider>
         </Stack>
@@ -97,9 +100,7 @@ export default function DashboardApp() {
 
 
           <Grid item xs={12} md={6} lg={10}>
-            <Stack alignItems="flex-end">
-            <Button alignSelf="right" onClick={addCalls}>+Add calls</Button>
-            </Stack>
+            <Typography label="abd"/>
             <Card>
               <CardHeader sx={{ mb: 2 }} title="Planned Calls"
               />
@@ -110,7 +111,7 @@ export default function DashboardApp() {
                   workList.map((item) => (
                     // <Stack key={item.work_id} justifyContent='space-between' direction='row' spacing={{ xs: 2, lg: 5 }}>
                     <Grid key={item.work_id} sx={{ mb: 1, }} container spacing={2}>
-                      <Grid item xs={8} >
+                      <Grid item xs={6} >
                         <Link
                           component="button"
                           variant="body2"
@@ -120,7 +121,10 @@ export default function DashboardApp() {
                         </Link>
                       </Grid>
                       <Grid item xs={2} >
-                        <Link href={`tel:${item.cust_phone}`}><Icon icon="ph:phone-call-light" width={24} height={24} /></Link>
+                        <Link href={`tel:${item.cust_phone}`}><Icon icon="ph:phone-call-light" width={22} height={22} /></Link>
+                      </Grid>
+                      <Grid item xs={2} >
+                        <Link href={`whatsapp://send?phone=+91${item.cust_phone}`}><Icon icon="logos:whatsapp" width={22} height={22} /></Link>
                       </Grid>
                       {
                         data.user_type === 'O' ?
@@ -131,7 +135,7 @@ export default function DashboardApp() {
                               variant="body2"
                               onClick={(event) => editCalls(event, item.work_id)}
                             >
-                              <Icon icon="lucide:pencil" width={21} height={21} />
+                              <Icon icon="lucide:pencil" width={20} height={20} />
                             </Link>
                           </Grid>
                           :
@@ -147,8 +151,8 @@ export default function DashboardApp() {
                 }
               </Box >
             </Card >
-            
-            <Card sx={{my:1}}>
+
+            <Card sx={{ my: 1 }}>
               <CardHeader sx={{ mb: 2 }} title="Calls made"
               />
               <Box sx={{ mx: 2, mb: 2, overflow: 'auto', maxHeight: 250, }} dir="ltr">
@@ -162,7 +166,7 @@ export default function DashboardApp() {
                           variant="body2"
                           onClick={(event) => onPhoneClick(event, item.work_id)}
                         > */}
-                          <Typography variant="subtitle2">{item.name}</Typography>
+                        <Typography variant="subtitle2">{item.name}</Typography>
                         {/* </Link> */}
                       </Grid>
                       <Grid item xs={2} >
@@ -196,3 +200,4 @@ export default function DashboardApp() {
     </Page >
   );
 }
+

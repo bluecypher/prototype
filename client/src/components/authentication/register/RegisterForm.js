@@ -8,10 +8,10 @@ import { useFormik, Form, FormikProvider } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from "react-redux";
 // material
-import { Stack, TextField, Typography, Checkbox, Grid, MenuItem, Button } from '@mui/material';
+import { Stack, TextField, Typography, Checkbox, Grid, Button, } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // import { number } from 'prop-types';
-import PINCODE from '../../../utils/pincode';
+// import PINCODE from '../../../utils/pincode';
 
 const axios = require('axios');
 // ----------------------------------------------------------------------
@@ -41,7 +41,12 @@ export default function RegisterForm() {
         setServices(res.data.services);
         if (res.data.userType) {
           setUserType(res.data.userType.user_type);
+          formik.setFieldValue('fname',res.data.userType.first_name);
         }
+        
+          
+          
+        
         // const tm = new Date(Date.now())
         console.log("datetike:", res.data);
       })
@@ -180,14 +185,14 @@ export default function RegisterForm() {
     fname: Yup.string()
       .min(2, 'Too Short!')
       .max(50, 'Too Long!')
-      .required('First name is required'),
+      .required('First name is Required'),
 
-    add: Yup.string().required('Address is required'),
+    add: Yup.string().required('Address is Required'),
 
-    city: Yup.string().required('City is required'),
-    pin: Yup.string().required('PIN is required'),
-    state: Yup.string().required('State is required'),
-
+    city: Yup.string().required('City is Required'),
+    pin: Yup.string().required('PIN is Required'),
+    state: Yup.string().required('State is Required'),
+    ent: Yup.string().required("Enterprise Name is Required")
 
   });
 
@@ -270,7 +275,9 @@ export default function RegisterForm() {
       <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
         <Stack spacing={3}>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 2, sm: 4 }}>
+            
             <TextField
+              
               fullWidth
               value={fname}
               onChange={(e) => setFname(e.target.value)}

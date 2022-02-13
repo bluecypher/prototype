@@ -2,12 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 // import { useCookies } from 'react-cookie';
-import { Link as RouterLink, useNavigate, useParams, } from 'react-router-dom';
-import { Icon } from '@iconify/react';
-import { Box, Grid, Container, Typography, Avatar, Stack, Button, Link, IconButton } from '@mui/material';
+import { useParams, } from 'react-router-dom';
+// import { Icon } from '@iconify/react';
+import { Grid, Container, Typography, Stack, } from '@mui/material';
 import { useSelector } from "react-redux";
 
-import bxEdit from '@iconify/icons-eva/edit-2-outline';
+// import bxEdit from '@iconify/icons-eva/edit-2-outline';
 
 
 import Page from '../components/Page';
@@ -22,10 +22,7 @@ export default function CustomerProfile() {
     const [custInfo, setCustInfo] = useState({});
     const [workPlan, setWorkPlan] = useState([]);
     const [workHistory, setWorkHistory] = useState([]);
-    const navigate = useNavigate();
-    const onEdit = () => {
-        console.log('Edit');
-    }
+    // const navigate = useNavigate();
     useEffect(() => {
 
         axios.post('http://localhost:5000/users/getCustomerDetails', { 'custId': custId, 'spId': data.id })

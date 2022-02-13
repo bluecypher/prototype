@@ -95,9 +95,10 @@ router.post("/addMembers",  (req, res) => {
     const number = req.body.number;
     const pNumber = req.body.pNumber;
     const name = req.body.name;
+    const ent_id = req.body.ent_id;
 
     if (pNumber) {
-        dao.addMembers(name, number, pNumber).then((resp) => {
+        dao.addMembers(name, number, pNumber, ent_id).then((resp) => {
             console.log("Members details updated")
             res.status(200).send(resp);
         }).catch((err) => {
@@ -209,7 +210,7 @@ router.post("/getTodaysWork",  (req, res) => {
             
             res.status(200).send(resp);
         }).catch((err) => {
-            res.status(404).send("Error");
+            res.status(404).send( err);
         })
     }
     else{
@@ -308,11 +309,11 @@ router.post("/getPaymentDetails",  (req, res) => {
 
 router.post("/uploadQR",  (req, res) => {
     const id = req.body.id;
-    const qr = req.body.qr;
+    const vpa = req.body.vpa;
     
-    if (id && qr) {
+    if (id && vpa) {
         
-        dao.uploadQR(id,qr).then((resp) => {
+        dao.uploadQR(id,vpa).then((resp) => {
             
             res.status(200).send(resp);
         }).catch((err) => {
@@ -430,4 +431,17 @@ router.post("/deleteCustomers",  (req, res) => {
 
 
 })
+router.post("/getAmount",  (req, res) => {
+    const id = req.body.id;
+    if (id) {
+        dao.getAmount(id).then((resp) => {
+            res.status(200).send(resp);
+        }).catch((err) => {
+            res.status(404).send("Error");
+        })
+    }
+    else{
+        res.status(404).send('Not valid ID');
+    }
+});
 module.exports = router;

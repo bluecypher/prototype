@@ -21,6 +21,13 @@ export const changePrev=(page)=>({
     
 });
 
+export const addVPA = (data) => ({
+    type: "ADD_VPA",
+    payload: {
+        data
+    }
+});
+
 // export const changeLanguage=(lang)=>({
          
 //     type: "CHANGE_LANGUAGE",

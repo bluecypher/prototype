@@ -7,10 +7,10 @@ import { useCookies } from 'react-cookie';
 import { useFormik, Form, FormikProvider } from 'formik';
 import plusFill from '@iconify/icons-eva/plus-fill';
 // import { Link as RouterLink } from 'react-router-dom';
-import { styled } from '@mui/material/styles';
+// import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 // material
 import trash2Outline from '@iconify/icons-eva/trash-2-outline';
 import {
@@ -31,7 +31,7 @@ import {
   Alert,
   Link,
   IconButton,
-  OutlinedInput,
+  
 } from '@mui/material';
 
 // components
@@ -39,7 +39,9 @@ import Page from '../components/Page';
 // import Label from '../components/Label';
 import Scrollbar from '../components/Scrollbar';
 import SearchNotFound from '../components/SearchNotFound';
-import { UserListHead, UserListToolbar, UserMoreMenu } from '../components/_dashboard/user';
+import { UserListHead, UserListToolbar,
+  //  UserMoreMenu 
+  } from '../components/_dashboard/user';
 
 //
 
@@ -96,7 +98,7 @@ function applySortFilter(array, comparator, query) {
 }
 
 // let filteredUsers=[];
-export default function Customers({foo}) {
+export default function Customers() {
   const [USERLIST, setUSERLIST] = useState([]);
   const navigate = useNavigate();
   const id = useSelector((state) => state.profileReducer.id);
@@ -351,7 +353,7 @@ export default function Customers({foo}) {
 
   });
 
-  const { touched, errors, isSubmitting, handleSubmit, getFieldProps } = formik;
+  const { touched, errors, handleSubmit, getFieldProps } = formik;
 
   return (
     <Page title="Customers">

@@ -16,6 +16,8 @@ const initialData = {
     user_type: '',
     qr_code: '',
     entLogo: '',
+    vpa:'',
+    ent_id: '',
 }
 
 
@@ -24,7 +26,7 @@ const profileReducer = (state = initialData, action) => {
         case 'ADD_PROFILE': {
             const { data } = action.payload;
             return {
-
+                ...state,
                 fname: data[0],
                 lname: data[1],
                 number: data[2],
@@ -41,11 +43,12 @@ const profileReducer = (state = initialData, action) => {
                 id: data[13],
                 user_type: data[14],
                 entLogo: data[15],
-
+                ent_id: data[16],
             }
         }
         case 'DELETE_PROFILE': {
             return {
+
                 fname: '',
                 lname: '',
                 number: '',
@@ -63,7 +66,17 @@ const profileReducer = (state = initialData, action) => {
                 user_type: '',
                 qr_code: '',
                 entLogo: '',
+                vpa:'',
+                ent_id: '',
             }
+        }
+        case 'ADD_VPA': {
+            const { data } = action.payload;
+            return {
+                ...state,
+                vpa: data,
+            }
+            
         }
 
         default: return state;

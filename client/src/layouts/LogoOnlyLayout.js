@@ -1,7 +1,7 @@
 import { Link as RouterLink, Outlet } from 'react-router-dom';
 // material
 import { styled } from '@mui/material/styles';
-import { Link, Stack, Typography } from '@mui/material';
+import { Link, Stack} from '@mui/material';
 // components
 import Logo from '../components/Logo';
 

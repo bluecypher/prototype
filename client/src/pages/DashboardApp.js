@@ -1,10 +1,10 @@
 // material
 
-import { alpha, styled } from '@mui/material/styles';
-import React, { useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
+import React, { useEffect } from 'react';
 import { useCookies } from 'react-cookie';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { Box, Grid, Container, Typography, Card, Avatar, Stack, Button, Link } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { Box, Grid, Container, Typography, Card, Avatar, Stack, } from '@mui/material';
 import { useDispatch, useSelector } from "react-redux";
 import { addProfile } from '../actions/index';
 
@@ -45,20 +45,12 @@ const RootStyle = styled(Card)(({ theme }) => ({
 
 const DashboardApp = () => {
   const navigate = useNavigate();
-  // const [name, setName] = useState('');
-  // const [img, setImg] = useState();
-  // const [number, setNumber] = useState('');
   const [cookies, setCookie] = useCookies('');
 
   const data = useSelector((state) => state.profileReducer);
-  const lang = useSelector((state)=> state.languageReducer);
-  // const lname = useSelector((state) => state.profileReducer.lname);
-  // const number = useSelector((state) => state.profileReducer.number);
-  // const img = useSelector((state) => state.profileReducer.img);
   const dispatch = useDispatch();
   useEffect(() => {
-    //  function foo() {
-    // setNumber(localStorage.getItem('number'));
+    console.log('data', localStorage.getItem('number'));
     axios.get('http://localhost:5000/users/getData', { params: { 'number': localStorage.getItem('number') } })
 
       .then((res) => {
@@ -79,7 +71,7 @@ const DashboardApp = () => {
               // setImg(bufferOriginal.toString('utf8'));
             }
           }
-          console.log('img data', logoBuffer.toString('utf8'));
+          console.log('img data', logoBuffer?logoBuffer.toString('utf8'):'no logo');
           dispatch(addProfile([res.data[0].first_name,
             res.data[0].last_name,
             localStorage.getItem('number'), 
@@ -96,7 +88,7 @@ const DashboardApp = () => {
             res.data[0].user_mast_id,
             res.data[0].user_type,
             logoBuffer ? logoBuffer.toString('utf8') : null,
-
+            res.data[0].ent_id,
           ]));
           const fullName = `${res.data[0].first_name} ${res.data[0].last_name}`;
           const obj = JSON.stringify({'number':localStorage.getItem('number'),'name':fullName,'image':bufferOriginal ? bufferOriginal.toString('utf8') : null});
@@ -109,15 +101,19 @@ const DashboardApp = () => {
 
 
       })
+      .then(()=>{
+        
+        setTimeout(()=>{
+         console.log('Welcome!');
+         navigate('/dashboard/work');
+        }, 2000);
+      }
+      )
+      
       .catch((err) => {
-        console.log('err', typeof err);
+        console.log('err', err);
       });
-      function greet() {
-        console.log('Welcome!');
-        navigate('/dashboard/work');
-       }
-       setTimeout(greet, 2000);
-
+      
 
     // foo();
   },[localStorage.getItem('number')]);

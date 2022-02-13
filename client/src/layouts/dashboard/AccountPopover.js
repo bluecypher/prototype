@@ -2,19 +2,19 @@ import { Icon } from '@iconify/react';
 import { useRef, useState } from 'react';
 import homeFill from '@iconify/icons-eva/home-fill';
 import personFill from '@iconify/icons-eva/person-fill';
-import settings2Fill from '@iconify/icons-eva/settings-2-fill';
+// import settings2Fill from '@iconify/icons-eva/settings-2-fill';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useSelector } from "react-redux";
-import { useCookies } from 'react-cookie';
+// import { useCookies } from 'react-cookie';
 // material
 import { alpha } from '@mui/material/styles';
-import { Button, Box, Divider, MenuItem, Typography, Avatar, IconButton,Link } from '@mui/material';
+import { Button, Box, Divider, MenuItem, Typography, Avatar, IconButton } from '@mui/material';
 // components
 import MenuPopover from '../../components/MenuPopover';
 
 //
 // import account from '../../_mocks_/account';
-const axios = require('axios');
+// const axios = require('axios');
 
 // ----------------------------------------------------------------------
 
@@ -44,7 +44,6 @@ export default function AccountPopover() {
   
   const name = useSelector((state)=> state.profileReducer.name)
   const number = useSelector((state)=> state.profileReducer.number)
-  const img = useSelector((state)=> state.profileReducer.img)
   const logo = useSelector((state)=> state.profileReducer.entLogo)
   // const [cookies, setCookie, removeCookie] = useCookies('');
   const handleOpen = () => {

@@ -33,7 +33,7 @@ const getData = (number) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
 
-        db.query("select user_mast_id,email,phone,first_name,last_name,photo,address1,address2,city,pin,state,locality_of_work,highlights,enterprise,user_type,ent_logo from service_provider_master where phone =?", [number], (err, row) => {
+        db.query("SELECT spm.user_mast_id,spm.email,spm.phone,spm.first_name,spm.last_name,spm.photo,spm.address1,spm.address2,spm.city,spm.pin,spm.state,spm.locality_of_work,spm.highlights,em.ent_name AS enterprise,spm.user_type,em.ent_logo AS ent_logo,spm.enterprise_id AS ent_id FROM service_provider_master spm INNER JOIN enterprise_master em ON spm.enterprise_id=em.ent_id WHERE phone =?", [number], (err, row) => {
             if (!err) {
                 resolve(row);
                 console.log(row[0]);
@@ -94,12 +94,26 @@ const login_new = (number) => {
 const updateDetails = (data) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
-        db.query("SELECT user_mast_id FROM service_provider_master WHERE phone=?",
+        db.query("SELECT user_mast_id,enterprise_id,user_type FROM service_provider_master WHERE phone=?",
             [data.number],
             (err, row) => {
                 if (row && row.length) {
+                    if (row[0].user_type === 'O') {
+                        addServices(row[0].user_mast_id, data.services);
+                        db.query("UPDATE enterprise_master SET ent_name=?,ent_logo=? WHERE ent_id=?",
+                            [
+                                data.ent,
+                                data.entLogo,
+                                row[0].enterprise_id
+                            ], (err, res) => {
+                                if (err) {
+
+                                    reject(err);
+                                }
+                            })
+                    }
                     db.query(
-                        "UPDATE service_provider_master SET status=?,email=?,phone=?,first_name=?,last_name=?,address1=?,address2=?,city=?,pin=?,state=?,photo=?,locality_of_work=?,highlights=?,enterprise=?,ent_logo=?,last_updated=? where phone =?",
+                        "UPDATE service_provider_master SET status=?,email=?,phone=?,first_name=?,last_name=?,address1=?,address2=?,city=?,pin=?,state=?,photo=?,locality_of_work=?,highlights=?,last_updated=? where phone =?",
                         [
                             'F',
                             data.email,
@@ -114,8 +128,6 @@ const updateDetails = (data) => {
                             data.img,
                             data.locality,
                             data.hghlts,
-                            data.ent,
-                            data.entLogo,
                             new Date(Date.now()),
                             data.number
 
@@ -123,44 +135,56 @@ const updateDetails = (data) => {
                         (err, res) => {
                             if (!err) {
 
-                                console.log("Data updated Successfully ", data.services);
-                                addServices(row[0].user_mast_id, data.services);
+                                // console.log("Data updated Successfully ", data.services);
+
                                 resolve();
                             } else reject(err);
                         }
                     );
                 }
                 else {
-                    db.query("INSERT INTO service_provider_master(status,email,phone,first_name,last_name,address1,address2,city,pin,state,photo,locality_of_work,highlights,user_type,enterprise,ent_logo,created_on,last_updated) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                    db.query("INSERT INTO enterprise_master(ent_name,ent_logo) VALUES(?,?)",
                         [
-                            'F',
-                            data.email,
-                            data.number,
-                            data.fname,
-                            data.lname,
-                            data.addr1,
-                            data.addr2,
-                            data.city,
-                            data.pin,
-                            data.state,
-                            data.img,
-                            data.locality,
-                            data.hghlts,
-                            'O',
                             data.ent,
-                            data.entLogo,
-                            new Date(Date.now()),
-                            new Date(Date.now())
+                            data.entLogo
                         ],
                         (err, res) => {
                             if (!err) {
-                                console.log("Data inserted Successfully ", res);
-                                addServices(res.insertId, data.services);
+                                db.query("INSERT INTO service_provider_master(status,email,phone,first_name,last_name,address1,address2,city,pin,state,photo,locality_of_work,highlights,user_type,enterprise_id,created_on,last_updated) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                                    [
+                                        'F',
+                                        data.email,
+                                        data.number,
+                                        data.fname,
+                                        data.lname,
+                                        data.addr1,
+                                        data.addr2,
+                                        data.city,
+                                        data.pin,
+                                        data.state,
+                                        data.img,
+                                        data.locality,
+                                        data.hghlts,
+                                        'O',
+                                        res.insertId,
+                                        new Date(Date.now()),
+                                        new Date(Date.now())
+                                    ],
+                                    (err, res) => {
+                                        if (!err) {
+                                            console.log("Data inserted Successfully ", res);
+                                            addServices(res.insertId, data.services);
 
-                                resolve();
-                            } else reject(err);
-                        }
-                    )
+                                            resolve();
+                                        } else reject(err);
+                                    }
+                                )
+
+                            }
+                            else {
+                                reject(err);
+                            }
+                        })
                 }
             })
         // db.end();
@@ -199,11 +223,11 @@ const addServices = (user_id, serv_ids) => {
     });
 
 };
-const addMembers = (name, number, pNumber) => {
+const addMembers = (name, number, pNumber, ent_id) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
 
-        db.query("select user_mast_id,user_type from service_provider_master where phone=?", [number], (err, row) => {
+        db.query("SELECT user_mast_id,user_type FROM service_provider_master WHERE phone=?", [number], (err, row) => {
             if (row && row.length) {
                 try {
                     if (err) {
@@ -228,23 +252,34 @@ const addMembers = (name, number, pNumber) => {
                     reject("err");
                 }
             } else {
-                db.query("INSERT INTO service_provider_master(status,phone,user_type,created_on,last_updated) VALUES(?,?,?,?,?)", [
+                db.query("INSERT INTO service_provider_master(first_name,status,phone,user_type,enterprise_id,created_on,last_updated) VALUES(?,?,?,?,?,?,?)", [
+                    name,
                     'U',
                     number,
                     'M',
+                    ent_id,
                     new Date(Date.now()),
                     new Date(Date.now())
                 ], (err, row) => {
                     if (!err) {
                         console.log('insert member ', row)
+                        db.query("SELECT spd.serv_id FROM service_provider_detail spd INNER JOIN service_provider_master spm USING(user_mast_id) WHERE spm.phone=?", [pNumber], (err, prow) => {
+                            let servIds = [];
+                            prow.forEach(element => {
+                                servIds.push(element.serv_id);
+                            });
+
+                            addServices(row.insertId, servIds);
+                        })
                         mapOwnertoTeam(name, pNumber, number, row.insertId);
                     }
                     else {
                         console.log(err);
-                        reject(err);
+                        resolve(err.sqlMessage);
                     }
+                    resolve("success");
                 });
-                resolve("success");
+
                 // console.log("No Such User Exists");
             }
         });
@@ -380,14 +415,14 @@ const getCustomersList = (id) => {
 const addWork = (spId, custId, date, todos, servId, asgnTo) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
-
+        console.log(date);
         db.query("INSERT INTO service_provider_work_list(service_provider_id,work_type,work_plan_date,cust_mast_id,work_desc,assign_to,status,created_on,last_updated) VALUES(?,?,?,?,?,?,?,?,?)", [
             spId,
             servId,
             new Date(date),
             custId,
             todos,
-            asgnTo?asgnTo:spId,
+            asgnTo ? asgnTo : spId,
             'O',
             new Date(Date.now()),
             new Date(Date.now())
@@ -410,7 +445,10 @@ const getTodaysWork = (id, date) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
 
-        db.query("SELECT spwl.work_list_id AS work_id, spcm.cust_name AS name, spcm.address1 AS addr, spcm.cust_phone, spwl.status  FROM service_provider_work_list spwl INNER JOIN service_provider_customer_master spcm USING(cust_mast_id) WHERE (spwl.service_provider_id=? OR spwl.assign_to=?) AND DATE(spwl.work_plan_date)=DATE(?)", [id,id,date], (err, row) => {
+        const dateObj = new Date(date);
+        
+        console.log('typeof', dateObj)
+        db.query("SELECT spwl.work_list_id AS work_id, spcm.cust_name AS name, spcm.address1 AS addr, spcm.cust_phone, spwl.status  FROM service_provider_work_list spwl INNER JOIN service_provider_customer_master spcm USING(cust_mast_id) WHERE (spwl.service_provider_id=? OR spwl.assign_to=?) AND DATE(spwl.work_plan_date)=DATE(?)", [id, id, dateObj], (err, row) => {
             if (!err) {
                 console.log('row', row);
                 resolve(row);
@@ -480,8 +518,8 @@ const updateWork = (workId, name, serv, amnt, wDetails, pmtMethod, nxtDate, nxtW
                     console.log('edit call')
                     resolve("Success");
                 }
-                else{
-                    console.log('edit call error',err);
+                else {
+                    console.log('edit call error', err);
                     reject(err);
                 }
             }
@@ -553,8 +591,6 @@ const getPaymentDetails = (id) => {
                                 }
                             });
                     }
-
-
                 }
                 else {
                     reject(err)
@@ -564,6 +600,25 @@ const getPaymentDetails = (id) => {
     });
 };
 
+const getAmount = (id) => {
+    return new Promise((resolve, reject) => {
+        const db = getconnection();
+        db.query("SELECT amount FROM service_provider_work_list WHERE work_list_id=?", [
+            id
+        ],
+            (err, row) => {
+                if (!err) {
+                    console.log(row);
+                    resolve(row);
+                }
+                else{
+                    reject(err);
+                }
+            }
+        );
+    });
+}
+     
 const getQRCode = (id) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
@@ -582,11 +637,11 @@ const getQRCode = (id) => {
     });
 }
 
-const uploadQR = (id, qr) => {
+const uploadQR = (id, vpa) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
         db.query("UPDATE service_provider_master SET qr_code=? WHERE user_mast_id=?", [
-            qr,
+            vpa,
             id
         ],
             (err, row) => {
@@ -699,7 +754,7 @@ const workTillToday = (id) => {
 const getUserType = (number) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
-        db.query('SELECT user_type FROM service_provider_master WHERE phone=?', [
+        db.query('SELECT user_type, first_name FROM service_provider_master WHERE phone=?', [
             number
         ], (err, row) => {
             if (!err) {
@@ -762,4 +817,5 @@ module.exports = {
     workTillToday,
     getUserType,
     deleteCustomers,
+    getAmount,
 };

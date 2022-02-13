@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from "react-redux";
-import { Box, Grid, Container, Typography, Stack, Button, FormControl, InputLabel, Select, MenuItem, TextField } from '@mui/material';
+import { Box, Container, Typography, Stack } from '@mui/material';
 
 import axios from 'axios';
 // components
@@ -15,7 +15,7 @@ export default function WorkToday() {
     // const [selectedService, setSelectedService] = useState("");
     const [onlineAmnt, setOnlineAmnt] = useState(0);
     const [cashAmnt, setCashAmnt] = useState(0);
-    const [cookies, setCookies] = useCookies();
+    const [cookies] = useCookies();
     const id = useSelector((state) => state.profileReducer.id);
     const navigate = useNavigate();
     useEffect(() => {
