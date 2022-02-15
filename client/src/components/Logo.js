@@ -19,9 +19,9 @@ export default function Logo({ sx }) {
         data.fname ?
           <Typography fontFamily='"Segoe UI"' variant="h3">{data.fname} सहायक</Typography>
           :
-          <Stack alignItems="center"><Avatar sx={{ width: 30, height: 30 }} src="/static/logo.png" alt="sahayak" />
-            <Typography fontFamily='"Segoe UI"' variant="h1">सहायक</Typography></Stack >
+          <Stack alignItems="center"><Avatar sx={{ width: 42, height: 42 }} src="/static/logo.png" alt="sahayak" />
+            <Typography fontFamily='"Segoe UI"' variant="h1">   सहायक</Typography></Stack >
       }
-    </Box>
+    </Box >
   );
 }

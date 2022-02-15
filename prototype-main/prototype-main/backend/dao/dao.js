@@ -33,7 +33,7 @@ const getData = (number) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
 
-        db.query("SELECT spm.user_mast_id,spm.email,spm.phone,spm.first_name,spm.last_name,spm.photo,spm.address1,spm.address2,spm.city,spm.pin,spm.state,spm.locality_of_work,spm.highlights,em.ent_name AS enterprise,spm.user_type,em.ent_logo AS ent_logo,spm.enterprise_id AS ent_id FROM service_provider_master spm INNER JOIN enterprise_master em ON spm.enterprise_id=em.ent_id WHERE phone =?", [number], (err, row) => {
+        db.query("SELECT spm.user_mast_id,spm.email,spm.phone,spm.first_name,spm.last_name,spm.photo,spm.address1,spm.address2,spm.city,spm.pin,spm.state,spm.locality_of_work,spm.highlights,em.ent_name AS enterprise,spm.user_type,em.ent_logo AS ent_logo,spm.enterprise_id AS ent_id,spm.qr_code AS vpa FROM service_provider_master spm INNER JOIN enterprise_master em ON spm.enterprise_id=em.ent_id WHERE phone =?", [number], (err, row) => {
             if (!err) {
                 resolve(row);
                 console.log(row[0]);
@@ -446,7 +446,7 @@ const getTodaysWork = (id, date) => {
         const db = getconnection();
 
         const dateObj = new Date(date);
-        
+
         console.log('typeof', dateObj)
         db.query("SELECT spwl.work_list_id AS work_id, spcm.cust_name AS name, spcm.address1 AS addr, spcm.cust_phone, spwl.status  FROM service_provider_work_list spwl INNER JOIN service_provider_customer_master spcm USING(cust_mast_id) WHERE (spwl.service_provider_id=? OR spwl.assign_to=?) AND DATE(spwl.work_plan_date)=DATE(?)", [id, id, dateObj], (err, row) => {
             if (!err) {
@@ -611,14 +611,14 @@ const getAmount = (id) => {
                     console.log(row);
                     resolve(row);
                 }
-                else{
+                else {
                     reject(err);
                 }
             }
         );
     });
 }
-     
+
 const getQRCode = (id) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();

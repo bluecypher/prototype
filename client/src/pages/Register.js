@@ -9,7 +9,6 @@ import Page from '../components/Page';
 import { MHidden } from '../components/@material-extend';
 import { RegisterForm } from '../components/authentication/register';
 
-
 // ----------------------------------------------------------------------
 
 const RootStyle = styled(Page)(({ theme }) => ({
@@ -64,12 +63,8 @@ export default function Register() {
             <Typography variant="h3" gutterBottom>
               Get started.
             </Typography>
-            <Typography sx={{ color: 'text.secondary' }}>
-              Enter your details.
-            </Typography>
+            <Typography sx={{ color: 'text.secondary' }}>Enter your details.</Typography>
           </Box>
-
-          
 
           <RegisterForm />
 

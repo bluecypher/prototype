@@ -1,20 +1,15 @@
-
-
 import React, { useState, useEffect } from 'react';
 // import { useCookies } from 'react-cookie';
-import { useParams, } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 // import { Icon } from '@iconify/react';
-import { Grid, Container, Typography, Stack, } from '@mui/material';
-import { useSelector } from "react-redux";
+import { Grid, Container, Typography, Stack } from '@mui/material';
+import { useSelector } from 'react-redux';
 
 // import bxEdit from '@iconify/icons-eva/edit-2-outline';
 
-
 import Page from '../components/Page';
 
-
 const axios = require('axios');
-
 
 export default function CustomerProfile() {
     const { custId } = useParams();
@@ -24,47 +19,43 @@ export default function CustomerProfile() {
     const [workHistory, setWorkHistory] = useState([]);
     // const navigate = useNavigate();
     useEffect(() => {
-
-        axios.post('/users/getCustomerDetails', { 'custId': custId, 'spId': data.id })
+        axios
+            .post('/users/getCustomerDetails', { custId: custId, spId: data.id })
             .then((res) => {
-                console.log("result", res);
+                console.log('result', res);
                 setCustInfo(res.data.info[0]);
                 setWorkPlan(res.data.work);
                 setWorkHistory(res.data.history);
             })
             .catch((err) => {
-                console.log("Error", err);
-            })
-    }, [])
+                console.log('Error', err);
+            });
+    }, []);
     return (
         <Page title="Customer Profile">
             <Container maxWidth="xl">
                 <Stack direction="row" justifyContent="space-between">
-
                     <Typography variant="h4">Customer Profile</Typography>
 
                     {/* <IconButton onClick={onEdit} size="large">
                         <Icon icon={bxEdit} />
                     </IconButton> */}
                 </Stack>
-                <Grid container spacing={3} >
-
-
-                    <Grid item xs={12} sm={6} md={12} alignItems='center'>
+                <Grid container spacing={3}>
+                    <Grid item xs={12} sm={6} md={12} alignItems="center">
                         <Stack spacing={2}>
                             <hr />
                             <Stack direction="row" justifyContent="space-between" spacing={2}>
-
-                                <Typography variant="h6">Name:    </Typography>
-                                <Typography variant="subtitle2">{custInfo.name}  </Typography>
+                                <Typography variant="h6">Name: </Typography>
+                                <Typography variant="subtitle2">{custInfo.name} </Typography>
                             </Stack>
                             <Stack direction="row" justifyContent="space-between" spacing={2}>
-                                <Typography variant="h6">Address:    </Typography>
-                                <Typography variant="subtitle2">{custInfo.add1}  </Typography>
+                                <Typography variant="h6">Address: </Typography>
+                                <Typography variant="subtitle2">{custInfo.add1} </Typography>
                             </Stack>
                             <Stack direction="row" justifyContent="space-between" spacing={2}>
-                                <Typography variant="h6">Phone number:    </Typography>
-                                <Typography variant="subtitle2">{custInfo.number}  </Typography>
+                                <Typography variant="h6">Phone number: </Typography>
+                                <Typography variant="subtitle2">{custInfo.number} </Typography>
                             </Stack>
                             {/* <Stack direction="row" justifyContent="space-between" spacing={2}>
                                 <Typography variant="h6">Email:    </Typography>
@@ -73,54 +64,44 @@ export default function CustomerProfile() {
                             <hr />
                             <Stack spacing={2}>
                                 <Typography variant="h6">Work History</Typography>
-                                {
-                                    workHistory.length ?
-                                        workHistory.map((item) =>
-                                            <Stack key={item.work_list_id} spacing={1}>
-
-                                                <Stack direction="row" spacing={2} justifyContent="space-between">
-                                                    <Typography variant="body">{item.serv_name}</Typography>
-                                                    <Typography variant="subtitle">{item.plan.slice(0, 10)}</Typography>
-
-                                                </Stack>
-                                                <Typography variant="body">{item.work_desc}</Typography>
-                                                <Stack direction="row" spacing={1}>
-                                                    <Typography variant="body">&#8377;{item.amnt} received through</Typography>
-                                                    {item.mode === 'C' ?
-                                                        <Typography variant="body">cash payment</Typography>
-                                                        :
-                                                        <Typography variant="body">online payment</Typography>
-                                                    }
-                                                </Stack>
+                                {workHistory.length ? (
+                                    workHistory.map((item) => (
+                                        <Stack key={item.work_list_id} spacing={1}>
+                                            <Stack direction="row" spacing={2} justifyContent="space-between">
+                                                <Typography variant="body">{item.serv_name}</Typography>
+                                                <Typography variant="subtitle">{item.plan.slice(0, 10)}</Typography>
                                             </Stack>
-                                        )
-                                        :
-                                        <Typography variant="subtitle2">Nothing to show here!!</Typography>
-
-
-                                }
+                                            <Typography variant="body">{item.work_desc}</Typography>
+                                            <Stack direction="row" spacing={1}>
+                                                <Typography variant="body">&#8377;{item.amnt} received through</Typography>
+                                                {item.mode === 'C' ? (
+                                                    <Typography variant="body">cash payment</Typography>
+                                                ) : (
+                                                    <Typography variant="body">online payment</Typography>
+                                                )}
+                                            </Stack>
+                                        </Stack>
+                                    ))
+                                ) : (
+                                    <Typography variant="subtitle2">Nothing to show here!!</Typography>
+                                )}
                             </Stack>
                             <hr />
                             <Stack spacing={2}>
                                 <Typography variant="h6">Next Calls</Typography>
-                                {
-                                    workPlan.length ?
-                                        workPlan.map((item) =>
-                                            <Stack key={item.work_list_id} spacing={1}>
-
-                                                <Stack direction="row" spacing={2} justifyContent="space-between">
-                                                    <Typography variant="body">{item.serv_name} </Typography>
-                                                    <Typography variant="subtitle">{item.plan.slice(0, 10)}</Typography>
-
-                                                </Stack>
-                                                <Typography variant="body">{item.work_desc}</Typography>
+                                {workPlan.length ? (
+                                    workPlan.map((item) => (
+                                        <Stack key={item.work_list_id} spacing={1}>
+                                            <Stack direction="row" spacing={2} justifyContent="space-between">
+                                                <Typography variant="body">{item.serv_name} </Typography>
+                                                <Typography variant="subtitle">{item.plan.slice(0, 10)}</Typography>
                                             </Stack>
-                                        )
-                                        :
-                                        <Typography variant="subtitle2">Nothing to show here!!</Typography>
-
-
-                                }
+                                            <Typography variant="body">{item.work_desc}</Typography>
+                                        </Stack>
+                                    ))
+                                ) : (
+                                    <Typography variant="subtitle2">Nothing to show here!!</Typography>
+                                )}
                             </Stack>
                             {/* <Stack direction="row" justifyContent="space-between" spacing={2}>
 
@@ -133,12 +114,10 @@ export default function CustomerProfile() {
                                 }
                             </Stack> */}
                             <hr />
-
-
                         </Stack>
                     </Grid>
                 </Grid>
             </Container>
         </Page>
-    )
+    );
 }

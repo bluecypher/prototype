@@ -16,7 +16,7 @@ const initialData = {
     user_type: '',
     qr_code: '',
     entLogo: '',
-    vpa:'',
+    vpa: '',
     ent_id: '',
 }
 
@@ -44,6 +44,7 @@ const profileReducer = (state = initialData, action) => {
                 user_type: data[14],
                 entLogo: data[15],
                 ent_id: data[16],
+                vpa: data[17],
             }
         }
         case 'DELETE_PROFILE': {
@@ -66,7 +67,7 @@ const profileReducer = (state = initialData, action) => {
                 user_type: '',
                 qr_code: '',
                 entLogo: '',
-                vpa:'',
+                vpa: '',
                 ent_id: '',
             }
         }
@@ -76,7 +77,7 @@ const profileReducer = (state = initialData, action) => {
                 ...state,
                 vpa: data,
             }
-            
+
         }
 
         default: return state;

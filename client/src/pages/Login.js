@@ -1,4 +1,3 @@
-
 import * as Yup from 'yup';
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
@@ -9,8 +8,16 @@ import { useCookies } from 'react-cookie';
 
 import { styled } from '@mui/material/styles';
 import {
-  Card, Stack, Link, Container, Typography, Avatar, CardActionArea, Alert,
-  TextField, Icon
+  Card,
+  Stack,
+  Link,
+  Container,
+  Typography,
+  Avatar,
+  CardActionArea,
+  Alert,
+  TextField,
+  Icon
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
@@ -66,49 +73,54 @@ export default function Login() {
   const [tmplt, setTmplt] = useState('OTP to login to Sahayak is ');
   const data = useSelector((state) => state.profileReducer);
   const LoginSchema = Yup.object().shape({
-    number: Yup.number('Mobile number must be numeric.').min(1000000000, 'Too Short. Please enter a valid number.').required('Mobile number is required'),
+    number: Yup.number('Mobile number must be numeric.')
+      .min(1000000000, 'Too Short. Please enter a valid number.')
+      .required('Mobile number is required')
     // password: Yup.string().required('OTP is required')
   });
   const handleSubmit2 = () => {
     if (inputOtp === '123456') {
-      axios.post('/users/login', {
-        'number': values.number
-      },
-        {
-          'access-control-allow-origin': '*'
-        })
+      axios
+        .post(
+          '/users/login',
+          {
+            number: values.number
+          },
+          {
+            'access-control-allow-origin': '*'
+          }
+        )
         .then((response) => {
-          console.log(response)
-          if (response.data.res === "success") {
-
+          console.log(response);
+          if (response.data.res === 'success') {
             localStorage.setItem('number', values.number);
-            setCookie("token", response.data.jwToken, { path: '/', expires: new Date(Date.now() + 1000 * 3600 * 24) });
+            setCookie('token', response.data.jwToken, {
+              path: '/',
+              expires: new Date(Date.now() + 1000 * 3600 * 24)
+            });
 
             if (response.data.status === 'F') {
               navigate('/dashboard', { replace: true });
-            }
-            else {
+            } else {
               navigate('/register', { replace: true });
             }
           }
         })
         .catch((e) => {
-          console.log("Error", e);
-        })
-    }
-    else {
+          console.log('Error', e);
+        });
+    } else {
       setError(true);
       console.log('less than 6');
     }
-  }
+  };
 
   useEffect(() => {
     console.log('number', data.number);
     if (cookies.token && data.number) {
-
       navigate('/dashboard', { replace: true });
     }
-  }, [data])
+  }, [data]);
 
   const formik = useFormik({
     initialValues: {
@@ -121,7 +133,7 @@ export default function Login() {
       // console.log(event);
 
       const temp = Math.floor(100000 + Math.random() * 900000).toString();
-      const msg = (tmplt.concat(temp, ". Do not share it with anyone."));
+      const msg = tmplt.concat(temp, '. Do not share it with anyone.');
       setOTP(temp);
       setShowSubmit(true);
       console.log(msg);
@@ -144,20 +156,14 @@ export default function Login() {
     }
   });
   const profileClick = () => {
-
-    formik.setFieldValue('number', prevData.number)
-      .then((res) => {
-        if (!showSubmit)
-          formik.handleSubmit();
-      });
-
-  }
+    formik.setFieldValue('number', prevData.number).then((res) => {
+      if (!showSubmit) formik.handleSubmit();
+    });
+  };
   const { errors, touched, values, isSubmitting, handleSubmit, getFieldProps } = formik;
 
   return (
     <RootStyle title="Login">
-
-
       <MHidden width="mdDown">
         <SectionStyle>
           <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
@@ -170,51 +176,49 @@ export default function Login() {
       <Container maxWidth="sm">
         <ContentStyle>
           <Stack sx={{ mb: 5 }}>
-            <Stack sx={{ mb: 5 }} alignItems='center'>
-              {
-                prevData &&
-                <Card sx={{ maxWidth: 345, p: 1, boxShadow: 10 }} >
+            <Stack sx={{ mb: 5 }} alignItems="center">
+              {prevData && (
+                <Card sx={{ maxWidth: 345, p: 1, boxShadow: 10 }}>
                   <CardActionArea onClick={profileClick}>
-                    <Stack spacing={1} alignItems='center'>
-                      <Stack alignItems='center' >
-                        {
-                          prevData.image ?
-                            <Avatar src={prevData.image} sx={{ width: 50, height: 50, alignSelf: 'center', border: 2 }} alt="photoURL" />
-                            :
-                            <Avatar sx={{ width: 50, height: 50, alignSelf: 'center' }} alt="photoURL" />
-                        }
+                    <Stack spacing={1} alignItems="center">
+                      <Stack alignItems="center">
+                        {prevData.image ? (
+                          <Avatar
+                            src={prevData.image}
+                            sx={{ width: 50, height: 50, alignSelf: 'center', border: 2 }}
+                            alt="photoURL"
+                          />
+                        ) : (
+                          <Avatar
+                            sx={{ width: 50, height: 50, alignSelf: 'center' }}
+                            alt="photoURL"
+                          />
+                        )}
                       </Stack>
 
-                      <Typography variant="subtitle2">
-                        {prevData.name}
-                      </Typography>
-
+                      <Typography variant="subtitle2">{prevData.name}</Typography>
                     </Stack>
                   </CardActionArea>
-
-
                 </Card>
-              }
+              )}
             </Stack>
             {/* <Link href={`whatsapp://send?phone=+91${formik.values.number}`}>calls</Link> */}
             <Typography variant="h4" gutterBottom>
               Log in
             </Typography>
-            <Typography sx={{ color: 'text.secondary' }}>Please provide your details below.</Typography>
+            <Typography sx={{ color: 'text.secondary' }}>
+              Please provide your details below.
+            </Typography>
           </Stack>
-
 
           {/* <LoginForm /> */}
           <Stack spacing={3}>
-
             <FormikProvider value={formik}>
               <Form id="myForm" autoComplete="off" noValidate onSubmit={handleSubmit}>
                 <Stack spacing={3}>
                   <TextField
                     fullWidth
-                    inputProps={{ maxLength: 10, }}
-
-
+                    inputProps={{ maxLength: 10 }}
                     label="Mobile number"
                     {...getFieldProps('number')}
                     error={Boolean(touched.number && errors.number)}
@@ -231,23 +235,21 @@ export default function Login() {
                     variant="contained"
                     disabled={showSubmit}
                   // loading={isSubmitting}
-
                   >
                     Get OTP
                   </LoadingButton>
                 </Stack>
               </Form>
             </FormikProvider>
-            {showSubmit &&
+            {showSubmit && (
               <Stack spacing={3}>
                 <TextField
                   fullWidth
-
                   type={showPassword ? 'text' : 'password'}
                   label="OTP"
                   // {...getFieldProps('password')}
                   inputProps={{
-                    maxLength: 6,
+                    maxLength: 6
                     // endAdornment: (
                     //   <InputAdornment position="end">
                     //     <IconButton onClick={handleShowPassword} edge="end">
@@ -255,7 +257,6 @@ export default function Login() {
                     //     </IconButton>
                     //   </InputAdornment>
                     // )
-
                   }}
                   value={inputOtp}
                   onChange={(event) => setInputOtp(event.target.value)}
@@ -263,14 +264,11 @@ export default function Login() {
                 // error={Boolean(touched.password && errors.password)}
                 // helperText={touched.password && errors.password}
                 />
-                {
-                  error &&
+                {error && (
                   <Stack m={2}>
                     <Alert severity="error">OTP does not match!</Alert>
                   </Stack>
-                }
-
-
+                )}
 
                 <Stack direction="row" alignItems="center" justifyContent="flex-end" sx={{ my: 2 }}>
                   {/* <FormControlLabel
@@ -295,9 +293,8 @@ export default function Login() {
                   Sign In
                 </LoadingButton>
               </Stack>
-            }
+            )}
           </Stack>
-
         </ContentStyle>
       </Container>
 
@@ -326,7 +323,5 @@ export default function Login() {
   </ContentStyle>
 </Container> */}
     </RootStyle>
-
-
   );
 }

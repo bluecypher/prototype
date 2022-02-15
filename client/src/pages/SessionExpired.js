@@ -23,40 +23,33 @@ const RootStyle = styled(Page)(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function SessionExpired() {
-
   const [cookies, setCookie, removeCookie] = useCookies();
   const dispatch = useDispatch();
   useEffect(() => {
-    console.log('sess')
+    console.log('sess');
     dispatch(deleteProfile());
     removeCookie('token', { path: '/' });
     localStorage.removeItem('number');
 
     localStorage.removeItem('persist:root');
-
-  }, [])
+  }, []);
   return (
     <RootStyle title="Session Expired">
       <Container>
         {/* <MotionContainer initial="initial" open> */}
         <Box sx={{ maxWidth: 480, margin: 'Auto', textAlign: 'center' }}>
-
           <Typography variant="h3" paragraph>
             You have been logged out!
             {/* सहायक का उपयोग करने के लिए धन्यवाद । */}
           </Typography>
 
-          <Typography sx={{ color: 'text.secondary' }}>
-            Please login again to continue.
-          </Typography>
-
+          <Typography sx={{ color: 'text.secondary' }}>Please login again to continue.</Typography>
 
           <Box
             component="img"
             src="/static/logo.png"
             sx={{ height: 160, mx: 'auto', my: { xs: 5, sm: 10 } }}
           />
-
 
           <Button to="/" size="large" variant="contained" component={RouterLink}>
             Go to Login

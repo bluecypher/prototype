@@ -9,7 +9,7 @@ import plusFill from '@iconify/icons-eva/plus-fill';
 import { useFormik, Form, FormikProvider } from 'formik';
 // import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from "react-redux";
+import { useSelector } from 'react-redux';
 import trash2Outline from '@iconify/icons-eva/trash-2-outline';
 import close from '@iconify/icons-ant-design/close-circle-outlined';
 // material
@@ -39,8 +39,9 @@ import Page from '../components/Page';
 import Scrollbar from '../components/Scrollbar';
 import SearchNotFound from '../components/SearchNotFound';
 import {
-  UserListHead, UserListToolbar,
-  //  UserMoreMenu 
+  UserListHead,
+  UserListToolbar
+  //  UserMoreMenu
 } from '../components/_dashboard/user';
 // import data from '@iconify/icons-eva/menu-2-fill';
 
@@ -53,18 +54,9 @@ const axios = require('axios');
 
 // ----------------------------------------------------------------------
 
-const TABLE_HEAD = [
-  { id: 'name', label: 'Name', alignRight: false },
-
-  { id: 'number', },
-  { id: '' }
-];
-
-
-
+const TABLE_HEAD = [{ id: 'name', label: 'Name', alignRight: false }, { id: 'number' }, { id: '' }];
 
 // ----------------------------------------------------------------------
-
 
 // const SearchStyle = styled(OutlinedInput)(({ theme }) => ({
 //   width: 320,
@@ -120,24 +112,21 @@ export default function User() {
   const [refresh, setRefresh] = useState(false);
   const [success, setSuccess] = useState(false);
   const AddSchema = Yup.object().shape({
-    name: Yup.string()
-      .min(2, 'Too Short!')
-      .max(50, 'Too Long!')
-      .required('Name is required'),
+    name: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('Name is required'),
 
-    phone: Yup.number('Mobile number must be numeric.').min(1000000000, 'Please enter a valid number.').required('Number is required').typeError('Mobile number must be numeric.'),
-
-
+    phone: Yup.number('Mobile number must be numeric.')
+      .min(1000000000, 'Please enter a valid number.')
+      .required('Number is required')
+      .typeError('Mobile number must be numeric.')
   });
   useEffect(() => {
     console.log('redux_id:', profileData);
-    axios.get('/users/getMembers', { params: { 'id': profileData.id } })
+    axios
+      .get('/users/getMembers', { params: { id: profileData.id } })
       .then((res) => {
-
         if (!Object.keys(cookies).length) {
-          navigate('/sessionExpired')
-        }
-        else {
+          navigate('/sessionExpired');
+        } else {
           // let uList = [];
           // uList = res.data.map(item => {
 
@@ -153,15 +142,12 @@ export default function User() {
           // });
           console.log('res data:', res.data);
           setUSERLIST(res.data);
-
         }
       })
       .catch((err) => {
         console.log('err', err);
-      })
+      });
   }, [error, success, profileData, refresh]);
-
-
 
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
@@ -172,8 +158,6 @@ export default function User() {
   const [number, setNumber] = useState('');
   const [tName, setTName] = useState('');
   const [showAdd, setShowAdd] = useState(false);
-
-
 
   const [cookies, setCookies] = useCookies('');
   const handleRequestSort = (event, property) => {
@@ -192,14 +176,12 @@ export default function User() {
   };
 
   const handleDelete = (event, memberId) => {
-
-    axios.post('/users/deleteMembers', { 'parent_id': profileData.id, 'member_id': memberId })
+    axios
+      .post('/users/deleteMembers', { parent_id: profileData.id, member_id: memberId })
       .then((res) => {
-
         if (!Object.keys(cookies).length) {
-          navigate('/sessionExpired')
-        }
-        else {
+          navigate('/sessionExpired');
+        } else {
           setRefresh(true);
           setRefresh(false);
           console.log('res:', res);
@@ -207,9 +189,9 @@ export default function User() {
       })
       .catch((err) => {
         console.log('err', err);
-      })
+      });
     // console.log('number34:', n);
-  }
+  };
 
   const handleClick = (event, name) => {
     const selectedIndex = selected.indexOf(name);
@@ -255,13 +237,11 @@ export default function User() {
       setShowAdd(false);
       setError(false);
       setSuccess(false);
-    }
-    else {
+    } else {
       setShowAdd(true);
       setError(false);
       setSuccess(false);
     }
-
   };
 
   // const handleAdd = () => {
@@ -280,7 +260,6 @@ export default function User() {
   //         setError(false);
   //         setSuccess(true);
 
-
   //       }
 
   //       else if (res.data === 'no_user') {
@@ -294,7 +273,6 @@ export default function User() {
   //     })
   // }
 
-
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
 
   const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
@@ -305,20 +283,17 @@ export default function User() {
   const formik = useFormik({
     initialValues: {
       name: '',
-      phone: '',
-
-
+      phone: ''
     },
     validationSchema: AddSchema,
     onSubmit: () => {
-
-
-      axios.post('/users/addMembers', {
-        'number': formik.values.phone,
-        'name': formik.values.name,
-        'pNumber': localStorage.getItem('number'),
-        'ent_id': profileData.ent_id,
-      })
+      axios
+        .post('/users/addMembers', {
+          number: formik.values.phone,
+          name: formik.values.name,
+          pNumber: localStorage.getItem('number'),
+          ent_id: profileData.ent_id
+        })
         .then((res) => {
           console.log(res);
           if (res.data === 'success') {
@@ -330,24 +305,15 @@ export default function User() {
             setRefresh(false);
             setError(false);
             setSuccess(true);
-
-
-          }
-
-          else if (res.data === 'user_exists') {
+          } else if (res.data === 'user_exists') {
             setSuccess(false);
             setError(true);
           }
-
         })
         .catch((err) => {
           console.log('err', err);
-        })
-
-
+        });
     }
-
-
   });
 
   const { touched, errors, handleSubmit, getFieldProps } = formik;
@@ -360,23 +326,21 @@ export default function User() {
             My Team
           </Typography>
 
-          {
-            showAdd || profileData.user_type === 'M' ?
-              <></>
-              :
-              <Button
-                variant="contained"
-                onClick={handleNewMember}
-                startIcon={<Icon icon={plusFill} />}
-              >
-                New Member
-              </Button>
-          }
+          {showAdd || profileData.user_type === 'M' ? (
+            <></>
+          ) : (
+            <Button
+              variant="contained"
+              onClick={handleNewMember}
+              startIcon={<Icon icon={plusFill} />}
+            >
+              New Member
+            </Button>
+          )}
         </Stack>
-        {
-          showAdd &&
-          (<Card sx={{ mb: 3, p: 2 }}>
-            <Stack direction="row" justifyContent="space-between" >
+        {showAdd && (
+          <Card sx={{ mb: 3, p: 2 }}>
+            <Stack direction="row" justifyContent="space-between">
               <Typography variant="h6" gutterBottom>
                 Add a new member
               </Typography>
@@ -384,7 +348,7 @@ export default function User() {
             </Stack>
             <FormikProvider value={formik}>
               <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
-                <Stack spacing={2} >
+                <Stack spacing={2}>
                   <TextField
                     inputProps={{ maxLength: 10 }}
                     label="Phone number"
@@ -405,27 +369,22 @@ export default function User() {
                     helperText={touched.name && errors.name}
                   />
 
-                  <Button
-
-                    type="submit"
-                  >Add</Button>
-                </Stack >
+                  <Button type="submit">Add</Button>
+                </Stack>
               </Form>
             </FormikProvider>
-            {
-              error &&
+            {error && (
               <Stack m={2}>
                 <Alert severity="error">Cannot add this number as it already exists!</Alert>
               </Stack>
-            }
-            {
-              success &&
+            )}
+            {success && (
               <Stack m={2}>
                 <Alert severity="success">Member added successfully!</Alert>
               </Stack>
-            }
-          </Card>)
-        }
+            )}
+          </Card>
+        )}
         <Card>
           <UserListToolbar
             numSelected={selected.length}
@@ -470,15 +429,14 @@ export default function User() {
                           <TableCell component="th" scope="row" padding="none">
                             <Stack direction="row" alignItems="center" spacing={2}>
                               <Avatar alt={name} src={img} sx={{ width: 32, height: 32 }} />
-                              <Typography variant="subtitle2" >
-                                {name}
-                              </Typography>
+                              <Typography variant="subtitle2">{name}</Typography>
                             </Stack>
                           </TableCell>
                           {/* <TableCell align="left">{company}</TableCell> */}
                           <TableCell align="left">
-                            <Link href={`tel:${number}`}><Icon icon="ph:phone-call-light" width={24} height={24} /></Link>
-
+                            <Link href={`tel:${number}`}>
+                              <Icon icon="ph:phone-call-light" width={24} height={24} />
+                            </Link>
                           </TableCell>
                           {/* <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
                           <TableCell align="left">
@@ -529,6 +487,6 @@ export default function User() {
           />
         </Card>
       </Container>
-    </Page >
+    </Page>
   );
 }

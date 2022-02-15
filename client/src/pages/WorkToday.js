@@ -1,15 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from "react-redux";
-import { Box, Container, Typography, Stack, } from '@mui/material';
+import { useSelector } from 'react-redux';
+import { Box, Container, Typography, Stack } from '@mui/material';
 
 import axios from 'axios';
 // components
 import Page from '../components/Page';
-
-
-
 
 export default function WorkToday() {
     // const [selectedService, setSelectedService] = useState("");
@@ -20,35 +17,28 @@ export default function WorkToday() {
     const navigate = useNavigate();
     useEffect(() => {
         // console.log("id is", id)
-        axios.post('/users/workDoneToday/', { 'id': id })
+        axios
+            .post('/users/workDoneToday/', { id: id })
             .then((res) => {
                 if (!Object.keys(cookies).length) {
-                    navigate('/sessionExpired')
-                }
-                else {
+                    navigate('/sessionExpired');
+                } else {
                     console.log('res data:', res.data);
                     res.data.map((item) => {
                         if (item.mode === 'O') {
                             setOnlineAmnt(item.amnt);
-                        }
-                        else {
+                        } else {
                             setCashAmnt(item.amnt);
                         }
                         return item;
-                    })
+                    });
                     // setCustList(res.data);
-
                 }
             })
             .catch((err) => {
                 console.log('err', err);
-            })
-
-
-    }, [id])
-
-
-
+            });
+    }, [id]);
 
     return (
         <Page title="Work Done Today">
@@ -57,7 +47,9 @@ export default function WorkToday() {
                     <Typography variant="h4">Work Done Today</Typography>
                 </Box>
                 <Stack spacing={2}>
-                    <Typography alignSelf="center" variant="h6">Payment Collection</Typography>
+                    <Typography alignSelf="center" variant="h6">
+                        Payment Collection
+                    </Typography>
                     <Stack direction="row" justifyContent="space-between">
                         <Typography variant="h6">Online</Typography>
                         <Typography variant="h6">&#8377;{onlineAmnt}</Typography>
@@ -72,9 +64,7 @@ export default function WorkToday() {
                         <Typography variant="h6">&#8377;{onlineAmnt + cashAmnt}</Typography>
                     </Stack>
                 </Stack>
-
             </Container>
         </Page>
-
     );
 }
