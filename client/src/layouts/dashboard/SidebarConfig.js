@@ -36,11 +36,11 @@ const sidebarConfig = [
   //   path: '/dashboard/blog',
   //   icon: getIcon(fileTextFill)
   // },
-  
+
   {
-    title: 'Edit Profile',
-    path: '/register',
-    icon: getIcon("clarity:note-edit-line" )
+    title: 'Profile',
+    path: '/dashboard/profile',
+    icon: getIcon("clarity:note-edit-line")
   },
   {
     title: "Today's Work",

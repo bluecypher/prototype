@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import * as Yup from 'yup';
 import { useCookies } from 'react-cookie';
-import { useNavigate, useParams} from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useFormik, Form, FormikProvider } from 'formik';
 // import { history } from 'react-router';
 import { useSelector, useDispatch } from "react-redux";
@@ -40,7 +40,7 @@ export default function EditCalls() {
 
     //     navigate('/dashboard/customers');
     // }
-    
+
     useEffect(() => {
         console.log("loc is", id)
         if (!Object.keys(cookies).length) {
@@ -48,7 +48,7 @@ export default function EditCalls() {
         }
         else {
 
-            axios.post('http://localhost:5000/users/getUserServices/', { 'id': id })
+            axios.post('/users/getUserServices/', { 'id': id })
                 .then((res) => {
                     console.log('services:', res.data);
                     setServices(res.data);
@@ -56,7 +56,7 @@ export default function EditCalls() {
                 .catch((err) => {
                     console.log('err', err);
                 })
-            axios.post('http://localhost:5000/users/getCustomersList/', { 'id': id })
+            axios.post('/users/getCustomersList/', { 'id': id })
                 .then((res) => {
                     console.log('customers:', res.data);
                     setCustList(res.data);
@@ -65,7 +65,7 @@ export default function EditCalls() {
                     console.log('err', err);
                 })
 
-            axios.post('http://localhost:5000/users/getWorkDetails', { 'workId': workId })
+            axios.post('/users/getWorkDetails', { 'workId': workId })
                 .then((res) => {
                     console.log("work details", res);
                     setSelectedService(res.data[0].work_type);
@@ -90,7 +90,7 @@ export default function EditCalls() {
                 .catch((err) => {
                     console.log("error", err);
                 })
-            axios.get('http://localhost:5000/users/getMembers', { params: { 'id': id } })
+            axios.get('/users/getMembers', { params: { 'id': id } })
                 .then((res) => {
                     console.log('get members:', res.data);
                     setUSERLIST(res.data);
@@ -112,7 +112,7 @@ export default function EditCalls() {
             setShowAdd(false);
             setError(false);
             setSuccess(false);
-            
+
         }
         else {
             setShowAdd(true);
@@ -141,7 +141,7 @@ export default function EditCalls() {
             date.setMinutes(time.getMinutes());
         }
 
-        axios.post('http://localhost:5000/users/updateWork/', { 'custId': selectedCustId, 'spId': id, 'date': date, 'todos': todo, 'servId': selectedService, 'asgnTo': selectedMember, 'workId': workId })
+        axios.post('/users/updateWork/', { 'custId': selectedCustId, 'spId': id, 'date': date, 'todos': todo, 'servId': selectedService, 'asgnTo': selectedMember, 'workId': workId })
             .then((res) => {
                 console.log("res:", res.data);
                 if (res.data === "Success") {
@@ -163,7 +163,7 @@ export default function EditCalls() {
         validationSchema: AddSchema,
         onSubmit: () => {
             // console.log('imag', formik.values.name);
-            axios.post('http://localhost:5000/users/addCustomers', {
+            axios.post('/users/addCustomers', {
                 'number': formik2.values.phone,
                 'id': id,
                 'name': formik2.values.name,
@@ -200,7 +200,10 @@ export default function EditCalls() {
 
 
     });
-
+    const onCancel = () => {
+        navigate('/dashboard/work');
+        console.log('cancel')
+    }
     const { touched, errors, isSubmitting, handleSubmit, getFieldProps } = formik2;
 
     return (
@@ -267,7 +270,7 @@ export default function EditCalls() {
                                     />
 
 
-                                    <Button type="submit" >Add</Button>
+                                    <Button type="submit" variant="contained" sx={{ width: "20%", alignSelf: "center" }} >Add</Button>
                                 </Stack >
                             </Form>
                         </FormikProvider>
@@ -385,6 +388,7 @@ export default function EditCalls() {
                         type="text"
                         label="To Dos"
                         value={todo}
+
                         onChange={(event) => { setTodo(event.target.value) }}
 
                     />
@@ -397,6 +401,9 @@ export default function EditCalls() {
                         onClick={onSave}
                     >
                         Save
+                    </Button>
+                    <Button variant="outlined" color="error" sx={{ border: 1.5 }} onClick={onCancel}>
+                        Cancel
                     </Button>
                 </Stack>
 

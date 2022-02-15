@@ -38,9 +38,10 @@ import Page from '../components/Page';
 // import Label from '../components/Label';
 import Scrollbar from '../components/Scrollbar';
 import SearchNotFound from '../components/SearchNotFound';
-import { UserListHead, UserListToolbar,
+import {
+  UserListHead, UserListToolbar,
   //  UserMoreMenu 
-  } from '../components/_dashboard/user';
+} from '../components/_dashboard/user';
 // import data from '@iconify/icons-eva/menu-2-fill';
 
 //
@@ -130,7 +131,7 @@ export default function User() {
   });
   useEffect(() => {
     console.log('redux_id:', profileData);
-    axios.get('http://localhost:5000/users/getMembers', { params: { 'id': profileData.id } })
+    axios.get('/users/getMembers', { params: { 'id': profileData.id } })
       .then((res) => {
 
         if (!Object.keys(cookies).length) {
@@ -191,8 +192,8 @@ export default function User() {
   };
 
   const handleDelete = (event, memberId) => {
-    
-    axios.post('http://localhost:5000/users/deleteMembers', { 'parent_id': profileData.id, 'member_id': memberId })
+
+    axios.post('/users/deleteMembers', { 'parent_id': profileData.id, 'member_id': memberId })
       .then((res) => {
 
         if (!Object.keys(cookies).length) {
@@ -266,7 +267,7 @@ export default function User() {
   // const handleAdd = () => {
 
   //   console.log('Add');
-  //   axios.post('http://localhost:5000/users/addMembers', {
+  //   axios.post('/users/addMembers', {
   //     'number': number,
   //     'name': tName,
   //     'pNumber': localStorage.getItem('number')
@@ -310,9 +311,9 @@ export default function User() {
     },
     validationSchema: AddSchema,
     onSubmit: () => {
-      
-      
-      axios.post('http://localhost:5000/users/addMembers', {
+
+
+      axios.post('/users/addMembers', {
         'number': formik.values.phone,
         'name': formik.values.name,
         'pNumber': localStorage.getItem('number'),
@@ -383,103 +384,103 @@ export default function User() {
             </Stack>
             <FormikProvider value={formik}>
               <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
-              <Stack spacing={2} >
-                <TextField
-                  inputProps={{ maxLength: 10 }}
-                  label="Phone number"
-                  value={number}
-                  onChange={handleNumber}
-                  {...getFieldProps('phone')}
-                  error={Boolean(touched.phone && errors.phone)}
-                  helperText={touched.phone && errors.phone}
+                <Stack spacing={2} >
+                  <TextField
+                    inputProps={{ maxLength: 10 }}
+                    label="Phone number"
+                    value={number}
+                    onChange={handleNumber}
+                    {...getFieldProps('phone')}
+                    error={Boolean(touched.phone && errors.phone)}
+                    helperText={touched.phone && errors.phone}
+                  />
+
+                  <TextField
+                    inputProps={{ maxLength: 50 }}
+                    label="Name"
+                    value={tName}
+                    onChange={handleTName}
+                    {...getFieldProps('name')}
+                    error={Boolean(touched.name && errors.name)}
+                    helperText={touched.name && errors.name}
+                  />
+
+                  <Button
+
+                    type="submit"
+                  >Add</Button>
+                </Stack >
+              </Form>
+            </FormikProvider>
+            {
+              error &&
+              <Stack m={2}>
+                <Alert severity="error">Cannot add this number as it already exists!</Alert>
+              </Stack>
+            }
+            {
+              success &&
+              <Stack m={2}>
+                <Alert severity="success">Member added successfully!</Alert>
+              </Stack>
+            }
+          </Card>)
+        }
+        <Card>
+          <UserListToolbar
+            numSelected={selected.length}
+            filterName={filterName}
+            onFilterName={handleFilterByName}
+          />
+
+          <Scrollbar>
+            <TableContainer sx={{ minWidth: { xs: 300, md: 800 } }}>
+              <Table>
+                <UserListHead
+                  order={order}
+                  orderBy={orderBy}
+                  headLabel={TABLE_HEAD}
+                  rowCount={USERLIST.length}
+                  numSelected={selected.length}
+                  onRequestSort={handleRequestSort}
+                  onSelectAllClick={handleSelectAllClick}
                 />
+                <TableBody>
+                  {filteredUsers
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((row) => {
+                      const { img, name, number, memberId } = row;
+                      const isItemSelected = selected.indexOf(name) !== -1;
 
-                <TextField
-                  inputProps={{ maxLength: 50 }}
-                  label="Name"
-                  value={tName}
-                  onChange={handleTName}
-                  {...getFieldProps('name')}
-                  error={Boolean(touched.name && errors.name)}
-                  helperText={touched.name && errors.name}
-                />
+                      return (
+                        <TableRow
+                          hover
+                          key={memberId}
+                          tabIndex={-1}
+                          role="checkbox"
+                          selected={isItemSelected}
+                          aria-checked={isItemSelected}
+                        >
+                          <TableCell padding="checkbox">
+                            <Checkbox
+                              checked={isItemSelected}
+                              onChange={(event) => handleClick(event, name)}
+                            />
+                          </TableCell>
+                          <TableCell component="th" scope="row" padding="none">
+                            <Stack direction="row" alignItems="center" spacing={2}>
+                              <Avatar alt={name} src={img} sx={{ width: 32, height: 32 }} />
+                              <Typography variant="subtitle2" >
+                                {name}
+                              </Typography>
+                            </Stack>
+                          </TableCell>
+                          {/* <TableCell align="left">{company}</TableCell> */}
+                          <TableCell align="left">
+                            <Link href={`tel:${number}`}><Icon icon="ph:phone-call-light" width={24} height={24} /></Link>
 
-                <Button 
-                
-                type="submit"
-                >Add</Button>
-              </Stack >
-            </Form>
-          </FormikProvider>
-              {
-          error &&
-          <Stack m={2}>
-            <Alert severity="error">Cannot add this number as it already exists!</Alert>
-          </Stack>
-        }
-        {
-          success &&
-          <Stack m={2}>
-            <Alert severity="success">Member added successfully!</Alert>
-          </Stack>
-        }
-      </Card>)
-        }
-      <Card>
-        <UserListToolbar
-          numSelected={selected.length}
-          filterName={filterName}
-          onFilterName={handleFilterByName}
-        />
-
-        <Scrollbar>
-          <TableContainer sx={{ minWidth: { xs: 300, md: 800 } }}>
-            <Table>
-              <UserListHead
-                order={order}
-                orderBy={orderBy}
-                headLabel={TABLE_HEAD}
-                rowCount={USERLIST.length}
-                numSelected={selected.length}
-                onRequestSort={handleRequestSort}
-                onSelectAllClick={handleSelectAllClick}
-              />
-              <TableBody>
-                {filteredUsers
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => {
-                    const { img, name, number, memberId } = row;
-                    const isItemSelected = selected.indexOf(name) !== -1;
-
-                    return (
-                      <TableRow
-                        hover
-                        key={memberId}
-                        tabIndex={-1}
-                        role="checkbox"
-                        selected={isItemSelected}
-                        aria-checked={isItemSelected}
-                      >
-                        <TableCell padding="checkbox">
-                          <Checkbox
-                            checked={isItemSelected}
-                            onChange={(event) => handleClick(event, name)}
-                          />
-                        </TableCell>
-                        <TableCell component="th" scope="row" padding="none">
-                          <Stack direction="row" alignItems="center" spacing={2}>
-                            <Avatar alt={name} src={img} sx={{width:32, height:32}}/>
-                            <Typography variant="subtitle2" >
-                              {name}
-                            </Typography>
-                          </Stack>
-                        </TableCell>
-                        {/* <TableCell align="left">{company}</TableCell> */}
-                        <TableCell align="left">
-                        <Link href={`tel:${number}`}><Icon icon="ph:phone-call-light" width={24} height={24}/></Link>
-                            
-                        </TableCell>
-                        {/* <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
+                          </TableCell>
+                          {/* <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
                           <TableCell align="left">
                             <Label
                               variant="ghost"
@@ -489,45 +490,45 @@ export default function User() {
                             </Label>
                           </TableCell> */}
 
-                        <TableCell align="left">
-                          {/* <UserMoreMenu handleDelete={(event)=>handleDelete(event,memberId)} memberId={memberId}/> */}
-                          <IconButton onClick={(event) => handleDelete(event, memberId)}>
-                            <Icon icon={trash2Outline} width={24} height={24} />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                {emptyRows > 0 && (
-                  <TableRow style={{ height: 53 * emptyRows }}>
-                    <TableCell colSpan={6} />
-                  </TableRow>
-                )}
-              </TableBody>
-              {isUserNotFound && (
-                <TableBody>
-                  <TableRow>
-                    <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                      <SearchNotFound searchQuery={filterName} />
-                    </TableCell>
-                  </TableRow>
+                          <TableCell align="left">
+                            {/* <UserMoreMenu handleDelete={(event)=>handleDelete(event,memberId)} memberId={memberId}/> */}
+                            <IconButton onClick={(event) => handleDelete(event, memberId)}>
+                              <Icon icon={trash2Outline} width={24} height={24} />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  {emptyRows > 0 && (
+                    <TableRow style={{ height: 53 * emptyRows }}>
+                      <TableCell colSpan={6} />
+                    </TableRow>
+                  )}
                 </TableBody>
-              )}
-            </Table>
-          </TableContainer>
-        </Scrollbar>
+                {isUserNotFound && (
+                  <TableBody>
+                    <TableRow>
+                      <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+                        <SearchNotFound searchQuery={filterName} />
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                )}
+              </Table>
+            </TableContainer>
+          </Scrollbar>
 
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={USERLIST.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Card>
-    </Container>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={USERLIST.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </Card>
+      </Container>
     </Page >
   );
 }

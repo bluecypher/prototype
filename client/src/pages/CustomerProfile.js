@@ -25,7 +25,7 @@ export default function CustomerProfile() {
     // const navigate = useNavigate();
     useEffect(() => {
 
-        axios.post('http://localhost:5000/users/getCustomerDetails', { 'custId': custId, 'spId': data.id })
+        axios.post('/users/getCustomerDetails', { 'custId': custId, 'spId': data.id })
             .then((res) => {
                 console.log("result", res);
                 setCustInfo(res.data.info[0]);
@@ -107,11 +107,11 @@ export default function CustomerProfile() {
                                     workPlan.length ?
                                         workPlan.map((item) =>
                                             <Stack key={item.work_list_id} spacing={1}>
-                                                
+
                                                 <Stack direction="row" spacing={2} justifyContent="space-between">
                                                     <Typography variant="body">{item.serv_name} </Typography>
                                                     <Typography variant="subtitle">{item.plan.slice(0, 10)}</Typography>
-                                                    
+
                                                 </Stack>
                                                 <Typography variant="body">{item.work_desc}</Typography>
                                             </Stack>

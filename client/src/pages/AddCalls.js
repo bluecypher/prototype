@@ -5,7 +5,7 @@ import { useNavigate, } from 'react-router-dom';
 import { useSelector } from "react-redux";
 import { useFormik, Form, FormikProvider } from 'formik';
 // import plusFill from '@iconify/icons-eva/plus-fill';
-import { Box, Container, Typography, Stack, Button, Modal, Alert, Card,FormControl, InputLabel, Select, MenuItem, TextField } from '@mui/material';
+import { Box, Container, Typography, Stack, Button, Modal, Alert, Card, FormControl, InputLabel, Select, MenuItem, TextField } from '@mui/material';
 import DatePicker from '@mui/lab/MobileDatePicker';
 import TimePicker from '@mui/lab/MobileTimePicker';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
@@ -13,6 +13,7 @@ import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import { Icon } from '@iconify/react';
 import close from '@iconify/icons-ant-design/close-circle-outlined';
 import axios from 'axios';
+
 
 // components
 import Page from '../components/Page';
@@ -52,7 +53,7 @@ export default function AddCalls() {
         else {
 
 
-            axios.post('http://localhost:5000/users/getUserServices/', { 'id': id })
+            axios.post('/users/getUserServices/', { 'id': id })
                 .then((res) => {
                     // console.log('services:', res.data);
                     if (res.data)
@@ -61,7 +62,7 @@ export default function AddCalls() {
                 .catch((err) => {
                     console.log('err', err);
                 })
-            axios.post('http://localhost:5000/users/getCustomersList/', { 'id': id })
+            axios.post('/users/getCustomersList/', { 'id': id })
                 .then((res) => {
                     // console.log('customers:', res.data, 'fssd');
                     if (res.data.length) {
@@ -72,7 +73,7 @@ export default function AddCalls() {
                 .catch((err) => {
                     console.log('err', err);
                 })
-            axios.get('http://localhost:5000/users/getMembers', { params: { 'id': id } })
+            axios.get('/users/getMembers', { params: { 'id': id } })
                 .then((res) => {
                     // console.log('get members:', res.data);
                     if (res.data)
@@ -112,7 +113,7 @@ export default function AddCalls() {
             date.setMinutes(time.getMinutes());
         }
 
-        axios.post('http://localhost:5000/users/addWork/', { 'custId': selectedCustId, 'spId': id, 'date': date, 'todos': todo, 'servId': selectedService, 'asgnTo': selectedMember })
+        axios.post('/users/addWork/', { 'custId': selectedCustId, 'spId': id, 'date': date, 'todos': todo, 'servId': selectedService, 'asgnTo': selectedMember })
             .then((res) => {
                 console.log("res:", res.data);
                 if (res.data === "Success") {
@@ -124,6 +125,12 @@ export default function AddCalls() {
             })
         console.log("clickks", date);
     }
+
+    const onCancel = () => {
+        navigate('/dashboard/work');
+        console.log('cancel')
+    }
+
     const formik2 = useFormik({
         initialValues: {
             name: '',
@@ -134,7 +141,7 @@ export default function AddCalls() {
         validationSchema: AddSchema,
         onSubmit: () => {
             // console.log('imag', formik.values.name);
-            axios.post('http://localhost:5000/users/addCustomers', {
+            axios.post('/users/addCustomers', {
                 'number': formik2.values.phone,
                 'id': id,
                 'name': formik2.values.name,
@@ -195,13 +202,13 @@ export default function AddCalls() {
                         p: 3,
                     }}>
                         <Stack direction="row" justifyContent="space-between">
-                        
-                        
-                        <Typography variant="h6" gutterBottom>
+
+
+                            <Typography variant="h6" gutterBottom>
                                 Add a new Customer
                             </Typography>
                             <Icon color="red" onClick={handleNewMember} icon={close} width={24} height={24} />
-                            </Stack>
+                        </Stack>
                         <FormikProvider value={formik2}>
                             <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
                                 <Stack spacing={2} >
@@ -238,7 +245,7 @@ export default function AddCalls() {
                                     />
 
 
-                                    <Button type="submit" >Add</Button>
+                                    <Button type="submit" variant="contained" sx={{ width: "20%", alignSelf: "center" }} >Add</Button>
                                 </Stack >
                             </Form>
                         </FormikProvider>
@@ -371,6 +378,12 @@ export default function AddCalls() {
                     >
                         Save
                     </Button>
+
+                    <Button variant="outlined" color="error" sx={{ border: 1.5 }} onClick={onCancel}>
+                        Cancel
+                    </Button>
+
+
                 </Stack>
 
             </Container>

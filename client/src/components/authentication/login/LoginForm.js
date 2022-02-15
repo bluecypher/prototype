@@ -35,28 +35,25 @@ function LoginForm() {
   const [inputOtp, setInputOtp] = useState('');
   const [showSubmit, setShowSubmit] = useState(false);
   const [error, setError] = useState(false);
-  
+
   const [cookies, setCookie] = useCookies('');
-  const [tmplt,setTmplt] = useState('OTP to login to Sahayak is ');
-  const data = useSelector((state)=>state.profileReducer);
+  const [tmplt, setTmplt] = useState('OTP to login to Sahayak is ');
+  const data = useSelector((state) => state.profileReducer);
   const LoginSchema = Yup.object().shape({
     number: Yup.number('Mobile number must be numeric.').min(1000000000, 'Too Short. Please enter a valid number.').required('Mobile number is required'),
     // password: Yup.string().required('OTP is required')
   });
-  const handleSubmit2 =() =>{
+  const handleSubmit2 = () => {
     if (inputOtp === '123456') {
-      axios.post('http://localhost:5000/users/login', {
+      axios.post('/users/login', {
         'number': values.number
-      },
-        {
-          'access-control-allow-origin': '*'
-        })
+      })
         .then((response) => {
           console.log(response)
           if (response.data.res === "success") {
 
             localStorage.setItem('number', values.number);
-            setCookie("token", response.data.jwToken, { path: '/', expires: new Date(Date.now() + 1000 * 60 ) });
+            setCookie("token", response.data.jwToken, { path: '/', expires: new Date(Date.now() + 1000 * 60) });
 
             if (response.data.status === 'F') {
               navigate('/dashboard', { replace: true });
@@ -70,14 +67,14 @@ function LoginForm() {
           console.log("Error", e);
         })
     }
-    else{
+    else {
       setError(true);
       console.log('less than 6');
     }
   }
-  
+
   useEffect(() => {
-    console.log('number',data.number);
+    console.log('number', data.number);
     if (cookies.token && data.number) {
 
       navigate('/dashboard', { replace: true });
@@ -93,13 +90,13 @@ function LoginForm() {
     validationSchema: LoginSchema,
     onSubmit: () => {
       // console.log(event);
-      
-       const temp=Math.floor(100000 + Math.random() * 900000).toString(); 
-       const msg = (tmplt.concat(temp,". Do not share it with anyone."));
-        setOTP(temp);
-        setShowSubmit(true);
-        console.log(msg);
-        
+
+      const temp = Math.floor(100000 + Math.random() * 900000).toString();
+      const msg = (tmplt.concat(temp, ". Do not share it with anyone."));
+      setOTP(temp);
+      setShowSubmit(true);
+      console.log(msg);
+
       //   axios.get("https://www.fast2sms.com/dev/bulkV2",{params:{'authorization' : "YgzaI0vM7BZLWe9cdHUwf41GkqiESbpNusX3tToK6Oy2Qnmjlr1olWahGJ3fzXv8iYQTdtIpsUcRCnDq",
       //   'route' : 'v3',
       //   'sender_id' : 'Cghpet',
@@ -197,39 +194,39 @@ function LoginForm() {
     // </FormikProvider>
 
     <Stack spacing={3}>
-        
-          <FormikProvider value={formik}>
-      <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
-      <Stack spacing={3}>
-          <TextField
-            fullWidth
-            inputProps={{ maxLength: 10 }}
 
-            label="Mobile number"
-            {...getFieldProps('number')}
-            error={Boolean(touched.number && errors.number)}
-            helperText={touched.number && errors.number}
-          />
-          {/* <a href="tel:7070024384">7070024384</a> */}
-          {/* <Link href={`tel:${call}`} >call</Link> */}
-          
-          <LoadingButton
-            id="otp"
-            fullWidth
-            size="large"
-            type="submit"
-            variant="contained"
-            disabled={showSubmit}
-          // loading={isSubmitting}
+      <FormikProvider value={formik}>
+        <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
+          <Stack spacing={3}>
+            <TextField
+              fullWidth
+              inputProps={{ maxLength: 10 }}
 
-          >
-            Get OTP
-          </LoadingButton>
+              label="Mobile number"
+              {...getFieldProps('number')}
+              error={Boolean(touched.number && errors.number)}
+              helperText={touched.number && errors.number}
+            />
+            {/* <a href="tel:7070024384">7070024384</a> */}
+            {/* <Link href={`tel:${call}`} >call</Link> */}
+
+            <LoadingButton
+              id="otp"
+              fullWidth
+              size="large"
+              type="submit"
+              variant="contained"
+              disabled={showSubmit}
+            // loading={isSubmitting}
+
+            >
+              Get OTP
+            </LoadingButton>
           </Stack>
-             </Form>
-    </FormikProvider>
-    { showSubmit &&
-         <Stack spacing={3}>
+        </Form>
+      </FormikProvider>
+      {showSubmit &&
+        <Stack spacing={3}>
           <TextField
             fullWidth
 
@@ -248,45 +245,45 @@ function LoginForm() {
 
             }}
             value={inputOtp}
-            onChange={(event)=>setInputOtp(event.target.value)}
+            onChange={(event) => setInputOtp(event.target.value)}
 
-            // error={Boolean(touched.password && errors.password)}
-            // helperText={touched.password && errors.password}
+          // error={Boolean(touched.password && errors.password)}
+          // helperText={touched.password && errors.password}
           />
           {
-              error &&
-              <Stack m={2}>
-                <Alert severity="error">OTP does not match!</Alert>
-              </Stack>
-            }
-             
-       
+            error &&
+            <Stack m={2}>
+              <Alert severity="error">OTP does not match!</Alert>
+            </Stack>
+          }
 
-        <Stack direction="row" alignItems="center" justifyContent="flex-end" sx={{ my: 2 }}>
-          {/* <FormControlLabel
+
+
+          <Stack direction="row" alignItems="center" justifyContent="flex-end" sx={{ my: 2 }}>
+            {/* <FormControlLabel
       control={<Checkbox {...getFieldProps('remember')} checked={values.remember} />}
       label="Remember me"
     /> */}
 
-          <Link component={RouterLink} variant="subtitle2" to="#">
-            Resend OTP?
-          </Link>
-        </Stack>
+            <Link component={RouterLink} variant="subtitle2" to="#">
+              Resend OTP?
+            </Link>
+          </Stack>
 
-        <LoadingButton
-          id="signin"
-          fullWidth
-          size="large"
-          type="submit"
-          variant="contained"
-          onClick={handleSubmit2}
-        // loading={isSubmitting}
-        >
-          Sign In
-        </LoadingButton>
+          <LoadingButton
+            id="signin"
+            fullWidth
+            size="large"
+            type="submit"
+            variant="contained"
+            onClick={handleSubmit2}
+          // loading={isSubmitting}
+          >
+            Sign In
+          </LoadingButton>
         </Stack>
-}
-      </Stack>
+      }
+    </Stack>
   );
 }
 

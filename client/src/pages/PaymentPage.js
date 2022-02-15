@@ -31,16 +31,16 @@ export default function PaymentPage() {
 
             resolve(event.target.result)
         };
-        
+
         reader.readAsDataURL(file);
-        
+
     })
     const fileChangeHandler = (file) => {
         if (!file) {
             setImage('');
             return;
         }
-        console.log('def',file);
+        console.log('def', file);
         fileToDataUri(file)
             .then(dataUri => {
                 setImage(dataUri)
@@ -50,20 +50,19 @@ export default function PaymentPage() {
     }
 
     const onSave = () => {
-        if(image)
-        {
+        if (image) {
             navigate('/dashboard/work');
-            
+
         }
-        else{
+        else {
             setError(true);
         }
     }
 
     useEffect(() => {
         console.log(data.vpa)
-        
-        axios.post('http://localhost:5000/users/getAmount', { 'id': workId })
+
+        axios.post('/users/getAmount', { 'id': workId })
             .then((res) => {
                 if (res.data) {
                     console.log(res.data);
@@ -72,21 +71,21 @@ export default function PaymentPage() {
                         payeeName: `${data.fname} ${data.lname}`,
                         amount: res.data[0].amount
                     })
-                    .then((upi) => {
+                        .then((upi) => {
                             console.log('upi qr', upi.qr);
                             setQR(upi.qr);
                             console.log('upi intent', upi.intent);
                         })
-                    .catch(err => {
+                        .catch(err => {
                             console.log(err);
                         });
                 }
-       
+
             })
             .catch((err) => {
                 console.log("Error", err);
             })
-    }, [ QR, workId])
+    }, [QR, workId])
     return (
         <Page title="Payment Page">
             <Container maxWidth="xl">
@@ -110,14 +109,14 @@ export default function PaymentPage() {
                                 <>{ /* eslint-disable-next-line jsx-a11y/label-has-associated-control */}</>
                                 <label htmlFor="icon-button-file"><Icon icon="ion:camera" width={32} height={32} /></label>
 
-                                <input style={{ display: 'none' }} accept='image/*' id='icon-button-file' type='file' capture='environment' onChange={(event) => { fileChangeHandler(event.target.files[0] || null) }}/>
+                                <input style={{ display: 'none' }} accept='image/*' id='icon-button-file' type='file' capture='environment' onChange={(event) => { fileChangeHandler(event.target.files[0] || null) }} />
                                 {
                                     image &&
                                     <Avatar src={image} sx={{ width: 20, height: 20, alignSelf: 'center' }} alt="photoURL" variant="square" />
                                 }
                             </Stack>
                             {
-                                error && 
+                                error &&
                                 <Alert severity="warning">Please select an image first!</Alert>
                             }
 
@@ -133,13 +132,13 @@ export default function PaymentPage() {
                                 </Button>
                             </Box>
                             <Button
-                                    sx={{ width: "50%", alignSelf: "center" }}
+                                sx={{ width: "50%", alignSelf: "center" }}
 
-                                    size="large"
-                                    
-                                    onClick={()=>navigate('dashboard/work')}>
-                                    Back To Dashboard
-                                </Button>
+                                size="large"
+
+                                onClick={() => navigate('/dashboard/work')}>
+                                Back To Dashboard
+                            </Button>
 
 
                         </Stack>

@@ -5,7 +5,7 @@ import { useFormik, Form, FormikProvider } from 'formik';
 
 // import { useSelector } from "react-redux";
 
-import {  useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 // material
 // import { styled } from '@mui/material/styles';
@@ -37,7 +37,7 @@ export default function WorkUpdate() {
     // const onSubmit = () =>{
     //     console.log('imajsdjg',amnt, wDetails);
 
-    //         axios.post('http://localhost:5000/users/updateWork', {
+    //         axios.post('/users/updateWork', {
     //             'workId': workId,
 
     //             'name': name,
@@ -69,41 +69,40 @@ export default function WorkUpdate() {
     //             })
     // }
 
-    useEffect(()=>{
+    useEffect(() => {
         console.log(workId);
-        axios.post('http://localhost:5000/users/getWorkDetails',{'workId':workId})
-        .then((res)=>{
-            console.log("result",res);
-            setName(res.data[0].cust_name);
-            setServ(res.data[0].serv_name);
-            setWDetails(res.data[0].work_desc);
-        })
-        .catch((err)=>{
-            console.log("error",err);
-        })
-    },[workId])
+        axios.post('/users/getWorkDetails', { 'workId': workId })
+            .then((res) => {
+                console.log("result", res);
+                setName(res.data[0].cust_name);
+                setServ(res.data[0].serv_name);
+                setWDetails(res.data[0].work_desc);
+            })
+            .catch((err) => {
+                console.log("error", err);
+            })
+    }, [workId])
 
 
     const handleMopChange = (event) => {
         setMop(event.target.value);
-        if(event.target.value==='No')
-        {
-            formik.setFieldValue('amnt',0);
-            
+        if (event.target.value === 'No') {
+            formik.setFieldValue('amnt', 0);
+
         }
     }
 
     const RegisterSchema = Yup.object().shape({
-        
+
         amnt: Yup.number().required('Amount is required').typeError('Amount must be a number'),
 
 
     });
 
     const formik = useFormik({
-        enableReinitialize:true,
+        enableReinitialize: true,
         initialValues: {
-            
+
             amnt: '',
             wd: wDetails,
             nxtWork: '',
@@ -111,40 +110,37 @@ export default function WorkUpdate() {
         validationSchema: RegisterSchema,
         onSubmit: () => {
             console.log('imag', wDetails);
-            if(mop)
-            {
-            axios.post('http://localhost:5000/users/updateWork', {
-                'workId': workId,
+            if (mop) {
+                axios.post('/users/updateWork', {
+                    'workId': workId,
 
-                'name': name,
-                'serv': serv,
-                'amnt': formik.values.amnt,
-                'wDetails': formik.values.wd,
-                'wrnt': grnt,
-                'pmtMethod': mop,
-                'nxtDate': date,
-                'nxtWork': formik.values.nxtWork,
+                    'name': name,
+                    'serv': serv,
+                    'amnt': formik.values.amnt,
+                    'wDetails': formik.values.wd,
+                    'wrnt': grnt,
+                    'pmtMethod': mop,
+                    'nxtDate': date,
+                    'nxtWork': formik.values.nxtWork,
 
-            })
-                .then((response) => {
-                    console.log("response:", response)
-                    if (response.data === "Success") {
-                        if(mop === 'Online')
-                        {
-                        navigate(`/dashboard/payment/${workId}`, { replace: true });
-                        }
-                        else{
-                            navigate('/dashboard/work', { replace: true });
-                        }
-
-                    }
                 })
-                .catch((e) => {
-                    console.log("Error", e);
-                })
+                    .then((response) => {
+                        console.log("response:", response)
+                        if (response.data === "Success") {
+                            if (mop === 'Online') {
+                                navigate(`/dashboard/payment/${workId}`, { replace: true });
+                            }
+                            else {
+                                navigate('/dashboard/work', { replace: true });
+                            }
+
+                        }
+                    })
+                    .catch((e) => {
+                        console.log("Error", e);
+                    })
             }
-            else
-            {
+            else {
                 setError(true);
             }
 
@@ -153,6 +149,11 @@ export default function WorkUpdate() {
 
 
     });
+
+    const onCancel = () => {
+        navigate('/dashboard/work');
+        console.log('cancel')
+    }
 
     const { touched, errors, handleSubmit, getFieldProps } = formik;
 
@@ -171,22 +172,22 @@ export default function WorkUpdate() {
                                 inputProps={{
                                     readOnly: true,
                                     disabled: true,
-                                  }}
+                                }}
                                 label="Customer name"
-                                
+
                             />
-                             {/* <Typography variant="subtitle">{name}</Typography>
+                            {/* <Typography variant="subtitle">{name}</Typography>
                              <Typography variant="subtitle">{serv}</Typography> */}
                             <TextField
                                 fullWidth
-                                
+
                                 value={serv}
                                 inputProps={{
                                     readOnly: true,
                                     disabled: true,
-                                  }}
+                                }}
                                 label="Service provided"
-                                
+
                             />
 
                             <TextField
@@ -195,7 +196,7 @@ export default function WorkUpdate() {
                                 minRows='2'
                                 type="text"
                                 label="Work Done"
-                                
+
                                 {...getFieldProps('wd')}
                                 error={Boolean(touched.wd && errors.wd)}
                                 helperText={touched.wd && errors.wd}
@@ -204,7 +205,7 @@ export default function WorkUpdate() {
                                 <InputLabel>Warranty</InputLabel>
 
                                 <Select
-                                    
+
                                     value={grnt}
                                     label="Warranty"
                                     onChange={(e) => setGrnt(e.target.value)}
@@ -222,13 +223,13 @@ export default function WorkUpdate() {
                                 <FormLabel component="legend">Payment method</FormLabel>
                                 <RadioGroup
                                     value={mop}
-                                    onChange={(event) => {handleMopChange(event)}}
+                                    onChange={(event) => { handleMopChange(event) }}
                                     name="radio-buttons-group"
                                 >
                                     <Stack direction='row' spacing={2}>
-                                    <FormControlLabel value="Online" control={<Radio />} label="Online Payment" />
-                                    <FormControlLabel value="Cash" control={<Radio />} label="Cash Payment" />
-                                    <FormControlLabel value="No" control={<Radio />} label="No Payment" />
+                                        <FormControlLabel value="Online" control={<Radio />} label="Online Payment" />
+                                        <FormControlLabel value="Cash" control={<Radio />} label="Cash Payment" />
+                                        <FormControlLabel value="No" control={<Radio />} label="No Payment" />
                                     </Stack>
 
                                 </RadioGroup>
@@ -242,7 +243,7 @@ export default function WorkUpdate() {
                                 //     setAmnt(e.target.value)}}
                                 label="Amount"
                                 inputProps={{
-                                    disabled: mop==='No',
+                                    disabled: mop === 'No',
                                 }}
                                 {...getFieldProps('amnt')}
                                 error={Boolean(touched.amnt && errors.amnt)}
@@ -252,7 +253,7 @@ export default function WorkUpdate() {
                                 error &&
                                 <Alert severity="error">Please choose a payment method</Alert>
                             }
-                            
+
                             <LocalizationProvider dateAdapter={AdapterDateFns}>
                                 <DatePicker
                                     label="Next Visit"
@@ -282,11 +283,14 @@ export default function WorkUpdate() {
                                 size="large"
                                 type="submit"
                                 variant="contained"
-                                
+
                             >
                                 Save
                             </Button>
-
+                            <Button
+                                variant="outlined" size="large" color="error" onClick={onCancel}>
+                                Cancel
+                            </Button>
                         </Stack>
                     </Form>
                 </FormikProvider>

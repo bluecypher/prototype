@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { Icon } from '@iconify/react';
 import { Box, Grid, Container, Typography, Avatar, Stack, Link, IconButton } from '@mui/material';
-import {  useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 import bxEdit from '@iconify/icons-eva/edit-2-outline';
 
@@ -24,7 +24,7 @@ export default function Profile() {
         navigate('/register');
     }
     useEffect(() => {
-        axios.post('http://localhost:5000/users/getUserServices', { 'id': data.id })
+        axios.post('/users/getUserServices', { 'id': data.id })
             .then((res) => {
                 console.log("result", res);
                 setServData(res.data);

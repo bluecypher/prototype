@@ -54,7 +54,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 
 export default function Login() {
   const prevData = JSON.parse(localStorage.getItem('prev_user'));
-  
+
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [otp, setOTP] = useState('');
@@ -71,7 +71,7 @@ export default function Login() {
   });
   const handleSubmit2 = () => {
     if (inputOtp === '123456') {
-      axios.post('http://localhost:5000/users/login', {
+      axios.post('/users/login', {
         'number': values.number
       },
         {
@@ -82,7 +82,7 @@ export default function Login() {
           if (response.data.res === "success") {
 
             localStorage.setItem('number', values.number);
-            setCookie("token", response.data.jwToken, { path: '/', expires: new Date(Date.now() + 1000 * 3600 * 24 ) });
+            setCookie("token", response.data.jwToken, { path: '/', expires: new Date(Date.now() + 1000 * 3600 * 24) });
 
             if (response.data.status === 'F') {
               navigate('/dashboard', { replace: true });
@@ -144,13 +144,13 @@ export default function Login() {
     }
   });
   const profileClick = () => {
-    
-    formik.setFieldValue('number',prevData.number)
-    .then((res)=>{
-      if(!showSubmit)
-      formik.handleSubmit();
-  });
-    
+
+    formik.setFieldValue('number', prevData.number)
+      .then((res) => {
+        if (!showSubmit)
+          formik.handleSubmit();
+      });
+
   }
   const { errors, touched, values, isSubmitting, handleSubmit, getFieldProps } = formik;
 
@@ -173,27 +173,27 @@ export default function Login() {
             <Stack sx={{ mb: 5 }} alignItems='center'>
               {
                 prevData &&
-              <Card sx={{ maxWidth: 345, p: 1, boxShadow: 10 }} >
-                <CardActionArea onClick={profileClick}>
-                  <Stack spacing={1} alignItems='center'>
-                    <Stack alignItems='center' >
-                      {
-                        prevData.image ?
-                          <Avatar src={prevData.image} sx={{ width: 50, height: 50, alignSelf: 'center', border: 2 }} alt="photoURL" />
-                          :
-                          <Avatar sx={{ width: 50, height: 50, alignSelf: 'center' }} alt="photoURL" />
-                      }
+                <Card sx={{ maxWidth: 345, p: 1, boxShadow: 10 }} >
+                  <CardActionArea onClick={profileClick}>
+                    <Stack spacing={1} alignItems='center'>
+                      <Stack alignItems='center' >
+                        {
+                          prevData.image ?
+                            <Avatar src={prevData.image} sx={{ width: 50, height: 50, alignSelf: 'center', border: 2 }} alt="photoURL" />
+                            :
+                            <Avatar sx={{ width: 50, height: 50, alignSelf: 'center' }} alt="photoURL" />
+                        }
+                      </Stack>
+
+                      <Typography variant="subtitle2">
+                        {prevData.name}
+                      </Typography>
+
                     </Stack>
-
-                    <Typography variant="subtitle2">
-                      {prevData.name}
-                    </Typography>
-
-                  </Stack>
-                </CardActionArea>
+                  </CardActionArea>
 
 
-              </Card>
+                </Card>
               }
             </Stack>
             {/* <Link href={`whatsapp://send?phone=+91${formik.values.number}`}>calls</Link> */}
@@ -212,7 +212,8 @@ export default function Login() {
                 <Stack spacing={3}>
                   <TextField
                     fullWidth
-                    inputProps={{ maxLength: 10 }}
+                    inputProps={{ maxLength: 10, }}
+
 
                     label="Mobile number"
                     {...getFieldProps('number')}

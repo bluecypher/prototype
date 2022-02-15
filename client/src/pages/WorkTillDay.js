@@ -20,20 +20,18 @@ export default function WorkToday() {
     const navigate = useNavigate();
     useEffect(() => {
         // console.log("id is", id)
-        axios.post('http://localhost:5000/users/workTillToday/', { 'id': id })
+        axios.post('/users/workTillToday/', { 'id': id })
             .then((res) => {
                 if (!Object.keys(cookies).length) {
                     navigate('/sessionExpired')
                 }
                 else {
                     console.log('res data:', res.data);
-                    res.data.map((item)=>{
-                        if(item.mode==='O')
-                        {
+                    res.data.map((item) => {
+                        if (item.mode === 'O') {
                             setOnlineAmnt(item.amnt);
                         }
-                        else
-                        {
+                        else {
                             setCashAmnt(item.amnt);
                         }
                         return item;
@@ -46,12 +44,12 @@ export default function WorkToday() {
                 console.log('err', err);
             })
 
-       
+
     }, [id])
 
-    
 
-    
+
+
     return (
         <Page title="Work Done Today">
             <Container maxWidth="xl">
@@ -59,19 +57,19 @@ export default function WorkToday() {
                     <Typography variant="h4">Work done till day</Typography>
                 </Box>
                 <Stack spacing={2}>
-                <Typography alignSelf="center" variant="h6">Payment Collection</Typography>
+                    <Typography alignSelf="center" variant="h6">Payment Collection</Typography>
                     <Stack direction="row" justifyContent="space-between">
-                    <Typography variant="h6">Online</Typography>
-                    <Typography variant="h6">&#8377;{onlineAmnt}</Typography>
+                        <Typography variant="h6">Online</Typography>
+                        <Typography variant="h6">&#8377;{onlineAmnt}</Typography>
                     </Stack>
                     <Stack direction="row" justifyContent="space-between">
-                    <Typography variant="h6">Cash</Typography>
-                    <Typography variant="h6">&#8377;{cashAmnt}</Typography>
+                        <Typography variant="h6">Cash</Typography>
+                        <Typography variant="h6">&#8377;{cashAmnt}</Typography>
                     </Stack>
-                   <hr/>
-                   <Stack direction="row" justifyContent="space-between">
-                    <Typography variant="h6">Total</Typography>
-                    <Typography variant="h6">&#8377;{onlineAmnt+cashAmnt}</Typography>
+                    <hr />
+                    <Stack direction="row" justifyContent="space-between">
+                        <Typography variant="h6">Total</Typography>
+                        <Typography variant="h6">&#8377;{onlineAmnt + cashAmnt}</Typography>
                     </Stack>
                 </Stack>
 

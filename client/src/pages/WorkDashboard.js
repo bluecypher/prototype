@@ -42,7 +42,7 @@ export default function DashboardApp() {
     }
     else {
       console.log('ud', date);
-      axios.post('http://localhost:5000/users/getTodaysWork', { 'id': data.id, "date": date })
+      axios.post('/users/getTodaysWork', { 'id': data.id, "date": date })
         .then((res) => {
           console.log('res.data', res.data);
           const workTemp = res.data.filter((item) => item.status === 'O');
@@ -72,7 +72,7 @@ export default function DashboardApp() {
           <Stack direction="row" alignItems="center" justifyContent="space-between">
             <Typography variant="h4">Work Dashboard</Typography>
             <Stack alignItems="flex-end">
-              <Button alignSelf="right" onClick={addCalls}><Typography variant="h6">+Add calls</Typography></Button>
+              <Button alignSelf="right" variant="contained" onClick={addCalls}><Typography variant="h6">+Add calls</Typography></Button>
             </Stack>
           </Stack>
         </Box>
@@ -87,11 +87,13 @@ export default function DashboardApp() {
 
               }}
 
-              renderInput={(params) => 
-                // console.log(params);
-                <TextField size="small" {...params} />}
+              renderInput={(params) => {
+                console.log(params);
+                return <TextField {...params} InputProps={{ style: { fontWeight: 'bold' } }} size="small" />
+              }}
               inputFormat='dd MMM, yyyy'
-              // onMonthChange={console.log('sc')}
+            // onMonthChange={console.log('sc')}
+
             />
           </LocalizationProvider>
         </Stack>
@@ -100,7 +102,7 @@ export default function DashboardApp() {
 
 
           <Grid item xs={12} md={6} lg={10}>
-            <Typography label="abd"/>
+            <Typography label="abd" />
             <Card>
               <CardHeader sx={{ mb: 2 }} title="Planned Calls"
               />
@@ -160,7 +162,7 @@ export default function DashboardApp() {
                   histList.map((item) => (
                     // <Stack key={item.work_id} justifyContent='space-between' direction='row' spacing={{ xs: 2, lg: 5 }}>
                     <Grid key={item.work_id} sx={{ mb: 1, }} container spacing={2}>
-                      <Grid item xs={8} >
+                      <Grid item xs={6} >
                         {/* <Link
                           component="button"
                           variant="body2"
@@ -171,6 +173,12 @@ export default function DashboardApp() {
                       </Grid>
                       <Grid item xs={2} >
                         <Link href={`tel:${item.cust_phone}`}><Icon icon="ph:phone-call-light" width={24} height={24} /></Link>
+                      </Grid>
+                      <Grid item xs={2} >
+                        <Link href={`whatsapp://send?phone=+91${item.cust_phone}`}><Icon icon="logos:whatsapp" width={22} height={22} /></Link>
+                      </Grid>
+                      <Grid item xs={2} >
+                        <></>
                       </Grid>
 
                     </Grid>

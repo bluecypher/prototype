@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Grid, Container, Typography, Avatar, Stack, Button, Alert, TextField } from '@mui/material';
 
 
-
+import { useNavigate } from 'react-router-dom';
 
 import { addVPA } from '../actions/index';
 import Page from '../components/Page';
@@ -27,7 +27,8 @@ export default function PaymentProfile() {
     // const [image, setImage] = useState('');
     const [vpa, setVPA] = useState('');
     const dispatch = useDispatch();
-    // const navigate = useNavigate();
+
+    const navigate = useNavigate();
 
     // const fileToDataUri = (file) => new Promise((resolve, reject) => {
     //     const reader = new FileReader();
@@ -53,9 +54,9 @@ export default function PaymentProfile() {
     const onSave = () => {
         if (vpa) {
             setError(false);
-            
 
-            axios.post('http://localhost:5000/users/uploadQR', { 'id': data.id, 'vpa': vpa })
+
+            axios.post('/users/uploadQR', { 'id': data.id, 'vpa': vpa })
                 .then((res) => {
 
                     setQR('');
@@ -72,13 +73,18 @@ export default function PaymentProfile() {
             setError(true);
         }
     }
+
+    const onCancel = () => {
+        navigate('/dashboard/profile');
+        console.log('cancel')
+    }
     const handleVPA = (event) => {
         setVPA(event.target.value);
     };
 
     useEffect(() => {
 
-        axios.post('http://localhost:5000/users/getPaymentDetails', { 'id': data.id })
+        axios.post('/users/getPaymentDetails', { 'id': data.id })
             .then((res) => {
 
                 // let bufferOriginal = null;
@@ -90,7 +96,7 @@ export default function PaymentProfile() {
                     upiqr({
                         payeeVPA: res.data[0],
                         payeeName: `${data.fname} ${data.lname}`,
-                        
+
                     })
                         .then((upi) => {
                             console.log('upi qr', upi.qr);
@@ -155,6 +161,10 @@ export default function PaymentProfile() {
                                         variant="contained"
                                         onClick={onSave}>
                                         Save
+                                    </Button>
+                                    <Button
+                                        variant="outlined" size="large" color="error" sx={{ border: 1.5, width: "50%", alignSelf: "center" }} onClick={onCancel}>
+                                        Back
                                     </Button>
                                 </Stack>
 

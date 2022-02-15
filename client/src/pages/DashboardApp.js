@@ -51,7 +51,7 @@ const DashboardApp = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     console.log('data', localStorage.getItem('number'));
-    axios.get('http://localhost:5000/users/getData', { params: { 'number': localStorage.getItem('number') } })
+    axios.get('/users/getData', { params: { 'number': localStorage.getItem('number') } })
 
       .then((res) => {
         console.log('data', res.data);
@@ -71,29 +71,29 @@ const DashboardApp = () => {
               // setImg(bufferOriginal.toString('utf8'));
             }
           }
-          console.log('img data', logoBuffer?logoBuffer.toString('utf8'):'no logo');
+          console.log('img data', logoBuffer ? logoBuffer.toString('utf8') : 'no logo');
           dispatch(addProfile([res.data[0].first_name,
-            res.data[0].last_name,
-            localStorage.getItem('number'), 
-            bufferOriginal ? bufferOriginal.toString('utf8') : null,
-            res.data[0].email,
-            res.data[0].address1,
-            res.data[0].address2,
-            res.data[0].city,
-            res.data[0].pin,
-            res.data[0].state,
-            res.data[0].locality_of_work,
-            res.data[0].highlights,
-            res.data[0].enterprise,
-            res.data[0].user_mast_id,
-            res.data[0].user_type,
-            logoBuffer ? logoBuffer.toString('utf8') : null,
-            res.data[0].ent_id,
+          res.data[0].last_name,
+          localStorage.getItem('number'),
+          bufferOriginal ? bufferOriginal.toString('utf8') : null,
+          res.data[0].email,
+          res.data[0].address1,
+          res.data[0].address2,
+          res.data[0].city,
+          res.data[0].pin,
+          res.data[0].state,
+          res.data[0].locality_of_work,
+          res.data[0].highlights,
+          res.data[0].enterprise,
+          res.data[0].user_mast_id,
+          res.data[0].user_type,
+          logoBuffer ? logoBuffer.toString('utf8') : null,
+          res.data[0].ent_id,
           ]));
           const fullName = `${res.data[0].first_name} ${res.data[0].last_name}`;
-          const obj = JSON.stringify({'number':localStorage.getItem('number'),'name':fullName,'image':bufferOriginal ? bufferOriginal.toString('utf8') : null});
+          const obj = JSON.stringify({ 'number': localStorage.getItem('number'), 'name': fullName, 'image': bufferOriginal ? bufferOriginal.toString('utf8') : null });
           console.log(obj);
-          localStorage.setItem('prev_user',obj);
+          localStorage.setItem('prev_user', obj);
         }
         else {
           navigate('/sessionExpired')
@@ -101,22 +101,22 @@ const DashboardApp = () => {
 
 
       })
-      .then(()=>{
-        
-        setTimeout(()=>{
-         console.log('Welcome!');
-         navigate('/dashboard/work');
+      .then(() => {
+
+        setTimeout(() => {
+          console.log('Welcome!');
+          navigate('/dashboard/work');
         }, 2000);
       }
       )
-      
+
       .catch((err) => {
         console.log('err', err);
       });
-      
+
 
     // foo();
-  },[localStorage.getItem('number')]);
+  }, [localStorage.getItem('number')]);
   return (
     <Page title="Dashboard">
       <Container maxWidth="xl">
@@ -135,7 +135,7 @@ const DashboardApp = () => {
             </RootStyle>
           </Grid>
           <Grid item xs={12} sm={6} md={6}>
-            <Stack sx={{ justifyContent: 'center', alignItems:'center', marginTop: 5 }} spacing={2}>
+            <Stack sx={{ justifyContent: 'center', alignItems: 'center', marginTop: 5 }} spacing={2}>
               <Typography variant="h4">{data.fname} {data.lname}</Typography>
               <Typography variant="h4">{data.number}</Typography>
 

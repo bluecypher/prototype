@@ -31,7 +31,7 @@ import {
   Alert,
   Link,
   IconButton,
-  
+
 } from '@mui/material';
 
 // components
@@ -39,9 +39,10 @@ import Page from '../components/Page';
 // import Label from '../components/Label';
 import Scrollbar from '../components/Scrollbar';
 import SearchNotFound from '../components/SearchNotFound';
-import { UserListHead, UserListToolbar,
+import {
+  UserListHead, UserListToolbar,
   //  UserMoreMenu 
-  } from '../components/_dashboard/user';
+} from '../components/_dashboard/user';
 
 //
 
@@ -110,7 +111,7 @@ export default function Customers() {
       .max(50, 'Too Long!')
       .required('Name is required'),
 
-    phone: Yup.number('Mobile number must be numeric.').min(1000000000,'Please enter a valid number.').required('Number is required'),
+    phone: Yup.number('Mobile number must be numeric.').min(1000000000, 'Please enter a valid number.').required('Number is required'),
 
 
   });
@@ -118,14 +119,14 @@ export default function Customers() {
   const [success, setSuccess] = useState(false);
   const [refresh, setRefresh] = useState(false);
 
-  const onItemClick = (event,id) => {
+  const onItemClick = (event, id) => {
 
-    
+
     navigate(`/dashboard/customer/${id}`);
   }
   useEffect(() => {
-    console.log("props",prevPage);
-    axios.post('http://localhost:5000/users/getCustomersList', { 'id': id })
+    console.log("props", prevPage);
+    axios.post('/users/getCustomersList', { 'id': id })
       .then((res) => {
 
         if (!Object.keys(cookies).length) {
@@ -153,7 +154,7 @@ export default function Customers() {
       .catch((err) => {
         console.log('err', err);
       })
-  }, [error, success, id,refresh]);
+  }, [error, success, id, refresh]);
 
 
 
@@ -246,11 +247,11 @@ export default function Customers() {
 
   };
 
-  const handleDelete = (event,memberId) => {
-    console.log(id,' ', memberId);
-    axios.post('http://localhost:5000/users/deleteCustomers', {  'parent_id':id, 'member_id':memberId })
+  const handleDelete = (event, memberId) => {
+    console.log(id, ' ', memberId);
+    axios.post('/users/deleteCustomers', { 'parent_id': id, 'member_id': memberId })
       .then((res) => {
-        
+
         if (!Object.keys(cookies).length) {
           navigate('/sessionExpired')
         }
@@ -269,7 +270,7 @@ export default function Customers() {
   // const handleAdd = () => {
 
 
-  //   axios.post('http://localhost:5000/users/addCustomers', {
+  //   axios.post('/users/addCustomers', {
   //     'number': number,
   //     'id': id,
   //     'name': cName
@@ -314,7 +315,7 @@ export default function Customers() {
     validationSchema: AddSchema,
     onSubmit: () => {
       // console.log('imag', formik.values.name);
-      axios.post('http://localhost:5000/users/addCustomers', {
+      axios.post('/users/addCustomers', {
         'number': formik.values.phone,
         'id': id,
         'name': formik.values.name,
@@ -390,7 +391,7 @@ export default function Customers() {
             <FormikProvider value={formik}>
               <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
                 <Stack spacing={2} >
-                <TextField
+                  <TextField
                     inputProps={{ maxLength: 10 }}
                     label="Phone number"
                     value={number}
@@ -408,7 +409,7 @@ export default function Customers() {
                     error={Boolean(touched.name && errors.name)}
                     helperText={touched.name && errors.name}
                   />
-                  
+
                   <TextField
                     inputProps={{ maxLength: 60 }}
                     label="Address"
@@ -462,7 +463,7 @@ export default function Customers() {
                   {filteredUsers
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
-                      const {custId, img, name, number } = row;
+                      const { custId, img, name, number } = row;
                       const isItemSelected = selected.indexOf(name) !== -1;
 
                       return (
@@ -483,7 +484,7 @@ export default function Customers() {
                           </TableCell>
                           <TableCell component="th" scope="row" padding="none">
                             <Stack direction="row" alignItems="center" spacing={2}>
-                              <Avatar alt={name} src={img} sx={{width:32, height:32}}/>
+                              <Avatar alt={name} src={img} sx={{ width: 32, height: 32 }} />
                               <Link
                                 component="button"
                                 variant="body2"
@@ -497,10 +498,10 @@ export default function Customers() {
                           </TableCell>
                           {/* <TableCell align="left">{company}</TableCell> */}
                           <TableCell align="left">
-                            
-                            <Link href={`tel:${number}`}><Icon icon="ph:phone-call-light" width={24} height={24}/></Link>
-                            
-                            </TableCell>
+
+                            <Link href={`tel:${number}`}><Icon icon="ph:phone-call-light" width={24} height={24} /></Link>
+
+                          </TableCell>
                           {/* <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
                           <TableCell align="left">
                             <Label
@@ -512,7 +513,7 @@ export default function Customers() {
                           </TableCell> */}
 
                           <TableCell align="left">
-                          <IconButton onClick={(event)=>handleDelete(event,custId)}>
+                            <IconButton onClick={(event) => handleDelete(event, custId)}>
                               <Icon icon={trash2Outline} width={24} height={24} />
                             </IconButton>
                           </TableCell>

@@ -36,21 +36,21 @@ export default function RegisterForm() {
   const [services, setServices] = useState([]);
   useEffect(() => {
     // console.log(PINCODE);
-    axios.get("http://localhost:5000/users/getServices", { params: { 'number': localStorage.getItem('number') } })
+    axios.get("/users/getServices", { params: { 'number': localStorage.getItem('number') } })
       .then((res) => {
         setServices(res.data.services);
         if (res.data.userType) {
           setUserType(res.data.userType.user_type);
-          formik.setFieldValue('fname',res.data.userType.first_name);
+          formik.setFieldValue('fname', res.data.userType.first_name);
         }
-        
-          
-          
-        
+
+
+
+
         // const tm = new Date(Date.now())
         console.log("datetike:", res.data);
       })
-    axios.post('http://localhost:5000/users/getUserServices', { 'id': data.id })
+    axios.post('/users/getUserServices', { 'id': data.id })
       .then((res) => {
         console.log("result", res.data);
         let temp = res.data;
@@ -111,7 +111,7 @@ export default function RegisterForm() {
   //     //     "C": "SOUTH DELHI",
   //     //     "D": "Delhi"
   //     //   }]);
-      
+
   //     console.log('pin suggestions',sgstns);
   //   }
   // }
@@ -137,7 +137,7 @@ export default function RegisterForm() {
     console.log('image:', image);
   }
 
-  const LogoChangeHandler=(file) => {
+  const LogoChangeHandler = (file) => {
     if (!file) {
       setLogo('');
       return;
@@ -190,7 +190,7 @@ export default function RegisterForm() {
     add: Yup.string().required('Address is Required'),
 
     city: Yup.string().required('City is Required'),
-    pin: Yup.string().required('PIN is Required'),
+    pin: Yup.number().required('PIN is Required').typeError('Pincode must be numeric.'),
     state: Yup.string().required('State is Required'),
     ent: Yup.string().required("Enterprise Name is Required")
 
@@ -234,7 +234,7 @@ export default function RegisterForm() {
       // console.log('imag', formik.values.name);
       const nm = localStorage.getItem('number');
       // console.log('number:', values);
-      axios.post('http://localhost:5000/users/updateDetails', {
+      axios.post('/users/updateDetails', {
         'fname': formik.values.fname,
         'lname': formik.values.lname,
         'email': formik.values.email,
@@ -275,9 +275,9 @@ export default function RegisterForm() {
       <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
         <Stack spacing={3}>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 2, sm: 4 }}>
-            
+
             <TextField
-              
+
               fullWidth
               value={fname}
               onChange={(e) => setFname(e.target.value)}
@@ -376,20 +376,20 @@ export default function RegisterForm() {
                   <TextField
                     fullWidth
                     label="PIN"
-                    
-                    
+
+
                     inputProps={{ maxLength: 6 }}
                     {...getFieldProps('pin')}
                     error={Boolean(touched.pin && errors.pin)}
                     helperText={touched.pin && errors.pin}
                   />
                   {
-              // sgstns.length >0 ?
-              //  sgstns.map((item,index)=><Typography key={index} value={index}>item.A</Typography>
-              //  )
-              // :
-              // <></>
-            }
+                    // sgstns.length >0 ?
+                    //  sgstns.map((item,index)=><Typography key={index} value={index}>item.A</Typography>
+                    //  )
+                    // :
+                    // <></>
+                  }
                 </Stack>
                 <TextField
                   fullWidth
