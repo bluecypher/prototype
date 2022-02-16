@@ -39,7 +39,7 @@ export default function Page404() {
           <Box
             component="img"
             src="/static/logo.png"
-            sx={{ height: 1600, mx: 'auto', my: { xs: 5, sm: 10 } }}
+            sx={{ height: 160, mx: 'auto', my: { xs: 5, sm: 10 } }}
           />
           {/* </motion.div> */}
 
