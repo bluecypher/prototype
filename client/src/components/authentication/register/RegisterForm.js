@@ -8,10 +8,14 @@ import { useFormik, Form, FormikProvider } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from "react-redux";
 // material
-import { Stack, TextField, Typography, Checkbox, Grid, Button, } from '@mui/material';
+import { Stack, TextField, Typography, Checkbox, Grid, Autocomplete, Button, } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // import { number } from 'prop-types';
 // import PINCODE from '../../../utils/pincode';
+import { createFilterOptions } from '@mui/material/Autocomplete';
+import imageCompression from 'browser-image-compression';
+import PINCODE from '../../../utils/pincodes';
+
 
 const axios = require('axios');
 // ----------------------------------------------------------------------
@@ -34,8 +38,15 @@ export default function RegisterForm() {
   // const [servData,setServData] = useState([]);
   // let services;
   const [services, setServices] = useState([]);
+  const [pini, setPini] = useState('');
   useEffect(() => {
-    // console.log(PINCODE);
+    console.log('data', data);
+    const temp = PINCODE.filter((item) =>
+
+      (item.Pincode === data.pin && item.Office === data.locality)
+    );
+    console.log('adda', temp);
+    setPn(temp[0]);
     axios.get("/users/getServices", { params: { 'number': localStorage.getItem('number') } })
       .then((res) => {
         setServices(res.data.services);
@@ -52,7 +63,7 @@ export default function RegisterForm() {
       })
     axios.post('/users/getUserServices', { 'id': data.id })
       .then((res) => {
-        console.log("result", res.data);
+        console.log("result", pn);
         let temp = res.data;
         temp = temp.map((item) => {
 
@@ -76,46 +87,13 @@ export default function RegisterForm() {
   const [lname, setLname] = useState('');
   const [userType, setUserType] = useState('');
   const [selected, setSelected] = useState([]);
-  const [sgstns, setSgstns] = useState([]);
+  const [pn, setPn] = useState({});
 
-  // const suggestLocality =()=> {
-  //   console.log('fshf',formik.values.pin.length);
-  //   if(formik.values.pin.length>5)
-  //   {
-  //     // const pn = formik.values.pin;
-  //     // const temp = PINCODE;
 
-  //     // for(let i=0; i<temp.length; i+=1)
-  //     // {
-  //     //   let pinSgstn = [];
-  //     //   if(temp[i].B.startsWith(pn))
-  //     //   {
-  //     //     pinSgstn = pinSgstn.concat(temp[i]);
-  //     //     console.log('pin suggestions',pinSgstn);
-  //     //   }
-  //     //   if(i===temp.length-1)
-  //     //   {
-  //     //     setSgstns(pinSgstn);
-  //     //   }
 
-  //     // } 
-  //     // setSgstns([{
-  //     //     "A": "Abul Fazal EnclaveI SO",
-  //     //     "B": "110025",
-  //     //     "C": "SOUTH DELHI",
-  //     //     "D": "Delhi"
-  //     //   },
-  //     //   {
-  //     //     "A": "Air Force Station Tugalkabad SO",
-  //     //     "B": "110080",
-  //     //     "C": "SOUTH DELHI",
-  //     //     "D": "Delhi"
-  //     //   }]);
+  const filterOptions = createFilterOptions({ matchFrom: 'start' });
 
-  //     console.log('pin suggestions',sgstns);
-  //   }
-  // }
-  const fileToDataUri = (file) => new Promise((resolve, reject) => {
+  const fileToDataUri = (file) => new Promise((resolve) => {
     const reader = new FileReader();
     reader.onload = (event) => {
       resolve(event.target.result)
@@ -129,10 +107,25 @@ export default function RegisterForm() {
       return;
     }
 
-    fileToDataUri(file)
-      .then(dataUri => {
-        setImage(dataUri)
-      })
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true
+    }
+    imageCompression(file, options).then((compressedFile) => {
+      console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
+      console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
+      fileToDataUri(compressedFile)
+        .then(dataUri => {
+          setImage(dataUri)
+        })
+      // return uploadToServer(compressedFile); // write your own logic
+    })
+      .catch((error) => {
+        console.log(error.message);
+      });
+
+
 
     console.log('image:', image);
   }
@@ -143,10 +136,23 @@ export default function RegisterForm() {
       return;
     }
 
-    fileToDataUri(file)
-      .then(dataUri => {
-        setLogo(dataUri)
-      })
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true
+    }
+    imageCompression(file, options).then((compressedFile) => {
+      console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
+      console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
+      fileToDataUri(compressedFile)
+        .then(dataUri => {
+          setLogo(dataUri)
+        })
+      // return uploadToServer(compressedFile); // write your own logic
+    })
+      .catch((error) => {
+        console.log(error.message);
+      });
 
     console.log('image:', logo);
   }
@@ -190,7 +196,7 @@ export default function RegisterForm() {
     add: Yup.string().required('Address is Required'),
 
     city: Yup.string().required('City is Required'),
-    pin: Yup.number().required('PIN is Required').typeError('Pincode must be numeric.'),
+    // pin: Yup.number().required('PIN is Required').typeError('Pincode must be numeric.'),
     state: Yup.string().required('State is Required'),
     ent: Yup.string().required("Enterprise Name is Required")
 
@@ -244,7 +250,7 @@ export default function RegisterForm() {
         'addr2': formik.values.add2,
         'locality': formik.values.locality,
         'city': formik.values.city,
-        'pin': formik.values.pin,
+        'pin': pini,
         'state': formik.values.state,
         'ent': formik.values.ent,
         'entLogo': logo,
@@ -355,6 +361,53 @@ export default function RegisterForm() {
                   error={Boolean(touched.add2 && errors.add2)}
                   helperText={touched.add2 && errors.add2}
                 />
+
+
+                <Autocomplete
+                  id="filter-demo"
+                  options={PINCODE}
+                  // value={pn}
+                  value={pn}
+                  getOptionLabel={(option) => `${option.Pincode}, ${option.Office}`}
+                  filterOptions={filterOptions}
+                  // renderOption={(props, option) => <li key={option.Id} {...props}>{option.Pincode}, {option.Locality}</li>}
+                  onChange={
+                    (event, newValue) => {
+                      if (newValue) {
+                        // console.log('sa', newValue.B);
+                        setPn(newValue);
+                        setPini(newValue.Pincode);
+                        formik.setFieldValue('locality', newValue.Office);
+                        formik.setFieldValue('city', newValue.StateName);
+                        formik.setFieldValue('state', newValue.StateName);
+                      }
+                      else {
+                        // console.log('ma', newValue);
+                        setPn(newValue);
+                      }
+
+
+                    }
+                  }
+                  renderInput={(params) =>
+                    <TextField
+                      inputProps={{ maxLength: 6 }}
+                      {...params}
+                      label="PIN"
+
+                    />
+                    // <TextField
+                    //   fullWidth
+                    //   label="PIN"
+
+                    //   {...params}
+                    //   inputProps={{ maxLength: 6 }}
+                    //   {...getFieldProps('pin')}
+                    //   error={Boolean(touched.pin && errors.pin)}
+                    //   helperText={touched.pin && errors.pin}
+                    // />
+                  }
+                />
                 <TextField
                   fullWidth
                   type="text"
@@ -373,7 +426,7 @@ export default function RegisterForm() {
                     helperText={touched.city && errors.city}
                   />
 
-                  <TextField
+                  {/* <TextField
                     fullWidth
                     label="PIN"
 
@@ -382,14 +435,9 @@ export default function RegisterForm() {
                     {...getFieldProps('pin')}
                     error={Boolean(touched.pin && errors.pin)}
                     helperText={touched.pin && errors.pin}
-                  />
-                  {
-                    // sgstns.length >0 ?
-                    //  sgstns.map((item,index)=><Typography key={index} value={index}>item.A</Typography>
-                    //  )
-                    // :
-                    // <></>
-                  }
+                  /> */}
+
+
                 </Stack>
                 <TextField
                   fullWidth
