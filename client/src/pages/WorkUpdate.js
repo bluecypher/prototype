@@ -47,41 +47,6 @@ export default function WorkUpdate() {
     const numbers = [1, 3, 6, 9, 12];
     const navigate = useNavigate();
 
-    // const onSubmit = () =>{
-    //     console.log('imajsdjg',amnt, wDetails);
-
-    //         axios.post('/users/updateWork', {
-    //             'workId': workId,
-
-    //             'name': name,
-    //             'serv': serv,
-    //             'amnt': amnt,
-    //             'wDetails': wDetails,
-    //             'wrnt' : grnt,
-    //             'pmtMethod': mop,
-    //             'nxtDate': date,
-    //             'nxtWork': nxtWork,
-
-    //         })
-    //             .then((response) => {
-    //                 console.log("response:", response)
-    //                 if (response.data === "Success") {
-
-    //                     if(mop === 'Online')
-    //                     {
-    //                     navigate('/dashboard/payment', { replace: true });
-    //                     }
-    //                     else{
-    //                         navigate('/dashboard/work', { replace: true });
-    //                     }
-
-    //                 }
-    //             })
-    //             .catch((e) => {
-    //                 console.log("Error", e);
-    //             })
-    // }
-
     useEffect(() => {
         console.log(workId);
         axios
@@ -270,7 +235,7 @@ export default function WorkUpdate() {
                             <Button fullWidth size="large" type="submit" variant="contained">
                                 Save
                             </Button>
-                            <Button variant="outlined" size="large" color="error" onClick={onCancel}>
+                            <Button sx={{border:1.5,}} variant="outlined" size="large" color="error" onClick={onCancel}>
                                 Cancel
                             </Button>
                         </Stack>

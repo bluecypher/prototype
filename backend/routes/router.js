@@ -444,4 +444,35 @@ router.post("/getAmount",  (req, res) => {
         res.status(404).send('Not valid ID');
     }
 });
+router.post("/editMembers",  (req, res) => {
+    const id = req.body.id;
+    const name = req.body.name;
+    const number =req.body.number;
+    if (id) {
+        dao.editMembers(id,name,number).then((resp) => {
+            res.status(200).send(resp);
+        }).catch((err) => {
+            res.status(404).send("Error");
+        })
+    }
+    else{
+        res.status(404).send('Not valid ID');
+    }
+});
+router.post("/editCustomers",  (req, res) => {
+    const id = req.body.id;
+    const name = req.body.name;
+    const number =req.body.number;
+    const add = req.body.add
+    if (id) {
+        dao.editCustomers(id,name,number,add).then((resp) => {
+            res.status(200).send(resp);
+        }).catch((err) => {
+            res.status(404).send("Error");
+        })
+    }
+    else{
+        res.status(404).send('Not valid ID');
+    }
+});
 module.exports = router;

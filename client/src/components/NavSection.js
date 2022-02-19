@@ -2,11 +2,14 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from '@iconify/react';
 import { NavLink as RouterLink, matchPath, useLocation } from 'react-router-dom';
+
+import { useSelector } from "react-redux";
 import arrowIosForwardFill from '@iconify/icons-eva/arrow-ios-forward-fill';
 import arrowIosDownwardFill from '@iconify/icons-eva/arrow-ios-downward-fill';
 // material
 import { alpha, useTheme, styled } from '@mui/material/styles';
 import { Box, List, Collapse, ListItemText, ListItemIcon, ListItemButton } from '@mui/material';
+import profileReducer from '../reducers/profileReducer';
 
 // ----------------------------------------------------------------------
 
@@ -155,14 +158,18 @@ NavSection.propTypes = {
 
 export default function NavSection({ navConfig, ...other }) {
   const { pathname } = useLocation();
+  const data = useSelector((state)=>state.profileReducer);
   const match = (path) => (path ? !!matchPath({ path, end: false }, pathname) : false);
 
   return (
     <Box {...other}>
       <List disablePadding>
         {navConfig.map((item) => (
-          
+          data.user_type==='M' && item.title==='My Team'?
+          <></>
+          :
           <NavItem key={item.title} item={item} active={match} />
+          
         ))}
       </List>
     </Box>

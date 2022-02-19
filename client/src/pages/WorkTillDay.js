@@ -27,7 +27,7 @@ export default function WorkToday() {
                     res.data.map((item) => {
                         if (item.mode === 'O') {
                             setOnlineAmnt(item.amnt);
-                        } else {
+                        } else if(item.mode === 'C'){
                             setCashAmnt(item.amnt);
                         }
                         return item;

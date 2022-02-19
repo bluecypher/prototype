@@ -6,7 +6,7 @@ const getconnection = () => {
     const con = mysql.createConnection({
         host: "localhost",
         user: 'root',
-        password: 'abc@123',
+        password: '12Mysql@34',
         database: "sahayak",
     });
     return con;
@@ -33,7 +33,7 @@ const getData = (number) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
 
-        db.query("SELECT spm.user_mast_id,spm.email,spm.phone,spm.first_name,spm.last_name,spm.photo,spm.address1,spm.address2,spm.city,spm.pin,spm.state,spm.locality_of_work,spm.highlights,em.ent_name AS enterprise,spm.user_type,em.ent_logo AS ent_logo,spm.enterprise_id AS ent_id,spm.qr_code AS vpa FROM service_provider_master spm INNER JOIN enterprise_master em ON spm.enterprise_id=em.ent_id WHERE phone =?", [number], (err, row) => {
+        db.query("SELECT spm.user_mast_id,spm.email,spm.phone,spm.first_name,spm.last_name,spm.photo,spm.address1,spm.address2,spm.city,spm.pin,spm.state,spm.locality_of_work,spm.highlights,em.ent_name AS enterprise,spm.user_type,em.ent_logo AS ent_logo,spm.enterprise_id AS ent_id,em.ent_vpa AS vpa FROM service_provider_master spm INNER JOIN enterprise_master em ON spm.enterprise_id=em.ent_id WHERE phone =?", [number], (err, row) => {
             if (!err) {
                 resolve(row);
                 console.log(row[0]);
@@ -100,11 +100,12 @@ const updateDetails = (data) => {
                 if (row && row.length) {
                     if (row[0].user_type === 'O') {
                         addServices(row[0].user_mast_id, data.services);
-                        db.query("UPDATE enterprise_master SET ent_name=?,ent_logo=? WHERE ent_id=?",
+                        db.query("UPDATE enterprise_master SET ent_name=?,ent_logo=?,last_updated=? WHERE ent_id=?",
                             [
                                 data.ent,
                                 data.entLogo,
-                                row[0].enterprise_id
+                                row[0].enterprise_id,
+                                new Date(Date.now())
                             ], (err, res) => {
                                 if (err) {
 
@@ -143,10 +144,12 @@ const updateDetails = (data) => {
                     );
                 }
                 else {
-                    db.query("INSERT INTO enterprise_master(ent_name,ent_logo) VALUES(?,?)",
+                    db.query("INSERT INTO enterprise_master(ent_name,ent_logo,created_on,last_updated) VALUES(?,?,?,?)",
                         [
                             data.ent,
-                            data.entLogo
+                            data.entLogo,
+                            new Date(Date.now()),
+                            new Date(Date.now())
                         ],
                         (err, res) => {
                             if (!err) {
@@ -399,7 +402,7 @@ const addCustomers = (name, number, id, add) => {
 const getCustomersList = (id) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
-        db.query("SELECT cust_mast_id AS custId, cust_name AS name,cust_phone AS number FROM service_provider_customer_master WHERE user_mast_id=?", [id], (err, row) => {
+        db.query("SELECT cust_mast_id AS custId, cust_name AS name,cust_phone AS number,address1 FROM service_provider_customer_master WHERE user_mast_id=?", [id], (err, row) => {
             if (!err) {
                 resolve(row);
                 // console.log(row);
@@ -549,7 +552,7 @@ const getUserServices = (id) => {
 const getWorkDetails = (workId) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
-        db.query("SELECT spcm.cust_name,sm.serv_name,spwl.work_desc,spwl.work_type,spwl.cust_mast_id,spwl.assign_to,spwl.work_plan_date FROM service_provider_work_list spwl INNER JOIN service_master sm ON spwl.work_type=sm.serv_id INNER JOIN service_provider_customer_master spcm ON spwl.cust_mast_id=spcm.cust_mast_id WHERE spwl.work_list_id=?", [
+        db.query("SELECT spcm.cust_name,sm.serv_name,spwl.work_desc,spwl.work_type,spwl.cust_mast_id,spwl.assign_to,spwl.work_plan_date,spwl.gaurantee,spwl.payment_mode,spwl.amount FROM service_provider_work_list spwl INNER JOIN service_master sm ON spwl.work_type=sm.serv_id INNER JOIN service_provider_customer_master spcm ON spwl.cust_mast_id=spcm.cust_mast_id WHERE spwl.work_list_id=?", [
             workId
         ],
             (err, row) => {
@@ -640,21 +643,38 @@ const getQRCode = (id) => {
 const uploadQR = (id, vpa) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
-        db.query("UPDATE service_provider_master SET qr_code=? WHERE user_mast_id=?", [
+        db.query("UPDATE service_provider_master SET qr_code=?,last_updated=? WHERE user_mast_id=?", [
             vpa,
+            new Date(Date.now()),
             id
         ],
             (err, row) => {
                 if (!err) {
                     console.log('qr row', row)
-                    resolve("Success");
+                    db.query("UPDATE enterprise_master SET ent_vpa=?,last_updated=? WHERE ent_id=(SELECT enterprise_id FROM service_provider_master WHERE user_mast_id=?)", [
+                        vpa,
+                        new Date(Date.now()),
+                        id
+                    ],
+                        (err, row) => {
+                            if (!err) {
+                                console.log('qr row', row)
+                                
+                                resolve("Success");
+                            }
+                            else {
+                                console.log('qr err', err)
+                                reject(err);
+                            }
+                        });
+                    
                 }
                 else {
                     console.log('qr err', err)
                     reject(err);
                 }
             });
-        db.end();
+        // db.end();
     });
 }
 
@@ -789,6 +809,63 @@ const deleteCustomers = (oID, tID) => {
     });
 };
 
+const editMembers = (id, name, number) => {
+    return new Promise((resolve, reject) => {
+        const db = getconnection();
+
+        db.query("UPDATE service_provider_master SET first_name=?,phone=? WHERE user_mast_id=?",
+            [ name, number,id],
+            (err, row) => {
+                if (!err) {
+                    console.log(row);
+                    db.query("UPDATE service_provider_team_detail SET team_member_first_name=?,team_member_phone=? WHERE team_member_id=?",
+                        [ name, number, id],
+                        (err, row) => {
+                            if (!err) {
+                                console.log(row);
+
+                                resolve("success");
+                            }
+                            else {
+                                console.log(err);
+                                resolve(err.sqlMessage);
+                            }
+                        });
+
+                   
+                }
+                else {
+                    console.log(err);
+                    resolve(err.sqlMessage);
+                }
+            });
+
+
+    });
+};
+
+const editCustomers = (id, name, number,add) => {
+    return new Promise((resolve, reject) => {
+        const db = getconnection();
+
+        db.query("UPDATE service_provider_customer_master SET cust_name=?,cust_phone=?,address1=? WHERE cust_mast_id=?",
+            [ name, number,add,id],
+            (err, row) => {
+                if (!err) {
+                    console.log(row);
+                    resolve("success");
+                   
+                }
+                else {
+                    console.log(err);
+                    resolve(err);
+                }
+            });
+
+
+    });
+};
+
 module.exports = {
     getconnection,
     updateDetails,
@@ -818,4 +895,6 @@ module.exports = {
     getUserType,
     deleteCustomers,
     getAmount,
+    editMembers,
+    editCustomers,
 };

@@ -108,12 +108,13 @@ export default function RegisterForm() {
     }
 
     const options = {
-      maxSizeMB: 1,
+      maxSizeMB: 0.1,
       maxWidthOrHeight: 1920,
       useWebWorker: true
     }
+    console.log(`OriginalFile size ${file.size / 1024 / 1024} MB`);
     imageCompression(file, options).then((compressedFile) => {
-      console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
+      // console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
       console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
       fileToDataUri(compressedFile)
         .then(dataUri => {
@@ -127,7 +128,7 @@ export default function RegisterForm() {
 
 
 
-    console.log('image:', image);
+    // console.log('image:', image);
   }
 
   const LogoChangeHandler = (file) => {

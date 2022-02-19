@@ -51,7 +51,7 @@ export default function PaymentPage() {
     };
 
     useEffect(() => {
-        console.log(data.vpa);
+        console.log(data);
 
         axios
             .post('/users/getAmount', { id: workId })
@@ -76,7 +76,7 @@ export default function PaymentPage() {
             .catch((err) => {
                 console.log('Error', err);
             });
-    }, [QR, workId]);
+    }, [QR, workId, data]);
     return (
         <Page title="Payment Page">
             <Container maxWidth="xl">

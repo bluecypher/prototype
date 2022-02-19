@@ -17,6 +17,7 @@ import {
   Card,
   Table,
   Stack,
+  Modal,
   Avatar,
   Button,
   Checkbox,
@@ -119,6 +120,14 @@ export default function User() {
       .required('Number is required')
       .typeError('Mobile number must be numeric.')
   });
+  const AddSchema2 = Yup.object().shape({
+    nam: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('Name is required'),
+
+    phon: Yup.number('Mobile number must be numeric.')
+      .min(1000000000, 'Please enter a valid number.')
+      .required('Number is required')
+      .typeError('Mobile number must be numeric.')
+  });
   useEffect(() => {
     console.log('redux_id:', profileData);
     axios
@@ -158,6 +167,7 @@ export default function User() {
   const [number, setNumber] = useState('');
   const [tName, setTName] = useState('');
   const [showAdd, setShowAdd] = useState(false);
+  const [showAdd2, setShowAdd2] = useState(false);
 
   const [cookies, setCookies] = useCookies('');
   const handleRequestSort = (event, property) => {
@@ -224,15 +234,17 @@ export default function User() {
     setFilterName(event.target.value);
   };
 
-  const handleNumber = (event) => {
-    setNumber(event.target.value);
-  };
-  const handleTName = (event) => {
-    setTName(event.target.value);
-  };
+  // const handleNumber = (event) => {
+  //   setNumber(event.target.value);
+  // };
+  // const handleTName = (event) => {
+  //   setTName(event.target.value);
+  // };
 
   const handleNewMember = () => {
     // console.log('filtered:',filteredUsers)
+    // formik.values.name = '';
+    // formik.values.phone = '';
     if (showAdd) {
       setShowAdd(false);
       setError(false);
@@ -244,34 +256,29 @@ export default function User() {
     }
   };
 
-  // const handleAdd = () => {
+  const handleNewMember2 = () => {
+    // console.log('filtered:',filteredUsers)
+    // formik2.values.name = '';
+    // formik2.values.phone = '';
+    if (showAdd2) {
+      setShowAdd2(false);
+      setError(false);
+      setSuccess(false);
+    } else {
+      setShowAdd2(true);
+      setError(false);
+      setSuccess(false);
+    }
+  };
 
-  //   console.log('Add');
-  //   axios.post('/users/addMembers', {
-  //     'number': number,
-  //     'name': tName,
-  //     'pNumber': localStorage.getItem('number')
-  //   })
-  //     .then((res) => {
-  //       console.log(res);
-  //       if (res.data === 'success') {
-  //         setNumber('');
-  //         setTName('');
-  //         setError(false);
-  //         setSuccess(true);
-
-  //       }
-
-  //       else if (res.data === 'no_user') {
-  //         setSuccess(false);
-  //         setError(true);
-  //       }
-
-  //     })
-  //     .catch((err) => {
-  //       console.log('err', err);
-  //     })
-  // }
+  const editUsers = (e, id) => {
+    formik2.values.id = id;
+    setShowAdd2(true);
+    const temp = USERLIST.filter((item) => item.memberId === id);
+    formik2.values.nam = temp[0].name;
+    formik2.values.phon = temp[0].number;
+    console.log(formik2.values.id);
+  }
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
 
@@ -299,8 +306,8 @@ export default function User() {
           if (res.data === 'success') {
             formik.values.name = '';
             formik.values.phone = '';
-            setNumber('');
-            setTName('');
+            // setNumber('');
+            // setTName('');
             setRefresh(true);
             setRefresh(false);
             setError(false);
@@ -316,11 +323,103 @@ export default function User() {
     }
   });
 
+  const formik2 = useFormik({
+    initialValues: {
+      nam: '',
+      phon: '',
+      id: '',
+    },
+    validationSchema: AddSchema2,
+    onSubmit: () => {
+      axios
+        .post('/users/editMembers', {
+          number: formik2.values.phon,
+          name: formik2.values.nam,
+          id: formik2.values.id,
+        })
+        .then((res) => {
+          console.log('response',res);
+          if (res.data === 'success') {
+            formik2.values.nam = '';
+            formik2.values.phon = '';
+
+            setRefresh(true);
+            setRefresh(false);
+            setError(false);
+            setSuccess(true);
+            handleNewMember2();
+          } else  {
+            setSuccess(false);
+            setError(true);
+          }
+        })
+        .catch((err) => {
+          console.log('err', err);
+        });
+      console.log('addnew',formik2.values.id);
+    }
+  });
+
   const { touched, errors, handleSubmit, getFieldProps } = formik;
 
+  // const { touched2, errors2, handleSubmit2, getFieldProps2 } = formik2;
   return (
     <Page title="My Team">
       <Container>
+        <Modal open={showAdd2} onClose={handleNewMember2}>
+          <Card sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '90%',
+            p: 3
+          }}>
+            <Stack direction="row" justifyContent="space-between">
+              <Typography variant="h6" gutterBottom>
+                Add a new member
+              </Typography>
+              <Icon color="red" onClick={handleNewMember2} icon={close} width={22} height={22} />
+            </Stack>
+            <FormikProvider value={formik2}>
+              <Form autoComplete="off" noValidate onSubmit={formik2.handleSubmit}>
+                <Stack spacing={2}>
+                  <TextField
+                    inputProps={{ maxLength: 10 }}
+                    label="Phone number"
+                    // value={number}
+                    // onChange={handleNumber}
+                    {...formik2.getFieldProps('phon')}
+                    error={Boolean(formik2.touched.phon && formik2.errors.phon)}
+                    helperText={formik2.touched.phon && formik2.errors.phon}
+                  />
+
+                  <TextField
+                    inputProps={{ maxLength: 50 }}
+                    label="Name"
+                    // value={tName}
+                    // onChange={handleTName}
+                    {...formik2.getFieldProps('nam')}
+                    error={Boolean(formik2.touched.nam && formik2.errors.nam)}
+                    helperText={formik2.touched.nam && formik2.errors.nam}
+                  />
+
+                  <Button type="submit">Add</Button>
+                </Stack>
+              </Form>
+            </FormikProvider>
+            {error && (
+              <Stack m={2}>
+                <Alert severity="error">Cannot add this number!</Alert>
+              </Stack>
+            )}
+            {success && (
+              <Stack m={2}>
+                <Alert severity="success">Member added successfully!</Alert>
+              </Stack>
+            )}
+          </Card>
+        </Modal>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
             My Team
@@ -339,7 +438,7 @@ export default function User() {
           )}
         </Stack>
         {showAdd && (
-          <Card sx={{ mb: 3, p: 2 }}>
+          <Card sx={{ mb: 3, p: 2, }}>
             <Stack direction="row" justifyContent="space-between">
               <Typography variant="h6" gutterBottom>
                 Add a new member
@@ -352,8 +451,8 @@ export default function User() {
                   <TextField
                     inputProps={{ maxLength: 10 }}
                     label="Phone number"
-                    value={number}
-                    onChange={handleNumber}
+                    // value={number}
+                    // onChange={handleNumber}
                     {...getFieldProps('phone')}
                     error={Boolean(touched.phone && errors.phone)}
                     helperText={touched.phone && errors.phone}
@@ -362,8 +461,8 @@ export default function User() {
                   <TextField
                     inputProps={{ maxLength: 50 }}
                     label="Name"
-                    value={tName}
-                    onChange={handleTName}
+                    // value={tName}
+                    // onChange={handleTName}
                     {...getFieldProps('name')}
                     error={Boolean(touched.name && errors.name)}
                     helperText={touched.name && errors.name}
@@ -375,7 +474,7 @@ export default function User() {
             </FormikProvider>
             {error && (
               <Stack m={2}>
-                <Alert severity="error">Cannot add this number as it already exists!</Alert>
+                <Alert severity="error">Cannot add this number, as it already exists!</Alert>
               </Stack>
             )}
             {success && (
@@ -420,12 +519,12 @@ export default function User() {
                           selected={isItemSelected}
                           aria-checked={isItemSelected}
                         >
-                          <TableCell padding="checkbox">
+                          {/* <TableCell padding="checkbox">
                             <Checkbox
                               checked={isItemSelected}
                               onChange={(event) => handleClick(event, name)}
                             />
-                          </TableCell>
+                          </TableCell> */}
                           <TableCell component="th" scope="row" padding="none">
                             <Stack direction="row" alignItems="center" spacing={2}>
                               <Avatar alt={name} src={img} sx={{ width: 32, height: 32 }} />
@@ -438,21 +537,26 @@ export default function User() {
                               <Icon icon="ph:phone-call-light" width={24} height={24} />
                             </Link>
                           </TableCell>
-                          {/* <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
+
+
                           <TableCell align="left">
-                            <Label
-                              variant="ghost"
-                              color={(status === 'inactive' && 'error') || 'success'}
-                            >
-                              {sentenceCase(status)}
-                            </Label>
-                          </TableCell> */}
+                            <Link href={`whatsapp://send?phone=+91${number}`}>
+                              <Icon icon="logos:whatsapp" width={22} height={22} />
+                            </Link>
+                          </TableCell>
 
                           <TableCell align="left">
                             {/* <UserMoreMenu handleDelete={(event)=>handleDelete(event,memberId)} memberId={memberId}/> */}
-                            <IconButton onClick={(event) => handleDelete(event, memberId)}>
+                            {/* <IconButton onClick={(event) => handleDelete(event, memberId)}>
                               <Icon icon={trash2Outline} width={24} height={24} />
-                            </IconButton>
+                            </IconButton> */}
+                            <Link
+                              component="button"
+                              variant="body2"
+                              onClick={(event) => editUsers(event, memberId)}
+                            >
+                              <Icon icon="lucide:pencil" width={20} height={20} />
+                            </Link>
                           </TableCell>
                         </TableRow>
                       );

@@ -65,6 +65,9 @@ export default function DashboardApp() {
   const onPhoneClick = (event, id) => {
     navigate(`/dashboard/work/${id}`);
   };
+  const onPhoneClick2 = (event, id) => {
+    navigate(`/dashboard/workHistory/${id}`);
+  };
   const editCalls = (event, id) => {
     navigate(`/dashboard/editCalls/${id}`);
   };
@@ -75,7 +78,7 @@ export default function DashboardApp() {
           <Stack direction="row" alignItems="center" justifyContent="space-between">
             <Typography variant="h4">Work Dashboard</Typography>
             <Stack alignItems="flex-end">
-              <Button alignSelf="right" variant="contained" onClick={addCalls}>
+              <Button variant="contained" onClick={addCalls}>
                 <Typography variant="h6">+Add calls</Typography>
               </Button>
             </Stack>
@@ -169,13 +172,13 @@ export default function DashboardApp() {
                     // <Stack key={item.work_id} justifyContent='space-between' direction='row' spacing={{ xs: 2, lg: 5 }}>
                     <Grid key={item.work_id} sx={{ mb: 1 }} container spacing={2}>
                       <Grid item xs={6}>
-                        {/* <Link
+                        <Link
                           component="button"
                           variant="body2"
-                          onClick={(event) => onPhoneClick(event, item.work_id)}
-                        > */}
+                          onClick={(event) => onPhoneClick2(event, item.work_id)}
+                        >
                         <Typography variant="subtitle2">{item.name}</Typography>
-                        {/* </Link> */}
+                        </Link>
                       </Grid>
                       <Grid item xs={2}>
                         <Link href={`tel:${item.cust_phone}`}>

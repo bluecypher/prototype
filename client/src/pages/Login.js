@@ -178,7 +178,7 @@ export default function Login() {
           <Stack sx={{ mb: 5 }}>
             <Stack sx={{ mb: 5 }} alignItems="center">
               {prevData && (
-                <Card sx={{ maxWidth: 345, p: 1, boxShadow: 10 }}>
+                <Card sx={{ maxWidth: 345, p: 1, boxShadow: 10, minWidth:100 }}>
                   <CardActionArea onClick={profileClick}>
                     <Stack spacing={1} alignItems="center">
                       <Stack alignItems="center">

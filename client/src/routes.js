@@ -51,6 +51,7 @@ const CustomerProfile = lazy(()=> import('./pages/CustomerProfile'));
 const WorkToday = lazy(()=> import('./pages/WorkToday'));
 const WorkTillDay = lazy(()=> import('./pages/WorkTillDay'));
 const PaymentPage = lazy(()=> import('./pages/PaymentPage'));
+const WorkHistory = lazy(()=> import('./pages/Workhistory'));
 
 // ----------------------------------------------------------------------
 
@@ -71,6 +72,7 @@ export default function Router() {
         { path: 'newCalls', element: <AddCalls /> },
         { path: 'profile', element: <Profile /> },
         { path: 'work/:workId', element: <WorkUpdate/>},
+        { path: 'workHistory/:workId', element: <WorkHistory/>},
         { path: 'customer/:custId', element: <CustomerProfile/>},
         { path: 'payment', element: <PaymentProfile/>},
         { path: 'todaysWork', element: <WorkToday/>},

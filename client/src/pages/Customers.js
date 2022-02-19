@@ -12,7 +12,8 @@ import { useNavigate } from 'react-router-dom';
 
 import { useSelector } from "react-redux";
 // material
-import trash2Outline from '@iconify/icons-eva/trash-2-outline';
+// import trash2Outline from '@iconify/icons-eva/trash-2-outline';
+import close from '@iconify/icons-ant-design/close-circle-outlined';
 import {
   Card,
   Table,
@@ -21,6 +22,7 @@ import {
   Button,
   Checkbox,
   TableRow,
+  Modal,
   TableBody,
   TableCell,
   Container,
@@ -111,7 +113,17 @@ export default function Customers() {
       .max(50, 'Too Long!')
       .required('Name is required'),
 
-    phone: Yup.number('Mobile number must be numeric.').min(1000000000, 'Please enter a valid number.').required('Number is required'),
+    phone: Yup.number('Mobile number must be numeric.').min(1000000000, 'Please enter a valid number.').required('Number is required').typeError('Mobile number must be numeric.'),
+
+
+  });
+  const AddSchema2 = Yup.object().shape({
+    name: Yup.string()
+      .min(2, 'Too Short!')
+      .max(50, 'Too Long!')
+      .required('Name is required'),
+
+    phone: Yup.number('Mobile number must be numeric.').min(1000000000, 'Please enter a valid number.').required('Number is required').typeError('Mobile number must be numeric.'),
 
 
   });
@@ -164,10 +176,11 @@ export default function Customers() {
   const [orderBy, setOrderBy] = useState('name');
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [number, setNumber] = useState('');
-  const [cName, setCName] = useState('');
+  // const [number, setNumber] = useState('');
+  // const [cName, setCName] = useState('');
   const [showAdd, setShowAdd] = useState(false);
-  const [add, setAdd] = useState('');
+  const [showAdd2, setShowAdd2] = useState(false);
+  // const [add, setAdd] = useState('');
 
 
 
@@ -189,23 +202,23 @@ export default function Customers() {
     setSelected([]);
   };
 
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-    setSelected(newSelected);
-  };
+  // const handleClick = (event, name) => {
+  //   const selectedIndex = selected.indexOf(name);
+  //   let newSelected = [];
+  //   if (selectedIndex === -1) {
+  //     newSelected = newSelected.concat(selected, name);
+  //   } else if (selectedIndex === 0) {
+  //     newSelected = newSelected.concat(selected.slice(1));
+  //   } else if (selectedIndex === selected.length - 1) {
+  //     newSelected = newSelected.concat(selected.slice(0, -1));
+  //   } else if (selectedIndex > 0) {
+  //     newSelected = newSelected.concat(
+  //       selected.slice(0, selectedIndex),
+  //       selected.slice(selectedIndex + 1)
+  //     );
+  //   }
+  //   setSelected(newSelected);
+  // };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -220,17 +233,17 @@ export default function Customers() {
     setFilterName(event.target.value);
   };
 
-  const handleNumber = (event) => {
-    setNumber(event.target.value);
-  };
+  // const handleNumber = (event) => {
+  //   setNumber(event.target.value);
+  // };
 
-  const handleCName = (event) => {
-    setCName(event.target.value);
-  };
+  // const handleCName = (event) => {
+  //   setCName(event.target.value);
+  // };
 
-  const handleAdd = (event) => {
-    setAdd(event.target.value);
-  };
+  // const handleAdd = (event) => {
+  //   setAdd(event.target.value);
+  // };
 
   const handleNewMember = () => {
     // console.log('filtered:',filteredUsers)
@@ -246,58 +259,42 @@ export default function Customers() {
     }
 
   };
+  const handleNewMember2 = () => {
+    // console.log('filtered:',filteredUsers)
+    if (showAdd2) {
+      setShowAdd2(false);
+      setError(false);
+      setSuccess(false);
+    }
+    else {
+      setShowAdd2(true);
+      setError(false);
+      setSuccess(false);
+    }
 
-  const handleDelete = (event, memberId) => {
-    console.log(id, ' ', memberId);
-    axios.post('/users/deleteCustomers', { 'parent_id': id, 'member_id': memberId })
-      .then((res) => {
+  };
 
-        if (!Object.keys(cookies).length) {
-          navigate('/sessionExpired')
-        }
-        else {
-          setRefresh(true);
-          setRefresh(false);
-          console.log('res:', res);
-        }
-      })
-      .catch((err) => {
-        console.log('err', err);
-      })
-    // console.log('number34:', n);
-  }
-
-  // const handleAdd = () => {
-
-
-  //   axios.post('/users/addCustomers', {
-  //     'number': number,
-  //     'id': id,
-  //     'name': cName
-  //   })
+  // const handleDelete = (event, memberId) => {
+  //   console.log(id, ' ', memberId);
+  //   axios.post('/users/deleteCustomers', { 'parent_id': id, 'member_id': memberId })
   //     .then((res) => {
-  //       console.log(res);
-  //       if (res.data === 'Success') {
-  //         setNumber('');
-  //         setCName('');
-  //         setError(false);
-  //         setSuccess(true);
 
-
+  //       if (!Object.keys(cookies).length) {
+  //         navigate('/sessionExpired')
   //       }
-
-  //       else if (res.data === 'no_user') {
-  //         setSuccess(false);
-  //         setError(true);
+  //       else {
+  //         setRefresh(true);
+  //         setRefresh(false);
+  //         console.log('res:', res);
   //       }
-
   //     })
   //     .catch((err) => {
   //       console.log('err', err);
   //     })
+  //   // console.log('number34:', n);
   // }
 
-
+  
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
 
   const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
@@ -324,12 +321,11 @@ export default function Customers() {
         .then((res) => {
           console.log(res);
           if (res.data === 'Success') {
-            setNumber('');
+           
             formik.values.name = '';
             formik.values.phone = '';
             formik.values.address = '';
-            setCName('');
-            setAdd('');
+           
             setRefresh(true);
             setRefresh(false);
             setError(false);
@@ -354,23 +350,144 @@ export default function Customers() {
 
   });
 
+  const formik2 = useFormik({
+    initialValues: {
+      name: '',
+      phone: '',
+      address: '',
+      id: '',
+
+    },
+    validationSchema: AddSchema2,
+    onSubmit: () => {
+      // 
+      axios.post('/users/editCustomers', {
+        'number': formik2.values.phone,
+        'id': formik2.values.id,
+        'name': formik2.values.name,
+        'add': formik2.values.address,
+      })
+        .then((res) => {
+          console.log(res);
+          if (res.data === 'success') {
+            
+            formik2.values.name = '';
+            formik2.values.phone = '';
+            formik2.values.address = '';
+            
+            setRefresh(true);
+            setRefresh(false);
+            setError(false);
+            setSuccess(true);
+            handleNewMember2();
+
+          }
+
+          else if (res.data.code === 'ER_DUP_ENTRY') {
+            setSuccess(false);
+            setError(true);
+          }
+
+        })
+        .catch((err) => {
+          console.log('err', err);
+        })
+      console.log('imag', formik2.values.id);
+
+    }
+
+
+  });
+  const editUsers = (e, id) => {
+    formik2.values.id = id;
+    setShowAdd2(true);
+    const temp = USERLIST.filter((item) => item.custId === id);
+    formik2.values.name = temp[0].name;
+    formik2.values.phone = temp[0].number;
+    formik2.values.address = temp[0].address1;
+    console.log('add');
+  }
+
+
   const { touched, errors, handleSubmit, getFieldProps } = formik;
 
   return (
     <Page title="Customers">
       <Container>
+      <Modal open={showAdd2} onClose={handleNewMember2}>
+          <Card sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '90%',
+            p: 3
+          }}>
+            <Stack direction="row" justifyContent="space-between">
+              <Typography variant="h6" gutterBottom>
+                Add a new Customer
+              </Typography>
+              <Icon color="red" onClick={handleNewMember2} icon={close} width={22} height={22} />
+            </Stack>
+            <FormikProvider value={formik2}>
+              <Form autoComplete="off" noValidate onSubmit={formik2.handleSubmit}>
+                <Stack spacing={2} >
+                  <TextField
+                    inputProps={{ maxLength: 10 }}
+                    label="Phone number"
+                    // value={number}
+                    // onChange={handleNumber}
+                    {...formik2.getFieldProps('phone')}
+                    error={Boolean(formik2.touched.phone && formik2.errors.phone)}
+                    helperText={formik2.touched.phone && formik2.errors.phone}
+                  />
+                  <TextField
+                    inputProps={{ maxLength: 40 }}
+                    label="Name"
+                    // value={cName}
+                    // onChange={handleCName}
+                    {...formik2.getFieldProps('name')}
+                    error={Boolean(formik2.touched.name && formik2.errors.name)}
+                    helperText={formik2.touched.name && formik2.errors.name}
+                  />
+
+                  <TextField
+                    inputProps={{ maxLength: 60 }}
+                    label="Address"
+                    // value={add}
+                    // onChange={handleAdd}
+                    {...formik2.getFieldProps('address')}
+                    error={Boolean(formik2.touched.address && formik2.errors.address)}
+                    helperText={formik2.touched.address && formik2.errors.address}
+                  />
+
+
+                  <Button type="submit" >Add</Button>
+                </Stack >
+              </Form>
+            </FormikProvider>
+
+            {
+              error &&
+              <Stack m={2}>
+                <Alert severity="error">A Customer with same number already exist in your list!!</Alert>
+              </Stack>
+            }
+            {
+              success &&
+              <Stack m={2}>
+                <Alert severity="success">Customer added successfully!</Alert>
+              </Stack>
+            }
+            </Card>
+            </Modal>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
             Customers List
           </Typography>
           {
             showAdd ?
-              <Button
-                variant="contained"
-                onClick={handleNewMember}
-              >
-                Close
-              </Button>
+              <></>
               :
               <Button
                 variant="contained"
@@ -383,19 +500,21 @@ export default function Customers() {
         </Stack>
         {
           showAdd &&
-          (<Card sx={{ mb: 3, p: 2 }}>
-            <Typography variant="h6" gutterBottom>
-              Add a new Customer
-            </Typography>
-
+          (<Card sx={{ mb: 3, p: 2, }}>
+            <Stack direction="row" justifyContent="space-between">
+              <Typography variant="h6" gutterBottom>
+                Add a new Customer
+              </Typography>
+              <Icon color="red" onClick={handleNewMember} icon={close} width={22} height={22} />
+            </Stack>
             <FormikProvider value={formik}>
               <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
                 <Stack spacing={2} >
                   <TextField
                     inputProps={{ maxLength: 10 }}
                     label="Phone number"
-                    value={number}
-                    onChange={handleNumber}
+                    // value={number}
+                    // onChange={handleNumber}
                     {...getFieldProps('phone')}
                     error={Boolean(touched.phone && errors.phone)}
                     helperText={touched.phone && errors.phone}
@@ -403,8 +522,8 @@ export default function Customers() {
                   <TextField
                     inputProps={{ maxLength: 40 }}
                     label="Name"
-                    value={cName}
-                    onChange={handleCName}
+                    // value={cName}
+                    // onChange={handleCName}
                     {...getFieldProps('name')}
                     error={Boolean(touched.name && errors.name)}
                     helperText={touched.name && errors.name}
@@ -413,8 +532,8 @@ export default function Customers() {
                   <TextField
                     inputProps={{ maxLength: 60 }}
                     label="Address"
-                    value={add}
-                    onChange={handleAdd}
+                    // value={add}
+                    // onChange={handleAdd}
                     {...getFieldProps('address')}
                     error={Boolean(touched.address && errors.address)}
                     helperText={touched.address && errors.address}
@@ -476,12 +595,12 @@ export default function Customers() {
                           selected={isItemSelected}
                           aria-checked={isItemSelected}
                         >
-                          <TableCell padding="checkbox">
+                          {/* <TableCell padding="checkbox">
                             <Checkbox
                               checked={isItemSelected}
                               onChange={(event) => handleClick(event, name)}
                             />
-                          </TableCell>
+                          </TableCell> */}
                           <TableCell component="th" scope="row" padding="none">
                             <Stack direction="row" alignItems="center" spacing={2}>
                               <Avatar alt={name} src={img} sx={{ width: 32, height: 32 }} />
@@ -502,20 +621,21 @@ export default function Customers() {
                             <Link href={`tel:${number}`}><Icon icon="ph:phone-call-light" width={24} height={24} /></Link>
 
                           </TableCell>
-                          {/* <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
-                          <TableCell align="left">
-                            <Label
-                              variant="ghost"
-                              color={(status === 'inactive' && 'error') || 'success'}
-                            >
-                              {sentenceCase(status)}
-                            </Label>
-                          </TableCell> */}
 
                           <TableCell align="left">
-                            <IconButton onClick={(event) => handleDelete(event, custId)}>
-                              <Icon icon={trash2Outline} width={24} height={24} />
-                            </IconButton>
+                            <Link href={`whatsapp://send?phone=+91${number}`}>
+                              <Icon icon="logos:whatsapp" width={22} height={22} />
+                            </Link>
+                          </TableCell>
+
+                          <TableCell align="left">
+                            <Link
+                              component="button"
+                              variant="body2"
+                              onClick={(event) => editUsers(event, custId)}
+                            >
+                              <Icon icon="lucide:pencil" width={20} height={20} />
+                            </Link>
                           </TableCell>
                         </TableRow>
                       );
