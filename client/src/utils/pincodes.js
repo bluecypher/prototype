@@ -558,7 +558,1033 @@ const PINCODE = [
     { "Office": "Vikas Puri", "Pincode": "110018", "District": "WEST DELHI", "StateName": "Delhi" },
     { "Office": "Vishnu Garden", "Pincode": "110018", "District": "WEST DELHI", "StateName": "Delhi" },
     { "Office": "Zakhira", "Pincode": "110015", "District": "WEST DELHI", "StateName": "Delhi" },
-    { "Office": "Mahthawal", "Pincode": "272206", "District": "SIDDHARTHNAGAR", "StateName": "Delhi" }
+    { "Office": "Mahthawal", "Pincode": "272206", "District": "SIDDHARTHNAGAR", "StateName": "Delhi" },
+    {
+        "Office": "Agon",
+        "Pincode": "122104",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Air Force",
+        "Pincode": "122005",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Akhera",
+        "Pincode": "122107",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Arjun Nagar",
+        "Pincode": "122001",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Baded",
+        "Pincode": "122508",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Badli",
+        "Pincode": "122508",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Badshahpur",
+        "Pincode": "122101",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Baghanki",
+        "Pincode": "122105",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Basai",
+        "Pincode": "122006",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Basai Road",
+        "Pincode": "122001",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Baslambi",
+        "Pincode": "122503",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Baspadamka",
+        "Pincode": "122503",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Bewan",
+        "Pincode": "122104",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Bhadas",
+        "Pincode": "122108",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Bhangrola",
+        "Pincode": "122505",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Bhirauti",
+        "Pincode": "122103",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Bhondsi",
+        "Pincode": "122102",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Bhorakalan",
+        "Pincode": "122413",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Bichhor",
+        "Pincode": "122508",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Bilaspur Khurd",
+        "Pincode": "122413",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Bisru",
+        "Pincode": "122508",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Budarpur",
+        "Pincode": "122108",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Budhera",
+        "Pincode": "122505",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Carterpuri",
+        "Pincode": "122017",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Chakkarpur",
+        "Pincode": "122002",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Chapera",
+        "Pincode": "122103",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Cheelarh",
+        "Pincode": "122502",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Damdama",
+        "Pincode": "122102",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Daulah",
+        "Pincode": "122103",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Daultabad",
+        "Pincode": "122006",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Dhani Chitarsain",
+        "Pincode": "122413",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Dhankot",
+        "Pincode": "122505",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "DLF Ph-II",
+        "Pincode": "122008",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "DLF Ph-III",
+        "Pincode": "122010",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "DLF QE",
+        "Pincode": "122002",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Doha",
+        "Pincode": "122104",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Dulawat",
+        "Pincode": "122105",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Dundahera",
+        "Pincode": "122016",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Dungerwas",
+        "Pincode": "123106",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Farrukh Nagar",
+        "Pincode": "122506",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Fazilpur",
+        "Pincode": "122101",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Ferozepur Jhirka",
+        "Pincode": "122104",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Ferozepur Namak",
+        "Pincode": "122107",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Galleria DLF-IV",
+        "Pincode": "122009",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Garhi Harsaru",
+        "Pincode": "122505",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Ghamroj",
+        "Pincode": "122102",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Ghasera",
+        "Pincode": "122103",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Ghungola",
+        "Pincode": "122103",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Gulalta",
+        "Pincode": "122508",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Gurgaon H.O",
+        "Pincode": "122001",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Gurgaon Kty.",
+        "Pincode": "122001",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Gurgaon Sector 17",
+        "Pincode": "122001",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Gurgaon Sector 45",
+        "Pincode": "122003",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Gurgaon Sector 56",
+        "Pincode": "122011",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Gurgaon South City I",
+        "Pincode": "122001",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Gurgaon South City II",
+        "Pincode": "122018",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Gurgaon Village",
+        "Pincode": "122006",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Gwal Pahari",
+        "Pincode": "122003",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Haillymandi",
+        "Pincode": "122504",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Hasanpur",
+        "Pincode": "122105",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Hirwari",
+        "Pincode": "122104",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "IMT Manesar",
+        "Pincode": "122052",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Inchhapuri",
+        "Pincode": "122414",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Indir Mewat",
+        "Pincode": "122103",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Industrial Complex Dundahera",
+        "Pincode": "122016",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Industrial Estate (Gurgaon)",
+        "Pincode": "122007",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Jagat",
+        "Pincode": "122502",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Jaitpur",
+        "Pincode": "122502",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Jamalgarh",
+        "Pincode": "122508",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Jamalpur",
+        "Pincode": "122503",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Janaula",
+        "Pincode": "122503",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Jant",
+        "Pincode": "122502",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Jataula",
+        "Pincode": "122504",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Jatauli",
+        "Pincode": "122504",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Jawasi",
+        "Pincode": "122105",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Jhamuwas",
+        "Pincode": "122105",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Jharsa",
+        "Pincode": "122003",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Kadipur",
+        "Pincode": "122101",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Kakoria",
+        "Pincode": "122502",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Kalwari",
+        "Pincode": "122105",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Kankarwali Rewari",
+        "Pincode": "123401",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Karola",
+        "Pincode": "122504",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Kasan",
+        "Pincode": "122051",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Khalilpur",
+        "Pincode": "122502",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Khandewia",
+        "Pincode": "122504",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Khandsa",
+        "Pincode": "122004",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Khandsa Road",
+        "Pincode": "122001",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Khatauli",
+        "Pincode": "122414",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Khera Khurampur",
+        "Pincode": "122506",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Kherki Daula",
+        "Pincode": "122004",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Kherla",
+        "Pincode": "122102",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "KherliLala",
+        "Pincode": "122103",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Khor",
+        "Pincode": "122414",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Kiranj",
+        "Pincode": "122103",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Kurthala",
+        "Pincode": "122107",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Lakhnaula",
+        "Pincode": "122004",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Lohinga Kalan",
+        "Pincode": "122508",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Lokra",
+        "Pincode": "122414",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Malab",
+        "Pincode": "122107",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Mandikhera",
+        "Pincode": "122108",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Manesar",
+        "Pincode": "122051",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Mankdola",
+        "Pincode": "122505",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Maruthi Kunj",
+        "Pincode": "122102",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Mehchana",
+        "Pincode": "122504",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Mini Sectt.",
+        "Pincode": "122001",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Mirpur",
+        "Pincode": "122502",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Mohamadpur Ahir",
+        "Pincode": "122105",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Moklawas",
+        "Pincode": "122413",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Moolthan",
+        "Pincode": "122108",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Nagina (Gurgaon)",
+        "Pincode": "122108",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Naheda",
+        "Pincode": "122508",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Nai",
+        "Pincode": "122508",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Nanukalan",
+        "Pincode": "122414",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Narhera",
+        "Pincode": "122503",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Narsinghpur",
+        "Pincode": "122004",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Nathupur",
+        "Pincode": "122002",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "New Colony (Gurgaon)",
+        "Pincode": "122001",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Noorgarh",
+        "Pincode": "122504",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Nsg Camp Manesar",
+        "Pincode": "122051",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Nuh",
+        "Pincode": "122107",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Pachgaon",
+        "Pincode": "122413",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Pahari",
+        "Pincode": "122502",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Palam Road",
+        "Pincode": "122015",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Palam Vihar (Gurgaon)",
+        "Pincode": "122017",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Paltra",
+        "Pincode": "122101",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Pataudi",
+        "Pincode": "122503",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Pathreri",
+        "Pincode": "122413",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Patil R.S.",
+        "Pincode": "122506",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Pingwan",
+        "Pincode": "122508",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Punhana",
+        "Pincode": "122508",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Railwary Road",
+        "Pincode": "122006",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Raisina",
+        "Pincode": "122102",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Ramgarh",
+        "Pincode": "122502",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Rathiwas",
+        "Pincode": "122105",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Rawli",
+        "Pincode": "122104",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Rethath",
+        "Pincode": "122508",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Rewasan",
+        "Pincode": "122103",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Rithoj",
+        "Pincode": "122102",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Rojka Meo",
+        "Pincode": "122103",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Sakras",
+        "Pincode": "122108",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Sarhaul",
+        "Pincode": "122015",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Sewari",
+        "Pincode": "122506",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Shahchokha",
+        "Pincode": "122508",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Sherpur",
+        "Pincode": "122502",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Shivaji Nagar (Gurgaon)",
+        "Pincode": "122001",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Sidhrawali",
+        "Pincode": "122413",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Sihri Singhalheri",
+        "Pincode": "122508",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Sikanderpur",
+        "Pincode": "122004",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Sikohpur",
+        "Pincode": "122004",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Sikrawa",
+        "Pincode": "122508",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Singar",
+        "Pincode": "122508",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Smaspur",
+        "Pincode": "122003",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Sohna Adda",
+        "Pincode": "122001",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Sohna",
+        "Pincode": "122103",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Sudaka",
+        "Pincode": "122107",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Sultanpur",
+        "Pincode": "122506",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Sundh",
+        "Pincode": "122105",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Syed Shahpur",
+        "Pincode": "122414",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Tain",
+        "Pincode": "122107",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Tapkan",
+        "Pincode": "122107",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Tatarpur",
+        "Pincode": "122502",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Tauru Extension Counter",
+        "Pincode": "122105",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Tauru",
+        "Pincode": "122105",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Teekli",
+        "Pincode": "122101",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Turkiawas",
+        "Pincode": "122502",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Ujina",
+        "Pincode": "122107",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Umra",
+        "Pincode": "122108",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Unchamajra",
+        "Pincode": "122503",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Urban Estate (Gurgaon)",
+        "Pincode": "122001",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Wazipur",
+        "Pincode": "122505",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       },
+       {
+        "Office": "Wazirabad",
+        "Pincode": "122003",
+        "District": "Gurgaon",
+        "StateName": "HARYANA"
+       }
 ]
 
 export default PINCODE;

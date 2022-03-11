@@ -48,10 +48,13 @@ const WorkUpdate = lazy(()=> import('./pages/WorkUpdate'));
 const Profile = lazy(()=> import('./pages/Profile'));
 const PaymentProfile = lazy(()=> import('./pages/PaymentProfile'));
 const CustomerProfile = lazy(()=> import('./pages/CustomerProfile'));
-const WorkToday = lazy(()=> import('./pages/WorkToday'));
-const WorkTillDay = lazy(()=> import('./pages/WorkTillDay'));
+// const WorkToday = lazy(()=> import('./pages/WorkToday'));
+// const WorkMonthly = lazy(()=> import('./pages/WorkMonthly'));
 const PaymentPage = lazy(()=> import('./pages/PaymentPage'));
 const WorkHistory = lazy(()=> import('./pages/Workhistory'));
+const MyCollections = lazy(()=> import('./pages/MyCollections'));
+const Feedback = lazy(()=> import('./pages/Feedback'));
+const FeedbackSubmit = lazy(()=> import('./pages/FeedbackSubmit'));
 
 // ----------------------------------------------------------------------
 
@@ -75,10 +78,12 @@ export default function Router() {
         { path: 'workHistory/:workId', element: <WorkHistory/>},
         { path: 'customer/:custId', element: <CustomerProfile/>},
         { path: 'payment', element: <PaymentProfile/>},
-        { path: 'todaysWork', element: <WorkToday/>},
-        { path: 'tillDaysWork', element: <WorkTillDay/>},
+        // { path: 'todaysWork', element: <WorkToday/>},
+        // { path: 'tillDaysWork', element: <WorkMonthly/>},
         { path: 'editCalls/:workId', element: <EditCalls/>},
         { path: 'payment/:workId', element: <PaymentPage/>},
+        { path: 'myCollections', element: <MyCollections/>},
+        
       ]
     },
     {
@@ -91,7 +96,9 @@ export default function Router() {
         { path: '404', element: <NotFound /> },
         { path: 'sessionExpired', element: <SessionExpired /> },
         { path: '/', element: <Login /> },
-        { path: '*', element: <Navigate to="/404" /> }
+        { path: '*', element: <Navigate to="/404" /> },
+        { path: 'feedback/:ciphertext', element: <Feedback/>},
+        { path: 'submitFeedback', element: <FeedbackSubmit/>},
       ]
     },
     { path: '*', element: <Navigate to="/404" replace /> }

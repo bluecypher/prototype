@@ -22,7 +22,7 @@ let servCols;
 let gOnline;
 let gCash;
 let myCols;
-export default function WorkToday() {
+export default function WorkMonthly() {
     // const [selectedService, setSelectedService] = useState("");
     const [onlineAmnt, setOnlineAmnt] = useState(0);
     const [cashAmnt, setCashAmnt] = useState(0);
@@ -49,7 +49,7 @@ export default function WorkToday() {
                 console.log('member dat:', teamList);
 
                 axios
-                    .post('/users/workDoneToday/', { id: id, date: inputDate })
+                    .post('/users/workDoneMonthly/', { id: id, date: inputDate })
                     .then((res) => {
                         if (!Object.keys(cookies).length) {
                             navigate('/sessionExpired');
@@ -158,76 +158,64 @@ export default function WorkToday() {
     return (
         <Page title="Work Done Today">
             <Box maxWidth="xl" sx={{ width: "100%" }}>
-                <Stack sx={{ pb: 1 }} direction="row" justifyContent="space-between">
-                {/* <Grid sx={{ mb: 1 }} alignItems="center" container  spacing={1}>
+                <Stack sx={{ pb: 1 }} direction="row" alignItems="center">
 
-                    <Grid item xs={2}> */}
-                        <Button onClick={(event) => {
-                            let temp = new Date(inputDate);
-                            temp = new Date(temp.setMonth(temp.getMonth() - 1));
-                            setMyColList([]);
-                            setMyTotCol(0);
-                            setInputDate(temp);
-                        }
-                        }>
+                    <Button onClick={(event) => {
+                        let temp = new Date(inputDate);
+                        temp = new Date(temp.setFullYear(temp.getFullYear() - 1));
+                        setMyColList([]);
+                        setMyTotCol(0);
+                        setInputDate(temp);
+                    }
+                    }>
+                        <Icon height={26} width={26} icon="gg:chevron-double-left-r" /></Button>
+                    <Button onClick={(event) => {
+                        let temp = new Date(inputDate);
+                        temp = new Date(temp.setMonth(temp.getMonth() - 1));
+                        setMyColList([]);
+                        setMyTotCol(0);
+                        setInputDate(temp);
+                    }}><Icon height={28} width={28} icon="ant-design:left-circle-outlined" /></Button>
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        <DatePicker
+                            value={inputDate}
+                            onChange={(newValue) => {
+                                setMyColList([]);
+                                setMyTotCol(0);
+                                setInputDate(newValue);
+                            }}
+                            renderInput={(params) =>
+                                <TextField
+                                    {...params}
+                                    InputProps={{ style: { fontWeight: 'bold' } }}
+                                    size="small"
+                                    sx={{ width: '100%' }}
+                                    fullWidth
+                                />
 
-                            <Icon height={26} width={26} icon="gg:chevron-double-left-r" /></Button>
-                    {/* </Grid>
-                    <Grid item xs={2}> */}
-                        <Button onClick={(event) => {
-                            setMyColList([]);
-                            setMyTotCol(0);
-                            setInputDate(new Date(inputDate.getTime() - 1000 * 60 * 60 * 24))
-                        }}><Icon height={28} width={28} icon="ant-design:left-circle-outlined" /></Button>
-                    {/* </Grid>
-                    <Grid item xs={4}> */}
-                        
-                        <LocalizationProvider dateAdapter={AdapterDateFns}>
-                            <DatePicker
-                                value={inputDate}
-                                onChange={(newValue) => {
-                                    setMyColList([]);
-                                    setMyTotCol(0);
-                                    setInputDate(newValue);
-                                }}
-                                
-                                renderInput={(params) =>
-                                    
-                                    <TextField
-                                        {...params}
-                                        InputProps={{ style: { fontWeight: 'bold' } }}
-                                        size="small"
-                                        sx={{ width: '100%' }}
-                                        fullWidth
-                                    />
-                                   
+                            }
+                            inputFormat="MMM, yyyy"
+                        />
+                    </LocalizationProvider>
+                    <Button onClick={(event) => {
+                        // setMyColList([]);
+                        // setInputDate(new Date(inputDate.getTime() + 1000 * 60 * 60 * 24))
 
-                                }
-                                inputFormat="dd MMM, yyyy"
-                            />
-                        </LocalizationProvider>
-                       
-
-                    {/* </Grid>
-                    <Grid item xs={2}> */}
-                        <Button onClick={(event) => {
-                            setMyColList([]);
-                            setMyTotCol(0);
-                            setInputDate(new Date(inputDate.getTime() + 1000 * 60 * 60 * 24))
-                        }}><Icon height={28} width={28} icon="ant-design:right-circle-outlined" /></Button>
-                    {/* </Grid>
-                    <Grid item xs={2}> */}
-                        <Button onClick={(event) => {
-                            let temp = new Date(inputDate);
-                            temp = new Date(temp.setMonth(temp.getMonth() + 1));
-                            setMyColList([]);
-                            setMyTotCol(0);
-                            setInputDate(temp);
-                        }
-                        }>
-                            <Icon height={26} width={26} icon="gg:chevron-double-right-r" /></Button>
-                    {/* </Grid>
-                </Grid> */}
+                        let temp = new Date(inputDate);
+                        temp = new Date(temp.setMonth(temp.getMonth() + 1));
+                        setMyColList([]);
+                        setMyTotCol(0);
+                        setInputDate(temp);
+                    }}><Icon height={28} width={28} icon="ant-design:right-circle-outlined" /></Button>
+                    <Button onClick={(event) => {
+                        let temp = new Date(inputDate);
+                        temp = new Date(temp.setFullYear(temp.getFullYear() + 1));
+                        setMyColList([]);
+                        setMyTotCol(0);
+                        setInputDate(temp);
+                    }
+                    }>
+                        <Icon height={26} width={26} icon="gg:chevron-double-right-r" /></Button>
 
                 </Stack>
                 <Stack sx={{ bgcolor: '#004F98', p: 1, borderRadius: 1 }} direction="row" justifyContent="space-between">
@@ -245,7 +233,7 @@ export default function WorkToday() {
 
                             <Box sx={{ mx: 2, mb: 2, overflow: 'auto', maxHeight: 250 }} dir="ltr">
                                 {myColList.length > 0 ? (
-                                    myColList.map((item) => (
+                                    myColList.map((item,id) => (
                                         <Stack key={item.serv_id} justifyContent='center'>
                                             <Stack direction="row" justifyContent="space-between">
                                                 <Typography variant="subtitle2">Service: </Typography>
@@ -260,7 +248,9 @@ export default function WorkToday() {
 
                                                 <Typography variant="h6">Online- &#8377;{item.online}, Cash- &#8377;{item.cash}</Typography>
                                             </Stack>
-                                            <hr />
+                                            
+                                            {id === myColList.length-1 ? <></>: <hr/>}
+
                                         </Stack>
                                     ))
                                 ) : (

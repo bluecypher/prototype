@@ -21,18 +21,7 @@ const axios = require('axios');
 // ----------------------------------------------------------------------
 
 export default function RegisterForm() {
-  // let sgstns = [{
-  //   "A": "Abul Fazal EnclaveI SO",
-  //   "B": "110025",
-  //   "C": "SOUTH DELHI",
-  //   "D": "Delhi"
-  // },
-  // {
-  //   "A": "Air Force Station Tugalkabad SO",
-  //   "B": "110080",
-  //   "C": "SOUTH DELHI",
-  //   "D": "Delhi"
-  // },];
+  
   const navigate = useNavigate();
   const data = useSelector((state) => state.profileReducer)
   // const [servData,setServData] = useState([]);
@@ -108,25 +97,26 @@ export default function RegisterForm() {
     }
 
     const options = {
-      maxSizeMB: 0.1,
+      maxSizeMB: 0.05,
       maxWidthOrHeight: 1920,
       useWebWorker: true
     }
     console.log(`OriginalFile size ${file.size / 1024 / 1024} MB`);
     imageCompression(file, options).then((compressedFile) => {
-      // console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
+      console.log('compressedFile typeof',compressedFile); // true
       console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
       fileToDataUri(compressedFile)
         .then(dataUri => {
           setImage(dataUri)
         })
-      // return uploadToServer(compressedFile); // write your own logic
+      
+      // setImage(compressedFile);
     })
       .catch((error) => {
         console.log(error.message);
       });
-
-
+    
+    
 
     // console.log('image:', image);
   }
@@ -138,24 +128,25 @@ export default function RegisterForm() {
     }
 
     const options = {
-      maxSizeMB: 1,
+      maxSizeMB: 0.05,
       maxWidthOrHeight: 1920,
       useWebWorker: true
     }
     imageCompression(file, options).then((compressedFile) => {
-      console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
+      // console.log('compressedFile instanceof Blob', typeof compressedFile); // true
       console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
       fileToDataUri(compressedFile)
         .then(dataUri => {
           setLogo(dataUri)
         })
+      
       // return uploadToServer(compressedFile); // write your own logic
     })
       .catch((error) => {
         console.log(error.message);
       });
 
-    console.log('image:', logo);
+    // console.log('image:', logo);
   }
 
   const handleCheck = (e, id) => {
@@ -241,7 +232,26 @@ export default function RegisterForm() {
       // console.log('imag', formik.values.name);
       const nm = localStorage.getItem('number');
       // console.log('number:', values);
-      axios.post('/users/updateDetails', {
+      const sTime = new Date().getTime();
+      // const formData = new FormData();
+      // formData.append('fname', formik.values.fname);
+      // formData.append('lname', formik.values.lname);
+      // formData.append('email', formik.values.email);
+      // formData.append('number', nm);
+      // formData.append('img', image);
+      // formData.append('addr1', formik.values.add);
+      // formData.append('addr2', formik.values.add2);
+      // formData.append('locality', formik.values.locality);
+      // formData.append('city', formik.values.city);
+      // formData.append('pin', pini);
+      // formData.append('state', formik.values.state);
+      // formData.append('ent', formik.values.ent);
+      // formData.append('entLogo', logo);
+      // formData.append('services', selected);
+      // formData.append('hghlts', formik.values.hghlts);
+
+      axios.post('/users/updateDetails', 
+      {
         'fname': formik.values.fname,
         'lname': formik.values.lname,
         'email': formik.values.email,
@@ -257,11 +267,19 @@ export default function RegisterForm() {
         'entLogo': logo,
         'services': selected,
         'hghlts': formik.values.hghlts
-      })
+      },
+      // formData,
+      // {headers: {
+      //   "Content-Type": "multipart/form-data",
+      // }},
+      )
         .then((response) => {
-          console.log("response:", response)
+          // console.log("response:", response);
+          const eTime = new Date().getTime();
+          console.log('time taken:',eTime-sTime);
           if (response.data === "Success") {
-
+            const eTime = new Date().getTime();
+            console.log('time taken:',eTime-sTime);
             navigate('/dashboard', { replace: true });
           }
         })
@@ -379,7 +397,7 @@ export default function RegisterForm() {
                         setPn(newValue);
                         setPini(newValue.Pincode);
                         formik.setFieldValue('locality', newValue.Office);
-                        formik.setFieldValue('city', newValue.StateName);
+                        formik.setFieldValue('city', newValue.District);
                         formik.setFieldValue('state', newValue.StateName);
                       }
                       else {

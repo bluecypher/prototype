@@ -43,14 +43,9 @@ const sidebarConfig = [
     icon: getIcon("clarity:note-edit-line")
   },
   {
-    title: "Today's Work",
-    path: '/dashboard/todaysWork',
+    title: "My Collections",
+    path: '/dashboard/myCollections',
     icon: getIcon("ic:outline-work")
-  },
-  {
-    title: 'Till Day Work',
-    path: '/dashboard/tillDaysWork',
-    icon: getIcon("bytesize:work")
   },
   {
     title: 'logout',

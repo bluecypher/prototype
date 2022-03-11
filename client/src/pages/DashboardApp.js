@@ -51,7 +51,7 @@ const DashboardApp = () => {
       .then((res) => {
         console.log('data', res.data);
         if (Object.keys(cookies).length) {
-          // console.log('data', cookies);
+          console.log('data', res.data[0].photo);
           let bufferOriginal = null;
           if (res.data[0].photo) {
             if (res.data[0].photo.data) {

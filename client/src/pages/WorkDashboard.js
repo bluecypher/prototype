@@ -27,6 +27,7 @@ import { Icon } from '@iconify/react';
 
 import Page from '../components/Page';
 
+
 // import {
 //   AppTasks,
 
@@ -34,30 +35,107 @@ import Page from '../components/Page';
 
 //   AppConversionRates
 // } from '../components/_dashboard/app';
-
+let teamList;
+let teamWorkTemp;
+let teamHistTemp;
 export default function DashboardApp() {
   const navigate = useNavigate();
 
   const [cookies, setCookies] = useCookies();
   const data = useSelector((state) => state.profileReducer);
-  const [workList, setWorkList] = useState([]);
-  const [histList, setHistList] = useState([]);
-  const [date, setDate] = useState(new Date());
+  const [myWorkList, setMyWorkList] = useState([]);
+  const [myHistList, setMyHistList] = useState([]);
+  const [complaints, setComplaints] = useState([]);
+  const [teamWorks, setTeamWorks] = useState([]);
+  const [teamHists, setTeamHists] = useState([]);
+  const [inputDate, setInputDate] = useState(new Date());
+  // const value = new Date();
   useEffect(() => {
     if (!Object.keys(cookies).length) {
       navigate('/sessionExpired');
     } else {
-      console.log('ud', date);
-      axios.post('/users/getTodaysWork', { id: data.id, date: date }).then((res) => {
-        console.log('res.data', res.data);
-        const workTemp = res.data.filter((item) => item.status === 'O');
-        const histTemp = res.data.filter((item) => item.status === 'C');
+      // console.log('ud', date);
+      axios.get('/users/getMembers', { params: { id: data.id } })
+        .then((res) => {
+          teamList = res.data;
+          axios.post('/users/getTodaysWork', { id: data.id, date: inputDate }).then((res) => {
+            console.log('res.data', res.data);
 
-        setWorkList(workTemp);
-        setHistList(histTemp);
-      });
+            const temp = res.data.map((item) => {
+              const tempItem = item;
+
+              // const date = new Date(item.callDate);
+              // let hours = date.getHours();
+              // let minutes = date.getMinutes();
+              // const ampm = hours >= 12 ? 'PM' : 'AM';
+              // hours %= 12;
+              // hours = hours || 12;
+              // minutes = minutes < 10 ? `0${minutes}` : minutes;
+              // const strTime = `${hours}:${minutes} ${ampm}`;
+
+              tempItem.callTime = convertTime(item.callDate);
+              tempItem.compTime = convertTime(item.compDate);
+              return tempItem;
+            })
+
+            console.log('updated res.data', temp);
+
+            const workTemp = temp.filter((item) => item.status === 'O' && (new Date(item.callDate)).toDateString() === (new Date(inputDate)).toDateString());
+            const histTemp = temp.filter((item) => item.status === 'C' && (new Date(item.compDate)).toDateString() === (new Date(inputDate)).toDateString());
+
+
+            console.log('team list:', teamList);
+            const myWorkTemp = workTemp.filter((item) => item.user_id === data.id);
+
+            const myHistTemp = histTemp.filter((item) => item.user_id === data.id);
+            teamWorkTemp = [];
+            teamHistTemp = [];
+            teamList.forEach((i) => {
+              const memberWork = workTemp.filter((item) => item.user_id === i.memberId);
+              const memberHist = histTemp.filter((item) => item.user_id === i.memberId);
+              if (memberWork.length)
+                teamWorkTemp.push({ "id": i.memberId, "name": i.name, "custs": memberWork, flag: false });
+
+              if (memberHist.length)
+                teamHistTemp.push({ "id": i.memberId, "name": i.name, "custs": memberHist, flag: false });
+            }
+            );
+            console.log(teamHistTemp);
+            setTeamWorks(teamWorkTemp);
+            setTeamHists(teamHistTemp);
+            setMyWorkList(myWorkTemp);
+            setMyHistList(myHistTemp);
+          });
+        });
+      axios.post('/users/getCallbacks', { spId: data.id }).then((res) => {
+        console.log('callbacks', res.data);
+        let callbacks = res.data;
+        callbacks = callbacks.map((item) => {
+          let dt = new Date(item.callDate).toDateString();
+          dt = dt.slice(4);
+          item.callDate = `${dt} ${convertTime(item.callDate)}`;
+          return item;
+        })
+        setComplaints(callbacks);
+      })
+        .catch((err) => {
+          console.log('err', err);
+        })
     }
-  }, [data.id, date]);
+  }, [data.id, inputDate]);
+
+  const convertTime = (dt) => {
+    const date = new Date(dt);
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours %= 12;
+    hours = hours || 12;
+    minutes = minutes < 10 ? `0${minutes}` : minutes;
+    const strTime = `${hours}:${minutes} ${ampm}`;
+    return strTime;
+  }
+
   const addCalls = () => {
     // console.log("click")
     navigate('/dashboard/newcalls');
@@ -84,14 +162,22 @@ export default function DashboardApp() {
             </Stack>
           </Stack>
         </Box>
-        <Stack sx={{ pb: 1 }} alignItems="center">
+        <Stack sx={{ pb: 1 }} direction="row" alignItems="center">
+
+          <Button onClick={(event) => {
+            let temp = new Date(inputDate);
+            temp = new Date(temp.setMonth(temp.getMonth() - 1));
+            setInputDate(temp);
+          }
+          }><Icon height={26} width={26} icon="gg:chevron-double-left-r" /></Button>
+          <Button onClick={(event) => setInputDate(new Date(inputDate.getTime() - 1000 * 60 * 60 * 24))}><Icon height={28} width={28} icon="ant-design:left-circle-outlined" /></Button>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
-              label="Select Date"
-              value={date}
+
+              value={inputDate}
               onChange={(newValue) => {
                 console.log('date:', format(new Date(newValue), 'dd MMM yyyy HH:mm'));
-                setDate(newValue);
+                setInputDate(newValue);
               }}
               renderInput={(params) => {
                 console.log(params);
@@ -100,6 +186,9 @@ export default function DashboardApp() {
                     {...params}
                     InputProps={{ style: { fontWeight: 'bold' } }}
                     size="small"
+                    sx={{ width: '100%' }}
+                    fullWidth
+
                   />
                 );
               }}
@@ -107,39 +196,52 @@ export default function DashboardApp() {
             // onMonthChange={console.log('sc')}
             />
           </LocalizationProvider>
+          <Button onClick={(event) => setInputDate(new Date(inputDate.getTime() + 1000 * 60 * 60 * 24))}><Icon height={28} width={28} icon="ant-design:right-circle-outlined" /></Button>
+          <Button onClick={(event) => {
+            let temp = new Date(inputDate);
+            temp = new Date(temp.setMonth(temp.getMonth() + 1));
+            setInputDate(temp);
+          }
+          }><Icon height={26} width={26} icon="gg:chevron-double-right-r" /></Button>
+
         </Stack>
         <Grid container spacing={3}>
           <Grid item xs={12} md={6} lg={10}>
-            <Typography label="abd" />
-            <Card>
-              <CardHeader sx={{ mb: 2 }} title="Planned Calls" />
+
+            <Card sx={{ my: 1 }}>
+              <CardHeader sx={{ mb: 2, py: 1, bgcolor: '#96bfff', borderRadius: 1 }} title={`My Calls(${myWorkList.length})`} />
 
               <Box sx={{ mx: 2, mb: 2, overflow: 'auto', maxHeight: 250 }} dir="ltr">
-                {workList.length > 0 ? (
-                  workList.map((item) => (
+                {myWorkList.length > 0 ? (
+                  myWorkList.map((item) => (
                     // <Stack key={item.work_id} justifyContent='space-between' direction='row' spacing={{ xs: 2, lg: 5 }}>
                     <Grid key={item.work_id} sx={{ mb: 1 }} container spacing={2}>
-                      <Grid item xs={6}>
+
+                      <Grid item xs={7}>
                         <Link
                           component="button"
                           variant="body2"
                           onClick={(event) => onPhoneClick(event, item.work_id)}
                         >
                           <Typography variant="subtitle2">{item.name}</Typography>
+
                         </Link>
+                        <Typography variant="subtitle2">Service: {item.serv_name}</Typography>
+                        <Typography variant="subtitle2">Time of visit: {item.callTime}</Typography>
                       </Grid>
-                      <Grid item xs={2}>
+                      <Grid item container xs={5}>
+                      <Grid item xs={4}>
                         <Link href={`tel:${item.cust_phone}`}>
                           <Icon icon="ph:phone-call-light" width={22} height={22} />
                         </Link>
                       </Grid>
-                      <Grid item xs={2}>
+                      <Grid item xs={4}>
                         <Link href={`whatsapp://send?phone=+91${item.cust_phone}`}>
                           <Icon icon="logos:whatsapp" width={22} height={22} />
                         </Link>
                       </Grid>
                       {data.user_type === 'O' ? (
-                        <Grid item xs={2}>
+                        <Grid item xs={4}>
                           <Link
                             component="button"
                             variant="body2"
@@ -151,6 +253,7 @@ export default function DashboardApp() {
                       ) : (
                         <></>
                       )}
+                      </Grid>
                     </Grid>
                   ))
                 ) : (
@@ -161,43 +264,246 @@ export default function DashboardApp() {
                     <Typography variant="subtitle1">No calls planned for the date!!</Typography>
                   </Stack>
                 )}
+
               </Box>
+              {
+                teamWorks.map((item) => (
+                  <Box key={item.id}>
+
+                    <Link onClick={(event) => {
+                      if (item.flag) {
+                        let newArr = [...teamWorks];
+                        newArr = newArr.map((i) =>
+                          i.id === item.id ? { ...i, flag: false } : i
+                        )
+                        setTeamWorks(newArr);
+                      }
+                      else {
+                        let newArr = [...teamWorks];
+                        newArr = newArr.map((i) =>
+                          i.id === item.id ? { ...i, flag: true } : i
+                        )
+                        setTeamWorks(newArr);
+                      }
+                      console.log(item.flag)
+                    }}>
+                      <CardHeader sx={{ mb: 1, py: 1, bgcolor: '#96bfff', borderRadius: 1 }} title={`${item.name}(${item.custs.length})`} />
+                    </Link>
+                    {item.flag ?
+                      <Box sx={{ mx: 2, overflow: 'auto', maxHeight: 250 }} dir="ltr">
+                        {
+                          item.custs.map((item) => (
+                            // <Stack key={item.work_id} justifyContent='space-between' direction='row' spacing={{ xs: 2, lg: 5 }}>
+                            <Grid key={item.work_id} sx={{ mb: 1 }} container spacing={2}>
+
+                              <Grid item xs={7}>
+                                <Link
+                                  component="button"
+                                  variant="body2"
+                                  onClick={(event) => onPhoneClick(event, item.work_id)}
+                                >
+                                  <Typography variant="subtitle2">{item.name}</Typography>
+
+                                </Link>
+                                <Typography variant="subtitle2">Service: {item.serv_name}</Typography>
+                                <Typography variant="subtitle2">Time of visit: {item.callTime}</Typography>
+                              </Grid>
+                              <Grid item container xs={5}>
+                              <Grid item xs={4}>
+                                <Link href={`tel:${item.cust_phone}`}>
+                                  <Icon icon="ph:phone-call-light" width={22} height={22} />
+                                </Link>
+                              </Grid>
+                              <Grid item xs={4}>
+                                <Link href={`whatsapp://send?phone=+91${item.cust_phone}`}>
+                                  <Icon icon="logos:whatsapp" width={22} height={22} />
+                                </Link>
+
+                              </Grid>
+                              {data.user_type === 'O' ? (
+                                <Grid item xs={4}>
+                                  <Link
+                                    component="button"
+                                    variant="body2"
+                                    onClick={(event) => editCalls(event, item.work_id)}
+                                  >
+                                    <Icon icon="lucide:pencil" width={20} height={20} />
+                                  </Link>
+                                </Grid>
+                              ) : (
+                                <></>
+                              )}
+                              </Grid>
+
+                            </Grid>
+
+                          ))
+                        }
+
+                      </Box>
+                      :
+                      <></>
+                    }
+                  </Box>
+                ))
+              }
+
             </Card>
 
-            <Card sx={{ my: 1 }}>
-              <CardHeader sx={{ mb: 2 }} title="Calls made" />
+            <Card sx={{ mt: 3 }}>
+
+              <CardHeader sx={{ mb: 2, py: 1, bgcolor: '#90EE90', borderRadius: 1, }} title={`My Completed Calls(${myHistList.length})`} />
               <Box sx={{ mx: 2, mb: 2, overflow: 'auto', maxHeight: 250 }} dir="ltr">
-                {histList.length > 0 ? (
-                  histList.map((item) => (
+                {myHistList.length > 0 ? (
+                  myHistList.map((item) => (
                     // <Stack key={item.work_id} justifyContent='space-between' direction='row' spacing={{ xs: 2, lg: 5 }}>
                     <Grid key={item.work_id} sx={{ mb: 1 }} container spacing={2}>
-                      <Grid item xs={6}>
+                      <Grid item xs={7}>
                         <Link
                           component="button"
                           variant="body2"
                           onClick={(event) => onPhoneClick2(event, item.work_id)}
                         >
-                        <Typography variant="subtitle2">{item.name}</Typography>
+                          <Typography variant="subtitle2">{item.name}</Typography>
                         </Link>
+                        <Typography variant="subtitle2">Service: {item.serv_name}</Typography>
+                        <Typography variant="subtitle2">Time of visit: {item.compTime}</Typography>
                       </Grid>
-                      <Grid item xs={2}>
+                      <Grid item container xs={5}>
+                      <Grid item xs={4}>
                         <Link href={`tel:${item.cust_phone}`}>
                           <Icon icon="ph:phone-call-light" width={24} height={24} />
                         </Link>
                       </Grid>
-                      <Grid item xs={2}>
+                      <Grid item xs={4}>
                         <Link href={`whatsapp://send?phone=+91${item.cust_phone}`}>
                           <Icon icon="logos:whatsapp" width={22} height={22} />
                         </Link>
                       </Grid>
-                      <Grid item xs={2}>
+                      <Grid item xs={4}>
                         <></>
+                      </Grid>
                       </Grid>
                     </Grid>
                   ))
                 ) : (
                   <Stack alignItems="center" sx={{ xs: 2, lg: 5 }}>
                     <Typography variant="subtitle1">No calls made on the date!!</Typography>
+                  </Stack>
+                )}
+              </Box>
+
+              {
+                teamHists.map((item) => (
+                  <Box key={item.id}>
+                    <Link onClick={(event) => {
+                      if (item.flag) {
+                        let newArr = [...teamHists];
+                        newArr = newArr.map((i) =>
+                          i.id === item.id ? { ...i, flag: false } : i
+                        )
+                        setTeamHists(newArr);
+                      }
+                      else {
+                        let newArr = [...teamHists];
+                        newArr = newArr.map((i) =>
+                          i.id === item.id ? { ...i, flag: true } : i
+                        )
+                        setTeamHists(newArr);
+                      }
+                      console.log(item.flag)
+                    }}>
+                      <CardHeader sx={{ mb: 1, py: 1, bgcolor: '#90EE90', borderRadius: 1 }} title={`${item.name}(${item.custs.length})`} />
+                    </Link>
+
+                    {item.flag ?
+                      <Box sx={{ mx: 2, overflow: 'auto', maxHeight: 250 }} dir="ltr">
+                        {
+                          item.custs.map((item) => (
+                            // <Stack key={item.work_id} justifyContent='space-between' direction='row' spacing={{ xs: 2, lg: 5 }}>
+                            <Grid key={item.work_id} sx={{ mb: 1 }} container spacing={2}>
+                              <Grid item xs={7}>
+                                <Link
+                                  component="button"
+                                  variant="body2"
+                                  onClick={(event) => onPhoneClick2(event, item.work_id)}
+                                >
+                                  <Typography variant="subtitle2">{item.name}</Typography>
+
+                                </Link>
+                                <Typography variant="subtitle2">Service: {item.serv_name}</Typography>
+                                <Typography variant="subtitle2">Time of visit: {item.compTime}</Typography>
+                              </Grid>
+                              <Grid item container xs={5}>
+                              <Grid item xs={4}>
+                                <Link href={`tel:${item.cust_phone}`}>
+                                  <Icon icon="ph:phone-call-light" width={22} height={22} />
+                                </Link>
+                              </Grid>
+                              <Grid item xs={4}>
+                                <Link href={`whatsapp://send?phone=+91${item.cust_phone}`}>
+                                  <Icon icon="logos:whatsapp" width={22} height={22} />
+                                </Link>
+                              </Grid>
+
+                              <Grid item xs={4}>
+                                <></>
+                              </Grid>
+                              </Grid>
+
+                            </Grid>
+                            
+                          ))
+                        }
+
+                      </Box>
+                      :
+                      <></>
+                    }
+                  </Box>
+                ))
+              }
+            </Card>
+
+            <Card sx={{ mt: 3 }}>
+
+              <CardHeader sx={{ mb: 2, py: 1, bgcolor: '#FF7F7F', borderRadius: 1, }} title={`Callback Complaints(${complaints.length})`} />
+              <Box sx={{ mx: 2, mb: 2, overflow: 'auto', maxHeight: 250 }} dir="ltr">
+                {complaints.length > 0 ? (
+                  complaints.map((item) => (
+                    // <Stack key={item.work_id} justifyContent='space-between' direction='row' spacing={{ xs: 2, lg: 5 }}>
+                    <Grid key={item.work_id} sx={{ mb: 1 }} container spacing={2}>
+                      <Grid item xs={7}>
+                        <Link
+                          component="button"
+                          variant="body2"
+                          onClick={(event) => onPhoneClick2(event, item.work_id)}
+                        >
+                          <Typography variant="subtitle2">{item.name}</Typography>
+                        </Link>
+                        <Typography variant="subtitle2">Service: {item.serv_name}</Typography>
+                        <Typography variant="subtitle2">Time of visit: {item.callDate}</Typography>
+                      </Grid>
+                      <Grid item container xs={5}>
+                      <Grid item xs={4}>
+                        <Link href={`tel:${item.cust_phone}`}>
+                          <Icon icon="ph:phone-call-light" width={24} height={24} />
+                        </Link>
+                      </Grid>
+                      <Grid item xs={4}>
+                        <Link href={`whatsapp://send?phone=+91${item.cust_phone}`}>
+                          <Icon icon="logos:whatsapp" width={22} height={22} />
+                        </Link>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Button variant="contained" onClick={(event) => editCalls(event, item.work_id)}>Reassign</Button>
+                      </Grid>
+                      </Grid>
+                    </Grid>
+                  ))
+                ) : (
+                  <Stack alignItems="center" sx={{ xs: 2, lg: 5 }}>
+                    <Typography variant="subtitle1">No Complaints!!</Typography>
                   </Stack>
                 )}
               </Box>
