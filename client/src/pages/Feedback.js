@@ -118,9 +118,10 @@ export default function Feedback() {
     }, [ciphertext]);
 
     return (
-        <RootStyle title="Feedback">
+        // <RootStyle title="Feedback">
+            <Page title="Feedback">
             <Container>
-                <Stack >
+                <Stack sx={{ mb:2, mt:4}}>
 
                     <Typography>
                         Dear Customer,
@@ -203,7 +204,9 @@ export default function Feedback() {
 
                 </Stack>
             </Container>
-        </RootStyle >
+           
+        {/* </RootStyle > */}
+        </Page>
     );
 }
 

@@ -49,6 +49,11 @@ export default function DashboardApp() {
   const [teamWorks, setTeamWorks] = useState([]);
   const [teamHists, setTeamHists] = useState([]);
   const [inputDate, setInputDate] = useState(new Date());
+  const [totWorkCount, setTotWorkCount] = useState(0);
+  const [totHistCount, setTotHistCount] = useState(0);
+  const [cFlag, setCFlag] = useState(false);
+  const [workFlag, setWorkFlag] = useState(false);
+  const [histFlag, setHistFlag] = useState(false);
   // const value = new Date();
   useEffect(() => {
     if (!Object.keys(cookies).length) {
@@ -83,7 +88,8 @@ export default function DashboardApp() {
             const workTemp = temp.filter((item) => item.status === 'O' && (new Date(item.callDate)).toDateString() === (new Date(inputDate)).toDateString());
             const histTemp = temp.filter((item) => item.status === 'C' && (new Date(item.compDate)).toDateString() === (new Date(inputDate)).toDateString());
 
-
+            setTotWorkCount(workTemp.length);
+            setTotHistCount(histTemp.length);
             console.log('team list:', teamList);
             const myWorkTemp = workTemp.filter((item) => item.user_id === data.id);
 
@@ -208,53 +214,74 @@ export default function DashboardApp() {
         <Grid container spacing={3}>
           <Grid item xs={12} md={6} lg={10}>
 
-            <Card sx={{ my: 1 }}>
-              <CardHeader sx={{ mb: 2, py: 1, bgcolor: '#96bfff', borderRadius: 1 }} title={`My Calls(${myWorkList.length})`} />
+            <Card sx={{ my: 1, borderRadius: 1 }}>
+              <CardHeader sx={{ py: 1, bgcolor: '#004F98', }} titleTypographyProps={{ color: '#fff' }} title={`Planned Calls (${totWorkCount})`} />
 
-              <Box sx={{ mx: 2, mb: 2, overflow: 'auto', maxHeight: 250 }} dir="ltr">
-                {myWorkList.length > 0 ? (
+              <Box sx={{  overflow: 'auto', maxHeight: 250 }} dir="ltr">
+                <Link style={{ textDecoration: 'none' }} onClick={(event) => {
+                  if (workFlag)
+                    setWorkFlag(false);
+                  else
+                    setWorkFlag(true);
+                }}>
+                  <CardHeader sx={{ mb: 1, py: 1, bgcolor: '#C0C0C0', }} titleTypographyProps={{ color: '#004F98' }} title={`My Calls (${myWorkList.length})`} action={
+                        workFlag ?
+                          <Button>
+                            <Icon height={24} width={24} icon="akar-icons:minus" />
+                          </Button>
+                          :
+                          <Button>
+                            <Icon height={24} width={24} icon="ant-design:right-outlined" />
+                          </Button>
+
+                      }/>
+                </Link>
+                {
+                  workFlag &&
+                (myWorkList.length > 0 ? (
                   myWorkList.map((item) => (
-                    // <Stack key={item.work_id} justifyContent='space-between' direction='row' spacing={{ xs: 2, lg: 5 }}>
-                    <Grid key={item.work_id} sx={{ mb: 1 }} container spacing={2}>
+                    <Box key={item.work_id} sx={{ mx: 2 }}>
+                      <Grid sx={{ mb: 1 }} container spacing={2}>
 
-                      <Grid item xs={7}>
-                        <Link
-                          component="button"
-                          variant="body2"
-                          onClick={(event) => onPhoneClick(event, item.work_id)}
-                        >
-                          <Typography variant="subtitle2">{item.name}</Typography>
-
-                        </Link>
-                        <Typography variant="subtitle2">Service: {item.serv_name}</Typography>
-                        <Typography variant="subtitle2">Time of visit: {item.callTime}</Typography>
-                      </Grid>
-                      <Grid item container xs={5}>
-                      <Grid item xs={4}>
-                        <Link href={`tel:${item.cust_phone}`}>
-                          <Icon icon="ph:phone-call-light" width={22} height={22} />
-                        </Link>
-                      </Grid>
-                      <Grid item xs={4}>
-                        <Link href={`whatsapp://send?phone=+91${item.cust_phone}`}>
-                          <Icon icon="logos:whatsapp" width={22} height={22} />
-                        </Link>
-                      </Grid>
-                      {data.user_type === 'O' ? (
-                        <Grid item xs={4}>
+                        <Grid item xs={7}>
                           <Link
                             component="button"
                             variant="body2"
-                            onClick={(event) => editCalls(event, item.work_id)}
+                            onClick={(event) => onPhoneClick(event, item.work_id)}
                           >
-                            <Icon icon="lucide:pencil" width={20} height={20} />
+                            <Typography variant="subtitle2">{item.name}</Typography>
+
                           </Link>
+                          <Typography variant="subtitle2">Service: {item.serv_name}</Typography>
+                          <Typography variant="subtitle2">Time of visit: {item.callTime}</Typography>
                         </Grid>
-                      ) : (
-                        <></>
-                      )}
+                        <Grid item container xs={5}>
+                          <Grid item xs={4}>
+                            <Link href={`tel:${item.cust_phone}`}>
+                              <Icon icon="ph:phone-call-light" width={22} height={22} />
+                            </Link>
+                          </Grid>
+                          <Grid item xs={4}>
+                            <Link href={`whatsapp://send?phone=+91${item.cust_phone}`}>
+                              <Icon icon="logos:whatsapp" width={22} height={22} />
+                            </Link>
+                          </Grid>
+                          {data.user_type === 'O' ? (
+                            <Grid item xs={4}>
+                              <Link
+                                component="button"
+                                variant="body2"
+                                onClick={(event) => editCalls(event, item.work_id)}
+                              >
+                                <Icon icon="lucide:pencil" width={20} height={20} />
+                              </Link>
+                            </Grid>
+                          ) : (
+                            <></>
+                          )}
+                        </Grid>
                       </Grid>
-                    </Grid>
+                    </Box>
                   ))
                 ) : (
                   <Stack
@@ -263,14 +290,14 @@ export default function DashboardApp() {
                   >
                     <Typography variant="subtitle1">No calls planned for the date!!</Typography>
                   </Stack>
-                )}
+                ))}
 
               </Box>
               {
                 teamWorks.map((item) => (
                   <Box key={item.id}>
 
-                    <Link onClick={(event) => {
+                    <Link style={{ textDecoration: 'none' }} onClick={(event) => {
                       if (item.flag) {
                         let newArr = [...teamWorks];
                         newArr = newArr.map((i) =>
@@ -287,7 +314,17 @@ export default function DashboardApp() {
                       }
                       console.log(item.flag)
                     }}>
-                      <CardHeader sx={{ mb: 1, py: 1, bgcolor: '#96bfff', borderRadius: 1 }} title={`${item.name}(${item.custs.length})`} />
+                      <CardHeader sx={{ mb: 1, py: 1, bgcolor: '#C0C0C0', }} titleTypographyProps={{ color: '#004F98' }} action={
+                        item.flag ?
+                          <Button>
+                            <Icon height={24} width={24} icon="akar-icons:minus" />
+                          </Button>
+                          :
+                          <Button>
+                            <Icon height={24} width={24} icon="ant-design:right-outlined" />
+                          </Button>
+
+                      } title={`${item.name} (${item.custs.length})`} />
                     </Link>
                     {item.flag ?
                       <Box sx={{ mx: 2, overflow: 'auto', maxHeight: 250 }} dir="ltr">
@@ -309,30 +346,30 @@ export default function DashboardApp() {
                                 <Typography variant="subtitle2">Time of visit: {item.callTime}</Typography>
                               </Grid>
                               <Grid item container xs={5}>
-                              <Grid item xs={4}>
-                                <Link href={`tel:${item.cust_phone}`}>
-                                  <Icon icon="ph:phone-call-light" width={22} height={22} />
-                                </Link>
-                              </Grid>
-                              <Grid item xs={4}>
-                                <Link href={`whatsapp://send?phone=+91${item.cust_phone}`}>
-                                  <Icon icon="logos:whatsapp" width={22} height={22} />
-                                </Link>
-
-                              </Grid>
-                              {data.user_type === 'O' ? (
                                 <Grid item xs={4}>
-                                  <Link
-                                    component="button"
-                                    variant="body2"
-                                    onClick={(event) => editCalls(event, item.work_id)}
-                                  >
-                                    <Icon icon="lucide:pencil" width={20} height={20} />
+                                  <Link href={`tel:${item.cust_phone}`}>
+                                    <Icon icon="ph:phone-call-light" width={22} height={22} />
                                   </Link>
                                 </Grid>
-                              ) : (
-                                <></>
-                              )}
+                                <Grid item xs={4}>
+                                  <Link href={`whatsapp://send?phone=+91${item.cust_phone}`}>
+                                    <Icon icon="logos:whatsapp" width={22} height={22} />
+                                  </Link>
+
+                                </Grid>
+                                {data.user_type === 'O' ? (
+                                  <Grid item xs={4}>
+                                    <Link
+                                      component="button"
+                                      variant="body2"
+                                      onClick={(event) => editCalls(event, item.work_id)}
+                                    >
+                                      <Icon icon="lucide:pencil" width={20} height={20} />
+                                    </Link>
+                                  </Grid>
+                                ) : (
+                                  <></>
+                                )}
                               </Grid>
 
                             </Grid>
@@ -350,11 +387,31 @@ export default function DashboardApp() {
 
             </Card>
 
-            <Card sx={{ mt: 3 }}>
+            <Card sx={{ mt: 3, borderRadius: 1 }}>
 
-              <CardHeader sx={{ mb: 2, py: 1, bgcolor: '#90EE90', borderRadius: 1, }} title={`My Completed Calls(${myHistList.length})`} />
-              <Box sx={{ mx: 2, mb: 2, overflow: 'auto', maxHeight: 250 }} dir="ltr">
-                {myHistList.length > 0 ? (
+              <CardHeader sx={{ py: 1, bgcolor: '#02590f', }} titleTypographyProps={{ color: '#fff' }} title={`Completed Calls (${totHistCount})`} />
+              <Link style={{ textDecoration: 'none' }} onClick={(event) => {
+                  if (histFlag)
+                    setHistFlag(false);
+                  else
+                    setHistFlag(true);
+                }}>
+              <CardHeader sx={{ mb: 1, py: 1, bgcolor: '#C0C0C0', }} titleTypographyProps={{ color: '#004F98' }} title={`My Calls (${myHistList.length})`} action={
+                        histFlag ?
+                          <Button>
+                            <Icon height={24} width={24} icon="akar-icons:minus" />
+                          </Button>
+                          :
+                          <Button>
+                            <Icon height={24} width={24} icon="ant-design:right-outlined" />
+                          </Button>
+
+                      }/>
+              </Link>
+              <Box sx={{ mx: 2, overflow: 'auto', maxHeight: 250 }} dir="ltr">
+                {
+                  histFlag &&
+                (myHistList.length > 0 ? (
                   myHistList.map((item) => (
                     // <Stack key={item.work_id} justifyContent='space-between' direction='row' spacing={{ xs: 2, lg: 5 }}>
                     <Grid key={item.work_id} sx={{ mb: 1 }} container spacing={2}>
@@ -370,19 +427,19 @@ export default function DashboardApp() {
                         <Typography variant="subtitle2">Time of visit: {item.compTime}</Typography>
                       </Grid>
                       <Grid item container xs={5}>
-                      <Grid item xs={4}>
-                        <Link href={`tel:${item.cust_phone}`}>
-                          <Icon icon="ph:phone-call-light" width={24} height={24} />
-                        </Link>
-                      </Grid>
-                      <Grid item xs={4}>
-                        <Link href={`whatsapp://send?phone=+91${item.cust_phone}`}>
-                          <Icon icon="logos:whatsapp" width={22} height={22} />
-                        </Link>
-                      </Grid>
-                      <Grid item xs={4}>
-                        <></>
-                      </Grid>
+                        <Grid item xs={4}>
+                          <Link href={`tel:${item.cust_phone}`}>
+                            <Icon icon="ph:phone-call-light" width={24} height={24} />
+                          </Link>
+                        </Grid>
+                        <Grid item xs={4}>
+                          <Link href={`whatsapp://send?phone=+91${item.cust_phone}`}>
+                            <Icon icon="logos:whatsapp" width={22} height={22} />
+                          </Link>
+                        </Grid>
+                        <Grid item xs={4}>
+                          <></>
+                        </Grid>
                       </Grid>
                     </Grid>
                   ))
@@ -390,13 +447,13 @@ export default function DashboardApp() {
                   <Stack alignItems="center" sx={{ xs: 2, lg: 5 }}>
                     <Typography variant="subtitle1">No calls made on the date!!</Typography>
                   </Stack>
-                )}
+                ))}
               </Box>
 
               {
                 teamHists.map((item) => (
                   <Box key={item.id}>
-                    <Link onClick={(event) => {
+                    <Link style={{ textDecoration: 'none' }} onClick={(event) => {
                       if (item.flag) {
                         let newArr = [...teamHists];
                         newArr = newArr.map((i) =>
@@ -413,7 +470,18 @@ export default function DashboardApp() {
                       }
                       console.log(item.flag)
                     }}>
-                      <CardHeader sx={{ mb: 1, py: 1, bgcolor: '#90EE90', borderRadius: 1 }} title={`${item.name}(${item.custs.length})`} />
+                      <CardHeader sx={{ mb: 1, py: 1, bgcolor: '#C0C0C0', }} titleTypographyProps={{ color: '#004F98' }} title={`${item.name} (${item.custs.length})`} action={
+                        item.flag ?
+                          <Button>
+                            <Icon height={24} width={24} icon="akar-icons:minus" />
+                          </Button>
+                          :
+                          <Button>
+                            <Icon height={24} width={24} icon="ant-design:right-outlined" />
+                          </Button>
+
+                      } />
+                      {/* <CardHeader sx={{ mb: 1, py: 1, bgcolor: '#90EE90', borderRadius: 1 }} title={`${item.name}(${item.custs.length})`} /> */}
                     </Link>
 
                     {item.flag ?
@@ -435,24 +503,24 @@ export default function DashboardApp() {
                                 <Typography variant="subtitle2">Time of visit: {item.compTime}</Typography>
                               </Grid>
                               <Grid item container xs={5}>
-                              <Grid item xs={4}>
-                                <Link href={`tel:${item.cust_phone}`}>
-                                  <Icon icon="ph:phone-call-light" width={22} height={22} />
-                                </Link>
-                              </Grid>
-                              <Grid item xs={4}>
-                                <Link href={`whatsapp://send?phone=+91${item.cust_phone}`}>
-                                  <Icon icon="logos:whatsapp" width={22} height={22} />
-                                </Link>
-                              </Grid>
+                                <Grid item xs={4}>
+                                  <Link href={`tel:${item.cust_phone}`}>
+                                    <Icon icon="ph:phone-call-light" width={22} height={22} />
+                                  </Link>
+                                </Grid>
+                                <Grid item xs={4}>
+                                  <Link href={`whatsapp://send?phone=+91${item.cust_phone}`}>
+                                    <Icon icon="logos:whatsapp" width={22} height={22} />
+                                  </Link>
+                                </Grid>
 
-                              <Grid item xs={4}>
-                                <></>
-                              </Grid>
+                                <Grid item xs={4}>
+                                  <></>
+                                </Grid>
                               </Grid>
 
                             </Grid>
-                            
+
                           ))
                         }
 
@@ -465,48 +533,67 @@ export default function DashboardApp() {
               }
             </Card>
 
-            <Card sx={{ mt: 3 }}>
+            <Card sx={{ mt: 3, borderRadius: 1 }}>
+              <Link style={{ textDecoration: 'none' }} onClick={(event) => {
+                if (cFlag)
+                  setCFlag(false);
+                else
+                  setCFlag(true);
+              }}>
+                <CardHeader sx={{ mb: 1, py: 1, bgcolor: '#8B0000', borderRadius: 1, }} titleTypographyProps={{ color: '#fff' }} title={`Callback Complaints (${complaints.length})`} action={
+                  cFlag ?
+                    <Button>
+                      <Icon color="#fff" height={24} width={24} icon="akar-icons:minus" />
+                    </Button>
+                    :
+                    <Button>
+                      <Icon color="#fff" height={24} width={24} icon="ant-design:right-outlined" />
+                    </Button>
 
-              <CardHeader sx={{ mb: 2, py: 1, bgcolor: '#FF7F7F', borderRadius: 1, }} title={`Callback Complaints(${complaints.length})`} />
-              <Box sx={{ mx: 2, mb: 2, overflow: 'auto', maxHeight: 250 }} dir="ltr">
-                {complaints.length > 0 ? (
-                  complaints.map((item) => (
-                    // <Stack key={item.work_id} justifyContent='space-between' direction='row' spacing={{ xs: 2, lg: 5 }}>
-                    <Grid key={item.work_id} sx={{ mb: 1 }} container spacing={2}>
-                      <Grid item xs={7}>
-                        <Link
-                          component="button"
-                          variant="body2"
-                          onClick={(event) => onPhoneClick2(event, item.work_id)}
-                        >
-                          <Typography variant="subtitle2">{item.name}</Typography>
-                        </Link>
-                        <Typography variant="subtitle2">Service: {item.serv_name}</Typography>
-                        <Typography variant="subtitle2">Time of visit: {item.callDate}</Typography>
+                } />
+              </Link>
+              {
+                cFlag &&
+                <Box sx={{ mx: 2, mb: 2, overflow: 'auto', maxHeight: 250 }} dir="ltr">
+                  {complaints.length > 0 ? (
+                    complaints.map((item) => (
+                      // <Stack key={item.work_id} justifyContent='space-between' direction='row' spacing={{ xs: 2, lg: 5 }}>
+                      <Grid key={item.work_id} sx={{ mb: 1 }} container spacing={2}>
+                        <Grid item xs={7}>
+                          <Link
+                            component="button"
+                            variant="body2"
+                            onClick={(event) => onPhoneClick2(event, item.work_id)}
+                          >
+                            <Typography variant="subtitle2">{item.name}</Typography>
+                          </Link>
+                          <Typography variant="subtitle2">Service: {item.serv_name}</Typography>
+                          <Typography variant="subtitle2">Time of visit: {item.callDate}</Typography>
+                        </Grid>
+                        <Grid item container xs={5}>
+                          <Grid item xs={4}>
+                            <Link href={`tel:${item.cust_phone}`}>
+                              <Icon icon="ph:phone-call-light" width={24} height={24} />
+                            </Link>
+                          </Grid>
+                          <Grid item xs={4}>
+                            <Link href={`whatsapp://send?phone=+91${item.cust_phone}`}>
+                              <Icon icon="logos:whatsapp" width={22} height={22} />
+                            </Link>
+                          </Grid>
+                          <Grid item xs={12}>
+                            <Button variant="contained" onClick={(event) => editCalls(event, item.work_id)}>Reassign</Button>
+                          </Grid>
+                        </Grid>
                       </Grid>
-                      <Grid item container xs={5}>
-                      <Grid item xs={4}>
-                        <Link href={`tel:${item.cust_phone}`}>
-                          <Icon icon="ph:phone-call-light" width={24} height={24} />
-                        </Link>
-                      </Grid>
-                      <Grid item xs={4}>
-                        <Link href={`whatsapp://send?phone=+91${item.cust_phone}`}>
-                          <Icon icon="logos:whatsapp" width={22} height={22} />
-                        </Link>
-                      </Grid>
-                      <Grid item xs={12}>
-                        <Button variant="contained" onClick={(event) => editCalls(event, item.work_id)}>Reassign</Button>
-                      </Grid>
-                      </Grid>
-                    </Grid>
-                  ))
-                ) : (
-                  <Stack alignItems="center" sx={{ xs: 2, lg: 5 }}>
-                    <Typography variant="subtitle1">No Complaints!!</Typography>
-                  </Stack>
-                )}
-              </Box>
+                    ))
+                  ) : (
+                    <Stack alignItems="center" sx={{ xs: 2, lg: 5 }}>
+                      <Typography variant="subtitle1">No Complaints!!</Typography>
+                    </Stack>
+                  )}
+                </Box>
+              }
             </Card>
           </Grid>
 

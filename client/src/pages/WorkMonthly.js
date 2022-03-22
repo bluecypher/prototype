@@ -228,8 +228,13 @@ export default function WorkMonthly() {
 
                 <Grid container spacing={3}>
                     <Grid item xs={12} md={6} lg={10}>
-                        <Card sx={{ my: 1 }}>
-                            <CardHeader sx={{ mb: 2, py: 1, bgcolor: '#96bfff', borderRadius: 1 }} title={`My Collection(Rs. ${myTotCol})`} />
+                        <Card sx={{ my: 1, borderRadius:1 }}>
+                            <CardHeader sx={{ mb: 2, py: 1, bgcolor: '#C0C0C0', }} titleTypographyProps={{ color: '#004F98' }} title="My Collection" 
+                            action={
+                                <Button disabled>
+                                <Typography variant="h6" sx={{color:'#004F98'}}>&#8377;{myTotCol}</Typography>
+                                </Button>
+                            }/>
 
                             <Box sx={{ mx: 2, mb: 2, overflow: 'auto', maxHeight: 250 }} dir="ltr">
                                 {myColList.length > 0 ? (
@@ -284,7 +289,20 @@ export default function WorkMonthly() {
                                             }
                                             console.log(item.flag)
                                         }}>
-                                            <CardHeader sx={{ mb: 1, py: 1, bgcolor: '#96bfff', borderRadius: 1 }} title={`${item.name}(Rs. ${item.memberTotal})`} />
+                                            <CardHeader sx={{ mb: 1, py: 1, bgcolor: '#C0C0C0' }} titleTypographyProps={{ color: '#004F98' }} title={`${item.name}(Rs. ${item.memberTotal})`} 
+                                            action={
+                                                // <Button disabled>
+                                                // <Typography variant="h6" sx={{color:'#004F98'}}>&#8377;{item.memberTotal}</Typography>
+                                                // </Button>
+                                                item.flag ?
+                                                <Button>
+                                                  <Icon height={24} width={24} icon="akar-icons:minus" />
+                                                </Button>
+                                                :
+                                                <Button>
+                                                  <Icon height={24} width={24} icon="ant-design:right-outlined" />
+                                                </Button>
+                                            }/>
                                         </Link>
                                         {item.flag ?
                                             <Box sx={{ mx: 2, overflow: 'auto', maxHeight: 250 }} dir="ltr">

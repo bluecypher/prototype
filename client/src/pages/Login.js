@@ -70,7 +70,7 @@ export default function Login() {
   const [error, setError] = useState(false);
 
   const [cookies, setCookie] = useCookies('');
-  const [tmplt, setTmplt] = useState('OTP to login to Sahayak is ');
+  const [tmplt, setTmplt] = useState('');
   const data = useSelector((state) => state.profileReducer);
   const LoginSchema = Yup.object().shape({
     number: Yup.number('Mobile number must be numeric.')
@@ -133,7 +133,7 @@ export default function Login() {
       // console.log(event);
 
       const temp = Math.floor(100000 + Math.random() * 900000).toString();
-      const msg = tmplt.concat(temp, '. Do not share it with anyone.');
+      const msg = tmplt.concat(temp, ' is your OTP to login to Sahayaks.');
       setOTP(temp);
       setShowSubmit(true);
       console.log(msg);
