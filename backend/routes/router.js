@@ -33,7 +33,7 @@ const upload = multer();
 router.get("/getData", (req, res) => {
     const number = req.query.number;
     dao.getData(number).then((resp) => {
-        console.log("Getting Data")
+        console.log("Getting Data",resp)
         res.status(200).send(resp);
     }).catch((err) => {
         res.status(404).send({ "Error": err });
@@ -545,6 +545,47 @@ router.post("/getCallbacks", (req, res) => {
     else {
         console.log("No work Id")
         res.status(404).send("No work Id");
+    }
+
+
+})
+
+router.post("/getLogin", (req, res) => {
+
+    const number= req.body.number;
+    if (number) {
+        dao.getLogin(number).then((resp) => {
+            console.log("Getting Login")
+            res.status(200).send(resp);
+        }).catch((err) => {
+            console.log("Error", err)
+            res.status(404).send({ "Error": err });
+        })
+    }
+    else {
+        console.log("No number")
+        res.status(404).send("No number");
+    }
+
+
+})
+
+router.post("/setPIN", (req, res) => {
+
+    const number= req.body.number;
+    const pin = req.body.pin;
+    if (number) {
+        dao.setPIN(number,pin).then((resp) => {
+            console.log("Set PIN")
+            res.status(200).send("Success");
+        }).catch((err) => {
+            console.log("Error", err)
+            res.status(404).send({ "Error": err });
+        })
+    }
+    else {
+        console.log("No number")
+        res.status(404).send("No number");
     }
 
 

@@ -168,15 +168,20 @@ export default function DashboardApp() {
             </Stack>
           </Stack>
         </Box>
-        <Stack sx={{ pb: 1 }} direction="row" alignItems="center">
-
+        {/* <Stack sx={{ pb: 1 }} direction="row" alignItems="center"> */}
+        <Grid container>
+          <Grid item xs={2} md={2} lg={2}>
           <Button onClick={(event) => {
             let temp = new Date(inputDate);
             temp = new Date(temp.setMonth(temp.getMonth() - 1));
             setInputDate(temp);
           }
           }><Icon height={26} width={26} icon="gg:chevron-double-left-r" /></Button>
+          </Grid>
+          <Grid item xs={2} md={2} lg={2}>
           <Button onClick={(event) => setInputDate(new Date(inputDate.getTime() - 1000 * 60 * 60 * 24))}><Icon height={28} width={28} icon="ant-design:left-circle-outlined" /></Button>
+          </Grid>
+          <Grid item xs={4} md={4} lg={4}>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
 
@@ -190,7 +195,7 @@ export default function DashboardApp() {
                 return (
                   <TextField
                     {...params}
-                    InputProps={{ style: { fontWeight: 'bold' } }}
+                    InputProps={{ style: { fontWeight: 'bold', fontSize:14 } }}
                     size="small"
                     sx={{ width: '100%' }}
                     fullWidth
@@ -202,15 +207,20 @@ export default function DashboardApp() {
             // onMonthChange={console.log('sc')}
             />
           </LocalizationProvider>
+          </Grid>
+          <Grid item xs={2} md={2} lg={2}>
           <Button onClick={(event) => setInputDate(new Date(inputDate.getTime() + 1000 * 60 * 60 * 24))}><Icon height={28} width={28} icon="ant-design:right-circle-outlined" /></Button>
+          </Grid>
+          <Grid item xs={2} md={2} lg={2}>
           <Button onClick={(event) => {
             let temp = new Date(inputDate);
             temp = new Date(temp.setMonth(temp.getMonth() + 1));
             setInputDate(temp);
           }
           }><Icon height={26} width={26} icon="gg:chevron-double-right-r" /></Button>
-
-        </Stack>
+          </Grid>
+          </Grid>
+        {/* </Stack> */}
         <Grid container spacing={3}>
           <Grid item xs={12} md={6} lg={10}>
 
@@ -582,7 +592,11 @@ export default function DashboardApp() {
                             </Link>
                           </Grid>
                           <Grid item xs={12}>
+                          {data.user_type === 'O' ?
                             <Button variant="contained" onClick={(event) => editCalls(event, item.work_id)}>Reassign</Button>
+                            :
+                            <></>
+                          }
                           </Grid>
                         </Grid>
                       </Grid>

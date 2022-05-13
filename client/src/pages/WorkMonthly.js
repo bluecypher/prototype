@@ -156,10 +156,12 @@ export default function WorkMonthly() {
 
 
     return (
-        <Page title="Work Done Today">
+        <Page title="Monthly Work">
             <Box maxWidth="xl" sx={{ width: "100%" }}>
-                <Stack sx={{ pb: 1 }} direction="row" alignItems="center">
+                {/* <Stack sx={{ pb: 1 }} direction="row" alignItems="center"> */}
+                <Grid sx={{ mb: 1 }} container>
 
+                    <Grid item xs={2}>
                     <Button onClick={(event) => {
                         let temp = new Date(inputDate);
                         temp = new Date(temp.setFullYear(temp.getFullYear() - 1));
@@ -169,6 +171,8 @@ export default function WorkMonthly() {
                     }
                     }>
                         <Icon height={26} width={26} icon="gg:chevron-double-left-r" /></Button>
+                        </Grid>
+                    <Grid item xs={2}>
                     <Button onClick={(event) => {
                         let temp = new Date(inputDate);
                         temp = new Date(temp.setMonth(temp.getMonth() - 1));
@@ -176,6 +180,8 @@ export default function WorkMonthly() {
                         setMyTotCol(0);
                         setInputDate(temp);
                     }}><Icon height={28} width={28} icon="ant-design:left-circle-outlined" /></Button>
+                    </Grid>
+                    <Grid item xs={4}>
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                         <DatePicker
                             value={inputDate}
@@ -187,7 +193,7 @@ export default function WorkMonthly() {
                             renderInput={(params) =>
                                 <TextField
                                     {...params}
-                                    InputProps={{ style: { fontWeight: 'bold' } }}
+                                    InputProps={{ style: { fontWeight: 'bold', fontSize:14 } }}
                                     size="small"
                                     sx={{ width: '100%' }}
                                     fullWidth
@@ -197,6 +203,8 @@ export default function WorkMonthly() {
                             inputFormat="MMM, yyyy"
                         />
                     </LocalizationProvider>
+                    </Grid>
+                    <Grid item xs={2}>
                     <Button onClick={(event) => {
                         // setMyColList([]);
                         // setInputDate(new Date(inputDate.getTime() + 1000 * 60 * 60 * 24))
@@ -207,6 +215,8 @@ export default function WorkMonthly() {
                         setMyTotCol(0);
                         setInputDate(temp);
                     }}><Icon height={28} width={28} icon="ant-design:right-circle-outlined" /></Button>
+                    </Grid>
+                    <Grid item xs={2}>
                     <Button onClick={(event) => {
                         let temp = new Date(inputDate);
                         temp = new Date(temp.setFullYear(temp.getFullYear() + 1));
@@ -216,8 +226,11 @@ export default function WorkMonthly() {
                     }
                     }>
                         <Icon height={26} width={26} icon="gg:chevron-double-right-r" /></Button>
+                        </Grid>
+                        </Grid>
+                   
 
-                </Stack>
+                {/* </Stack> */}
                 <Stack sx={{ bgcolor: '#004F98', p: 1, borderRadius: 1 }} direction="row" justifyContent="space-between">
                     <Stack>
                         <Typography variant="subtitle" color="#fff">Cash: &#8377;{cashAmnt}</Typography>
@@ -272,7 +285,7 @@ export default function WorkMonthly() {
                                 teamColList.map((item) => (
                                     <Box key={item.memberId}>
 
-                                        <Link onClick={(event) => {
+                                        <Link style={{ textDecoration: 'none' }} onClick={(event) => {
                                             if (item.flag) {
                                                 let newArr = [...teamColList];
                                                 newArr = newArr.map((i) =>
@@ -289,7 +302,7 @@ export default function WorkMonthly() {
                                             }
                                             console.log(item.flag)
                                         }}>
-                                            <CardHeader sx={{ mb: 1, py: 1, bgcolor: '#C0C0C0' }} titleTypographyProps={{ color: '#004F98' }} title={`${item.name}(Rs. ${item.memberTotal})`} 
+                                            <CardHeader sx={{ mb: 1, py: 1, bgcolor: '#C0C0C0' }} titleTypographyProps={{ color: '#004F98' }} title={`${item.name} (Rs. ${item.memberTotal})`} 
                                             action={
                                                 // <Button disabled>
                                                 // <Typography variant="h6" sx={{color:'#004F98'}}>&#8377;{item.memberTotal}</Typography>

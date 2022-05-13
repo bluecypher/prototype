@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useFormik, Form, FormikProvider } from 'formik';
 import { useCookies } from 'react-cookie';
+// import PWAInstallerPrompt from 'react-pwa-installer-prompt';
 // material
 
 import { styled } from '@mui/material/styles';
@@ -17,7 +18,8 @@ import {
   CardActionArea,
   Alert,
   TextField,
-  Icon
+  Icon,
+  Button
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
@@ -30,6 +32,7 @@ import { MHidden } from '../components/@material-extend';
 // import AuthSocial from '../components/authentication/AuthSocial';
 
 const axios = require('axios');
+const CryptoJS = require("crypto-js");
 // ----------------------------------------------------------------------
 
 const RootStyle = styled(Page)(({ theme }) => ({
@@ -66,8 +69,13 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [otp, setOTP] = useState('');
   const [inputOtp, setInputOtp] = useState('');
-  const [showSubmit, setShowSubmit] = useState(false);
+  const [inputPin, setInputPin] = useState('');
+  const [encPin, setEncPin] = useState('');
+  const [showOTP, setShowOTP] = useState(false);
+  const [showPIN, setShowPIN] = useState(false);
   const [error, setError] = useState(false);
+  const [pinError, setPinError] = useState(false);
+  // const [supported, setSupported] = useState(false);
 
   const [cookies, setCookie] = useCookies('');
   const [tmplt, setTmplt] = useState('');
@@ -80,7 +88,22 @@ export default function Login() {
   });
   const handleSubmit2 = () => {
     if (inputOtp === '123456') {
-      axios
+      localStorage.setItem('number', values.number);
+      navigate('/setPin',{replace: true});
+      
+    } else {
+      setError(true);
+      console.log('less than 6');
+    }
+  };
+
+  const handleSubmit3 = () => {
+    const bytes  = CryptoJS.AES.decrypt(encPin, 'sahayak2');
+    const originalText = bytes.toString(CryptoJS.enc.Utf8);
+    console.log('dec',inputPin);
+    if(originalText === inputPin)
+    {
+    axios
         .post(
           '/users/login',
           {
@@ -96,7 +119,7 @@ export default function Login() {
             localStorage.setItem('number', values.number);
             setCookie('token', response.data.jwToken, {
               path: '/',
-              expires: new Date(Date.now() + 1000 * 3600 * 24)
+              expires: new Date(Date.now() + 1000 * 3600 * 24 * 7)
             });
 
             if (response.data.status === 'F') {
@@ -109,14 +132,16 @@ export default function Login() {
         .catch((e) => {
           console.log('Error', e);
         });
-    } else {
-      setError(true);
-      console.log('less than 6');
-    }
-  };
+      }
+      else
+      {
+        setPinError(true);
+      }
+    
+  }
 
   useEffect(() => {
-    console.log('number', data.number);
+    
     if (cookies.token && data.number) {
       navigate('/dashboard', { replace: true });
     }
@@ -132,11 +157,26 @@ export default function Login() {
     onSubmit: () => {
       // console.log(event);
 
-      const temp = Math.floor(100000 + Math.random() * 900000).toString();
-      const msg = tmplt.concat(temp, ' is your OTP to login to Sahayaks.');
-      setOTP(temp);
-      setShowSubmit(true);
-      console.log(msg);
+    //   const props = ['name', 'email', 'tel', 'address', 'icon'];
+    // const opts = { multiple: true };
+    //   navigator.contacts.select(props, opts).then((contacts)=>{
+    //     console.log('results:',contacts);
+    //   })
+      
+    //   .catch ((ex)=> {
+    //   console.log('err',ex);
+    // })
+
+    axios.post('/users/getLogin', { number: values.number }).then((res) => {
+      console.log('getlogin', res.data);
+      if(res.data==='insert' || res.data[0].password === null)
+      {
+        setShowOTP(true);
+        const temp = Math.floor(100000 + Math.random() * 900000).toString();
+        const msg = tmplt.concat(temp, ' is your OTP to login to Sahayaks.');
+        setOTP(temp);
+        
+        console.log(msg);
 
       //   axios.get("https://www.fast2sms.com/dev/bulkV2",{params:{'authorization' : "YgzaI0vM7BZLWe9cdHUwf41GkqiESbpNusX3tToK6Oy2Qnmjlr1olWahGJ3fzXv8iYQTdtIpsUcRCnDq",
       //   'route' : 'v3',
@@ -153,11 +193,23 @@ export default function Login() {
       // .catch((err)=>{
       //   console.log("error in otp api",err);
       // })
+      }
+      else
+      {
+        setShowPIN(true);
+        setEncPin(res.data[0].password);
+      }
+    })
+      .catch((err) => {
+        console.log('err', err);
+      })
+
+      
     }
   });
   const profileClick = () => {
     formik.setFieldValue('number', prevData.number).then((res) => {
-      if (!showSubmit) formik.handleSubmit();
+      if (!showOTP) formik.handleSubmit();
     });
   };
   const { errors, touched, values, isSubmitting, handleSubmit, getFieldProps } = formik;
@@ -178,7 +230,7 @@ export default function Login() {
           <Stack sx={{ mb: 5 }}>
             <Stack sx={{ mb: 5 }} alignItems="center">
               {prevData && (
-                <Card sx={{ maxWidth: 345, p: 1, boxShadow: 10, minWidth:100 }}>
+                <Card sx={{ maxWidth: 345, p: 1, boxShadow: 10, minWidth: 100 }}>
                   <CardActionArea onClick={profileClick}>
                     <Stack spacing={1} alignItems="center">
                       <Stack alignItems="center">
@@ -206,9 +258,18 @@ export default function Login() {
             <Typography variant="h4" gutterBottom>
               Log in
             </Typography>
+            {/* <PWAInstallerPrompt
+              render={({ onClick }) => (
+                <Button type="submit" onClick={onClick}> 
+                  Install
+                </Button>
+              )}
+              callback={(data) => console.log(data)}
+            /> */}
             <Typography sx={{ color: 'text.secondary' }}>
-              Please provide your details below.
+              Please enter your Mobile Number.
             </Typography>
+
           </Stack>
 
           {/* <LoginForm /> */}
@@ -233,15 +294,15 @@ export default function Login() {
                     size="large"
                     type="submit"
                     variant="contained"
-                    disabled={showSubmit}
+                    disabled={showOTP || showPIN}
                   // loading={isSubmitting}
                   >
-                    Get OTP
+                    Next
                   </LoadingButton>
                 </Stack>
               </Form>
             </FormikProvider>
-            {showSubmit && (
+            {showOTP && (
               <Stack spacing={3}>
                 <TextField
                   fullWidth
@@ -276,9 +337,9 @@ export default function Login() {
       label="Remember me"
     /> */}
 
-                  <Link component={RouterLink} variant="subtitle2" to="#">
+                  {/* <Link component={RouterLink} variant="subtitle2" to="#">
                     Resend OTP?
-                  </Link>
+                  </Link> */}
                 </Stack>
 
                 <LoadingButton
@@ -288,6 +349,48 @@ export default function Login() {
                   type="submit"
                   variant="contained"
                   onClick={handleSubmit2}
+                // loading={isSubmitting}
+                >
+                  Sign In
+                </LoadingButton>
+              </Stack>
+            )}
+            {showPIN && (
+              <Stack spacing={3}>
+                <TextField
+                  fullWidth
+                  type={showPassword ? 'text' : 'password'}
+                  label="PIN"
+                  // {...getFieldProps('password')}
+                  inputProps={{
+                    maxLength: 6
+                    // endAdornment: (
+                    //   <InputAdornment position="end">
+                    //     <IconButton onClick={handleShowPassword} edge="end">
+                    //       <Icon icon={showPassword ? eyeFill : eyeOffFill} />
+                    //     </IconButton>
+                    //   </InputAdornment>
+                    // )
+                  }}
+                  value={inputPin}
+                  onChange={(event) => setInputPin(event.target.value)}
+
+                // error={Boolean(touched.password && errors.password)}
+                // helperText={touched.password && errors.password}
+                />
+                {pinError && (
+                  <Stack m={2}>
+                    <Alert severity="error">Wrong PIN!</Alert>
+                  </Stack>
+                )}
+
+                <LoadingButton
+                  id="signin"
+                  fullWidth
+                  size="large"
+                  type="submit"
+                  variant="contained"
+                  onClick={handleSubmit3}
                 // loading={isSubmitting}
                 >
                   Sign In

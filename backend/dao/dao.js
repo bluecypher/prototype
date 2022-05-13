@@ -32,11 +32,13 @@ const getconnection = () => {
 const getData = (number) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
-
-        db.query("SELECT spm.user_mast_id,spm.email,spm.phone,spm.first_name,spm.last_name,spm.photo,spm.address1,spm.address2,spm.city,spm.pin,spm.state,spm.locality_of_work,spm.highlights,em.ent_name AS enterprise,spm.user_type,em.ent_logo AS ent_logo,spm.enterprise_id AS ent_id,em.ent_vpa AS vpa FROM service_provider_master spm INNER JOIN enterprise_master em ON spm.enterprise_id=em.ent_id WHERE phone =?", [number], (err, row) => {
+        console.log('number', number);
+        db.query("SELECT spm.user_mast_id,spm.email,spm.phone,spm.first_name,spm.last_name,spm.photo,spm.address1,spm.address2,spm.city,spm.pin,spm.state,spm.locality_of_work,spm.highlights,em.ent_name AS enterprise,spm.user_type,em.ent_logo AS ent_logo,spm.enterprise_id AS ent_id,em.ent_vpa AS vpa FROM service_provider_master spm INNER JOIN enterprise_master em ON spm.enterprise_id=em.ent_id WHERE phone =?", 
+        [number], 
+        (err, row) => {
             if (!err) {
                 resolve(row);
-                console.log(row[0]);
+                console.log('getdata result',row[0]);
             } else reject(err);
         });
         db.end();
@@ -97,7 +99,7 @@ const updateDetails = (data) => {
         db.query("SELECT user_mast_id,enterprise_id,user_type FROM service_provider_master WHERE phone=?",
             [data.number],
             (err, row) => {
-                if (row && row.length) {
+                if (row && row[0].enterprise_id) {
                     if (row[0].user_type === 'O') {
                         addServices(row[0].user_mast_id, data.services);
                         db.query("UPDATE enterprise_master SET ent_name=?,ent_logo=?,last_updated=? WHERE ent_id=?",
@@ -106,7 +108,7 @@ const updateDetails = (data) => {
                                 data.entLogo,
                                 new Date(Date.now()),
                                 row[0].enterprise_id,
-                                
+
                             ], (err, res) => {
                                 if (err) {
 
@@ -114,6 +116,7 @@ const updateDetails = (data) => {
                                 }
                             })
                     }
+                    
                     db.query(
                         "UPDATE service_provider_master SET status=?,email=?,phone=?,first_name=?,last_name=?,address1=?,address2=?,city=?,pin=?,state=?,photo=?,locality_of_work=?,highlights=?,last_updated=? where phone =?",
                         [
@@ -154,7 +157,8 @@ const updateDetails = (data) => {
                         ],
                         (err, res) => {
                             if (!err) {
-                                db.query("INSERT INTO service_provider_master(status,email,phone,first_name,last_name,address1,address2,city,pin,state,photo,locality_of_work,highlights,user_type,enterprise_id,created_on,last_updated) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                                db.query(
+                                    "UPDATE service_provider_master SET status=?,email=?,phone=?,first_name=?,last_name=?,address1=?,address2=?,city=?,pin=?,state=?,photo=?,locality_of_work=?,highlights=?,enterprise_id=?,last_updated=? where phone =?",
                                     [
                                         'F',
                                         data.email,
@@ -169,20 +173,50 @@ const updateDetails = (data) => {
                                         data.img,
                                         data.locality,
                                         data.hghlts,
-                                        'O',
                                         res.insertId,
                                         new Date(Date.now()),
-                                        new Date(Date.now())
+                                        data.number
+            
                                     ],
                                     (err, res) => {
                                         if (!err) {
-                                            console.log("Data inserted Successfully ", res);
-                                            addServices(res.insertId, data.services);
-
+            
+                                            // console.log("Data updated Successfully ", data.services);
+                                            addServices(row[0].user_mast_id, data.services);
                                             resolve();
                                         } else reject(err);
                                     }
-                                )
+                                );
+
+                                // db.query("INSERT INTO service_provider_master(status,email,phone,first_name,last_name,address1,address2,city,pin,state,photo,locality_of_work,highlights,user_type,enterprise_id,created_on,last_updated) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                                //     [
+                                //         'F',
+                                //         data.email,
+                                //         data.number,
+                                //         data.fname,
+                                //         data.lname,
+                                //         data.addr1,
+                                //         data.addr2,
+                                //         data.city,
+                                //         data.pin,
+                                //         data.state,
+                                //         data.img,
+                                //         data.locality,
+                                //         data.hghlts,
+                                //         'O',
+                                //         res.insertId,
+                                //         new Date(Date.now()),
+                                //         new Date(Date.now())
+                                //     ],
+                                //     (err, res) => {
+                                //         if (!err) {
+                                //             console.log("Data inserted Successfully ", res);
+                                //             addServices(res.insertId, data.services);
+
+                                //             resolve();
+                                //         } else reject(err);
+                                //     }
+                                // )
 
                             }
                             else {
@@ -452,7 +486,7 @@ const getTodaysWork = (id, date) => {
         const dateObj = new Date(date);
 
         // console.log('typeof', dateObj)
-        db.query("SELECT spwl.work_list_id AS work_id, spcm.cust_name AS name, spcm.address1 AS addr, spcm.cust_phone, spwl.status, spwl.work_plan_date AS callDate, spwl.work_comp_date AS compDate, spwl.assign_to AS user_id, sm.serv_name FROM service_provider_work_list spwl INNER JOIN service_provider_customer_master spcm USING(cust_mast_id) INNER JOIN service_provider_master spm ON spwl.assign_to=spm.user_mast_id INNER JOIN service_master sm ON spwl.work_type=sm.serv_id WHERE (spwl.service_provider_id=? OR spwl.assign_to=?) AND (DATE(spwl.work_plan_date)=DATE(?) OR DATE(spwl.work_comp_date)=DATE(?))", [id, id, dateObj,dateObj], (err, row) => {
+        db.query("SELECT spwl.work_list_id AS work_id, spcm.cust_name AS name, spcm.address1 AS addr, spcm.cust_phone, spwl.status, spwl.work_plan_date AS callDate, spwl.work_comp_date AS compDate, spwl.assign_to AS user_id, sm.serv_name FROM service_provider_work_list spwl INNER JOIN service_provider_customer_master spcm USING(cust_mast_id) INNER JOIN service_provider_master spm ON spwl.assign_to=spm.user_mast_id INNER JOIN service_master sm ON spwl.work_type=sm.serv_id WHERE (spwl.service_provider_id=? OR spwl.assign_to=?) AND (DATE(spwl.work_plan_date)=DATE(?) OR DATE(spwl.work_comp_date)=DATE(?))", [id, id, dateObj, dateObj], (err, row) => {
             if (!err) {
                 console.log('row', row);
                 resolve(row);
@@ -488,7 +522,7 @@ const updateWork = (workId, name, serv, amnt, wDetails, pmtMethod, nxtDate, nxtW
                                 // console.log('result',row[0]);
                                 console.log('update work')
                                 if (nxtDate) {
-                                    addWork(row[0].service_provider_id, row[0].cust_mast_id, nxtDate, nxtWork,serv,row[0].assign_to);
+                                    addWork(row[0].service_provider_id, row[0].cust_mast_id, nxtDate, nxtWork, serv, row[0].assign_to);
                                 }
                             }
                             else {
@@ -559,7 +593,7 @@ const getWorkDetails = (workId) => {
         ],
             (err, row) => {
                 if (!err) {
-                    console.log('work Details:',row);
+                    console.log('work Details:', row);
 
 
                     resolve(row);
@@ -661,7 +695,7 @@ const uploadQR = (id, vpa) => {
                         (err, row) => {
                             if (!err) {
                                 console.log('qr row', row)
-                                
+
                                 resolve("Success");
                             }
                             else {
@@ -669,7 +703,7 @@ const uploadQR = (id, vpa) => {
                                 reject(err);
                             }
                         });
-                    
+
                 }
                 else {
                     console.log('qr err', err)
@@ -737,7 +771,7 @@ const getCustomerWorkHistory = (spId, custId) => {
     })
 }
 
-const workDoneToday = (id,date) => {
+const workDoneToday = (id, date) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
         const dateObj = new Date(date);
@@ -759,7 +793,7 @@ const workDoneToday = (id,date) => {
     })
 }
 
-const workDoneMonthly = (id,date) => {
+const workDoneMonthly = (id, date) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
         const dateObj = new Date(date);
@@ -824,12 +858,12 @@ const editMembers = (id, name, number) => {
         const db = getconnection();
 
         db.query("UPDATE service_provider_master SET first_name=?,phone=? WHERE user_mast_id=?",
-            [ name, number,id],
+            [name, number, id],
             (err, row) => {
                 if (!err) {
                     console.log(row);
                     db.query("UPDATE service_provider_team_detail SET team_member_first_name=?,team_member_phone=? WHERE team_member_id=?",
-                        [ name, number, id],
+                        [name, number, id],
                         (err, row) => {
                             if (!err) {
                                 console.log(row);
@@ -842,7 +876,7 @@ const editMembers = (id, name, number) => {
                             }
                         });
 
-                   
+
                 }
                 else {
                     console.log(err);
@@ -854,17 +888,17 @@ const editMembers = (id, name, number) => {
     });
 };
 
-const editCustomers = (id, name, number,add) => {
+const editCustomers = (id, name, number, add) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
 
         db.query("UPDATE service_provider_customer_master SET cust_name=?,cust_phone=?,address1=? WHERE cust_mast_id=?",
-            [ name, number,add,id],
+            [name, number, add, id],
             (err, row) => {
                 if (!err) {
                     console.log(row);
                     resolve("success");
-                   
+
                 }
                 else {
                     console.log(err);
@@ -886,7 +920,7 @@ const getComplaints = () => {
             else reject(err);
         })
 
-        
+
     });
 };
 
@@ -905,71 +939,133 @@ const postFeedback = (selected, value, flag, workId) => {
                 reject(err);
             }
         })
-        
+
     })
 }
 
 const getFeedbacks = (workId) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
-        db.query("SELECT feedback, rating FROM service_provider_work_list WHERE work_list_id=?",[workId], (err, row) => {
+        db.query("SELECT feedback, rating FROM service_provider_work_list WHERE work_list_id=?", [workId], (err, row) => {
             if (!err) {
                 resolve(row);
             }
             else reject(err);
         })
 
-        
+
     });
 };
 
 const getCallbacks = (spId) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
-        db.query("SELECT spwl.work_list_id AS work_id, spcm.cust_name AS name, spcm.address1 AS addr, spcm.cust_phone, spwl.work_comp_date AS callDate, spwl.assign_to AS user_id, sm.serv_name FROM service_provider_work_list spwl INNER JOIN service_provider_customer_master spcm USING(cust_mast_id) INNER JOIN service_provider_master spm ON spwl.assign_to=spm.user_mast_id INNER JOIN service_master sm ON spwl.work_type=sm.serv_id WHERE (spwl.service_provider_id=? OR spwl.assign_to=?) AND spwl.status=?",[spId, spId, 'N'], (err, row) => {
+        db.query("SELECT spwl.work_list_id AS work_id, spcm.cust_name AS name, spcm.address1 AS addr, spcm.cust_phone, spwl.work_comp_date AS callDate, spwl.assign_to AS user_id, sm.serv_name FROM service_provider_work_list spwl INNER JOIN service_provider_customer_master spcm USING(cust_mast_id) INNER JOIN service_provider_master spm ON spwl.assign_to=spm.user_mast_id INNER JOIN service_master sm ON spwl.work_type=sm.serv_id WHERE (spwl.service_provider_id=? OR spwl.assign_to=?) AND spwl.status=?", [spId, spId, 'N'], (err, row) => {
             if (!err) {
                 resolve(row);
             }
             else reject(err);
         })
 
-        
+
     });
 };
 
-module.exports = {
-    getconnection,
-    updateDetails,
-    login_new,
-    addMembers,
+const getLogin = (number) => {
+    return new Promise((resolve, reject) => {
+        const db = getconnection();
+        db.query("SELECT password FROM service_provider_master WHERE phone=?",
+            [number],
+            (err, row) => {
+                if (!err) {
+                    if (row && row.length)
+                        resolve(row);
+                    else
+                        resolve('insert');
 
-    getData,
-    addServices,
-    getServices,
+                }
+                else reject(err);
+            })
 
-    getMembers,
-    deleteMembers,
-    addCustomers,
-    getCustomersList,
-    addWork,
-    getTodaysWork,
-    updateWork,
-    getUserServices,
-    getWorkDetails,
-    getPaymentDetails,
-    uploadQR,
-    getCustomerInfo,
-    getCustomerWork,
-    getCustomerWorkHistory,
-    workDoneToday,
-    workDoneMonthly,
-    getUserType,
-    deleteCustomers,
-    getAmount,
-    editMembers,
-    editCustomers,
-    getComplaints,
-    postFeedback,
-    getFeedbacks,
-    getCallbacks
+    });
 };
+
+const setPIN = (number, pin) => {
+    return new Promise((resolve, reject) => {
+        const db = getconnection();
+        db.query("SELECT user_mast_id,enterprise_id,user_type FROM service_provider_master WHERE phone=?",
+            [number],
+            (err, row) => {
+                if (row && row.length) {
+                    db.query("UPDATE service_provider_master SET password=? WHERE phone=?",
+                        [pin, number],
+                        (err, row) => {
+                            if (!err) {
+
+                                resolve(row);
+
+
+                            }
+                            else reject(err);
+                        })
+                }
+                else {
+                    db.query("INSERT INTO service_provider_master(password,phone,user_type,status,last_updated,created_on) VALUES(?,?,?,?,?,?)",
+                        [
+                            pin,
+                            number,
+                            'O',
+                            'U',
+                            new Date(Date.now()),
+                            new Date(Date.now())
+                        ],
+                        (err, row) => {
+                            if (!err)
+                                resolve(row)
+                            else
+                                reject(err);
+                        }
+                    )
+                }
+
+            });
+    });
+}
+    module.exports = {
+        getconnection,
+        updateDetails,
+        login_new,
+        addMembers,
+
+        getData,
+        addServices,
+        getServices,
+
+        getMembers,
+        deleteMembers,
+        addCustomers,
+        getCustomersList,
+        addWork,
+        getTodaysWork,
+        updateWork,
+        getUserServices,
+        getWorkDetails,
+        getPaymentDetails,
+        uploadQR,
+        getCustomerInfo,
+        getCustomerWork,
+        getCustomerWorkHistory,
+        workDoneToday,
+        workDoneMonthly,
+        getUserType,
+        deleteCustomers,
+        getAmount,
+        editMembers,
+        editCustomers,
+        getComplaints,
+        postFeedback,
+        getFeedbacks,
+        getCallbacks,
+        getLogin,
+        setPIN,
+    };

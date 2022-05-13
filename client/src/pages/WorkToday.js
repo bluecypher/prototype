@@ -158,10 +158,10 @@ export default function WorkToday() {
     return (
         <Page title="Work Done Today">
             <Box maxWidth="xl" sx={{ width: "100%" }}>
-                <Stack sx={{ pb: 1 }} direction="row" justifyContent="space-between">
-                {/* <Grid sx={{ mb: 1 }} alignItems="center" container  spacing={1}>
+                {/* <Stack sx={{ pb: 1 }} direction="row" justifyContent="space-between"> */}
+                <Grid sx={{ mb: 1 }} container>
 
-                    <Grid item xs={2}> */}
+                    <Grid item xs={2}>
                         <Button onClick={(event) => {
                             let temp = new Date(inputDate);
                             temp = new Date(temp.setMonth(temp.getMonth() - 1));
@@ -172,15 +172,15 @@ export default function WorkToday() {
                         }>
 
                             <Icon height={26} width={26} icon="gg:chevron-double-left-r" /></Button>
-                    {/* </Grid>
-                    <Grid item xs={2}> */}
+                    </Grid>
+                    <Grid item xs={2}>
                         <Button onClick={(event) => {
                             setMyColList([]);
                             setMyTotCol(0);
                             setInputDate(new Date(inputDate.getTime() - 1000 * 60 * 60 * 24))
                         }}><Icon height={28} width={28} icon="ant-design:left-circle-outlined" /></Button>
-                    {/* </Grid>
-                    <Grid item xs={4}> */}
+                    </Grid>
+                    <Grid item xs={4}>
                         
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                             <DatePicker
@@ -195,7 +195,7 @@ export default function WorkToday() {
                                     
                                     <TextField
                                         {...params}
-                                        InputProps={{ style: { fontWeight: 'bold' } }}
+                                        InputProps={{ style: { fontWeight: 'bold', fontSize:14 } }}
                                         size="small"
                                         sx={{ width: '100%' }}
                                         fullWidth
@@ -208,15 +208,15 @@ export default function WorkToday() {
                         </LocalizationProvider>
                        
 
-                    {/* </Grid>
-                    <Grid item xs={2}> */}
+                    </Grid>
+                    <Grid item xs={2}>
                         <Button onClick={(event) => {
                             setMyColList([]);
                             setMyTotCol(0);
                             setInputDate(new Date(inputDate.getTime() + 1000 * 60 * 60 * 24))
                         }}><Icon height={28} width={28} icon="ant-design:right-circle-outlined" /></Button>
-                    {/* </Grid>
-                    <Grid item xs={2}> */}
+                    </Grid>
+                    <Grid item xs={2}>
                         <Button onClick={(event) => {
                             let temp = new Date(inputDate);
                             temp = new Date(temp.setMonth(temp.getMonth() + 1));
@@ -226,10 +226,10 @@ export default function WorkToday() {
                         }
                         }>
                             <Icon height={26} width={26} icon="gg:chevron-double-right-r" /></Button>
-                    {/* </Grid>
-                </Grid> */}
+                    </Grid>
+                </Grid>
 
-                </Stack>
+                {/* </Stack> */}
                 <Stack sx={{ bgcolor: '#004F98', p: 1, borderRadius: 1 }} direction="row" justifyContent="space-between">
                     <Stack>
                         <Typography variant="subtitle" color="#fff">Cash: &#8377;{cashAmnt}</Typography>

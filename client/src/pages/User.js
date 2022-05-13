@@ -1,4 +1,4 @@
-import { filter } from 'lodash';
+import { concat, filter } from 'lodash';
 import * as Yup from 'yup';
 import { Icon } from '@iconify/react';
 // import { sentenceCase } from 'change-case';
@@ -230,6 +230,54 @@ export default function User() {
     setPage(0);
   };
 
+  const handlePhoneBook = () =>{
+      const props = ['name', 'email', 'tel', 'address', 'icon'];
+    const opts = { multiple: true };
+      navigator.contacts.select(props, opts).then((contacts)=>{
+        console.log('results:',contacts);
+        const parent =localStorage.getItem('number');
+        const enterpriseId = profileData.ent_id;
+        // for(let i=0;i<contacts.length;i+=1)
+        // {
+        //   console.log('number:',contacts[i].tel[contacts[i].tel.length-1],' name:',contacts[i].name[0])
+        // }
+        for(let i=0;i<contacts.length;i+=1)
+        {
+          // console.log('number:',contacts[i].tel[concat.tel.length-1],' name:',contacts[i].name[0])
+        axios
+        .post('/users/addMembers', {
+          number: contacts[i].tel[contacts[i].tel.length-1],
+          name: contacts[i].name[0],
+          pNumber: parent,
+          ent_id: enterpriseId
+        })
+        .then((res) => {
+          console.log(res);
+          if (res.data === 'success') {
+            formik.values.name = '';
+            formik.values.phone = '';
+            // setNumber('');
+            // setTName('');
+            setRefresh(true);
+            setRefresh(false);
+            setError(false);
+            setSuccess(true);
+          } else if (res.data === 'user_exists') {
+            setSuccess(false);
+            setError(true);
+          }
+        })
+        .catch((err) => {
+          console.log('err', err);
+        });
+      }
+      })
+      
+      .catch ((ex)=> {
+      console.log('err',ex);
+    })
+  }
+
   const handleFilterByName = (event) => {
     setFilterName(event.target.value);
   };
@@ -296,7 +344,7 @@ export default function User() {
     onSubmit: () => {
       axios
         .post('/users/addMembers', {
-          number: formik.values.phone,
+          number: `+91${formik.values.phone}`,
           name: formik.values.name,
           pNumber: localStorage.getItem('number'),
           ent_id: profileData.ent_id
@@ -342,7 +390,6 @@ export default function User() {
           if (res.data === 'success') {
             formik2.values.nam = '';
             formik2.values.phon = '';
-
             setRefresh(true);
             setRefresh(false);
             setError(false);
@@ -377,7 +424,7 @@ export default function User() {
           }}>
             <Stack direction="row" justifyContent="space-between">
               <Typography variant="h6" gutterBottom>
-                Add a new member
+                Edit member details
               </Typography>
               <Icon color="red" onClick={handleNewMember2} icon={close} width={22} height={22} />
             </Stack>
@@ -404,7 +451,7 @@ export default function User() {
                     helperText={formik2.touched.nam && formik2.errors.nam}
                   />
 
-                  <Button type="submit">Add</Button>
+                  <Button type="submit">Update</Button>
                 </Stack>
               </Form>
             </FormikProvider>
@@ -439,6 +486,9 @@ export default function User() {
         </Stack>
         {showAdd && (
           <Card sx={{ mb: 3, p: 2, }}>
+            <Stack>
+            <Button type="submit" onClick={handlePhoneBook}>Add From Phonebook</Button>
+            </Stack>
             <Stack direction="row" justifyContent="space-between">
               <Typography variant="h6" gutterBottom>
                 Add a new member
@@ -540,7 +590,7 @@ export default function User() {
 
 
                           <TableCell align="left">
-                            <Link href={`whatsapp://send?phone=+91${number}`}>
+                            <Link href={`whatsapp://send?phone=${number}`}>
                               <Icon icon="logos:whatsapp" width={22} height={22} />
                             </Link>
                           </TableCell>

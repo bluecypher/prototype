@@ -17,7 +17,7 @@ export default function MyCollections() {
         setValue(newValue);
     };
     return (
-        <Page title="Work Done Today">
+        <Page title="My Collections">
             <Box maxWidth="xl" sx={{ width: "100%" }}>
                 
                 <TabContext value={value}>

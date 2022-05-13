@@ -44,9 +44,10 @@ const DashboardApp = () => {
   const data = useSelector((state) => state.profileReducer);
   const dispatch = useDispatch();
   useEffect(() => {
-    console.log('data', localStorage.getItem('number'));
+    const num = localStorage.getItem('number');
+    console.log('data', num);
     axios
-      .get('/users/getData', { params: { number: localStorage.getItem('number') } })
+      .get('/users/getData', { params: { number: num } })
 
       .then((res) => {
         console.log('data', res.data);

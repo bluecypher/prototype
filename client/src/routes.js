@@ -55,6 +55,7 @@ const WorkHistory = lazy(()=> import('./pages/Workhistory'));
 const MyCollections = lazy(()=> import('./pages/MyCollections'));
 const Feedback = lazy(()=> import('./pages/Feedback'));
 const FeedbackSubmit = lazy(()=> import('./pages/FeedbackSubmit'));
+const SetPin = lazy(()=> import('./pages/SetPin'));
 
 // ----------------------------------------------------------------------
 
@@ -93,6 +94,7 @@ export default function Router() {
         { element: <Navigate to="/login" replace /> },
         { path: 'login', element: <Login /> },
         { path: 'register', element: <Register /> },
+        { path: 'setPin', element: <SetPin /> },
         { path: '404', element: <NotFound /> },
         { path: 'sessionExpired', element: <SessionExpired /> },
         { path: '/', element: <Login /> },
