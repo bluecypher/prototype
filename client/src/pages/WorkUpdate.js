@@ -96,9 +96,11 @@ export default function WorkUpdate() {
                 axios
                     .post('/users/updateWork', {
                         workId: workId,
-
                         name: name,
+                        spName: spName,
+                        custPhone: custPhone,
                         serv: servId,
+                        servName: serv,
                         amnt: formik.values.amnt,
                         wDetails: formik.values.wd,
                         wrnt: grnt,
@@ -115,40 +117,40 @@ export default function WorkUpdate() {
                             // const bytes  = CryptoJS.AES.decrypt(ciphertext, 'sahayak2');
                             // const originalText = bytes.toString(CryptoJS.enc.Utf8);
 
-                            const baseWorkId = Buffer.from(workId).toString('base64');
-                            console.log('cipher',baseWorkId);
-                            const originalText = Buffer.from(baseWorkId, "base64").toString();
+                            // const baseWorkId = Buffer.from(workId).toString('base64');
+                            // console.log('cipher',baseWorkId);
+                            // const originalText = Buffer.from(baseWorkId, "base64").toString();
                             
-                            console.log('original',originalText);
-                            let dt= new Date().toDateString();
-                            dt = dt.slice(4);
-                            let tm = new Date().toLocaleTimeString();
-                            tm = `${tm.slice(0,-6)} ${tm.slice(-2)}`;
-                            dt = `${dt} ${tm}`;
-                            console.log('date',dt,'teim',tm);
-                            const link = `http://shayak.co.in/feedback/${baseWorkId}`
+                            // console.log('original',originalText);
+                            // let dt= new Date().toDateString();
+                            // dt = dt.slice(4);
+                            // let tm = new Date().toLocaleTimeString();
+                            // tm = `${tm.slice(0,-6)} ${tm.slice(-2)}`;
+                            // dt = `${dt} ${tm}`;
+                            // console.log('date',dt,'teim',tm);
+                            // const link = `http://shayak.co.in/feedback/${baseWorkId}`
 
-                            const msg = `Sahayak ${spName} visited for ${serv} on ${dt}. Kindly share your feedback on ${link}`;
+                            // const msg = `Sahayak ${spName} visited for ${serv} on ${dt}. Kindly share your feedback on ${link}`;
 
 
 
-                              axios.get("https://www.fast2sms.com/dev/bulkV2",{params:{'authorization' : "YgzaI0vM7BZLWe9cdHUwf41GkqiESbpNusX3tToK6Oy2Qnmjlr1olWahGJ3fzXv8iYQTdtIpsUcRCnDq",
-                              'route' : 'v3',
-                              'sender_id' : 'Cghpet',
-                              'message': msg,
-                              'language' : "english",
-                              'numbers' :custPhone,
-                              'flash' : "0"
+                            //   axios.get("https://www.fast2sms.com/dev/bulkV2",{params:{'authorization' : "YgzaI0vM7BZLWe9cdHUwf41GkqiESbpNusX3tToK6Oy2Qnmjlr1olWahGJ3fzXv8iYQTdtIpsUcRCnDq",
+                            //   'route' : 'v3',
+                            //   'sender_id' : 'Cghpet',
+                            //   'message': msg,
+                            //   'language' : "english",
+                            //   'numbers' :custPhone,
+                            //   'flash' : "0"
 
-                            }})
-                            .then((res)=>{
-                              console.log("SMS api response:",res);
-                            })
-                            .catch((err)=>{
-                              console.log("error in otp api",err);
-                            })
+                            // }})
+                            // .then((res)=>{
+                            //   console.log("SMS api response:",res);
+                            // })
+                            // .catch((err)=>{
+                            //   console.log("error in otp api",err);
+                            // })
 
-                            console.log(msg, msg.length);
+                            // console.log(msg, msg.length);
 
                             if (mop === 'Online') {
                                 navigate(`/dashboard/payment/${workId}`, { replace: true });

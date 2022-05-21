@@ -3,6 +3,8 @@ const router = express.Router();
 const dao = require("../dao/dao");
 const multer = require('multer');
 const upload = multer();
+const axios = require("axios");
+const CryptoJS = require("crypto-js");
 
 
 
@@ -33,7 +35,7 @@ const upload = multer();
 router.get("/getData", (req, res) => {
     const number = req.query.number;
     dao.getData(number).then((resp) => {
-        console.log("Getting Data",resp)
+        console.log("Getting Data", resp)
         res.status(200).send(resp);
     }).catch((err) => {
         res.status(404).send({ "Error": err });
@@ -104,7 +106,33 @@ router.post("/addMembers", (req, res) => {
 
     if (pNumber) {
         dao.addMembers(name, number, pNumber, ent_id).then((resp) => {
-            console.log("Members details updated")
+            console.log("Members details updated", resp)
+            // if(resp === "success")
+            // {
+            //         axios.post("https://api.msg91.com/api/v5/flow/", {
+            //             "flow_id": "6283774ee1c07d702138b3f4",
+            //             "mobiles": `91${number}`,
+            //             "name": "Raju",
+            //             "servname":"AC",
+            //             "dt":"17/05/2022",
+            //             "url":"http://sahayakscom"
+            //     },
+            //         {
+            //             headers: {
+            //                 // "Content-Type": "application/json",
+            //                 // "Access-Control-Allow-Origin": true,
+            //                 "authkey": "375887AvOeC9dKi625e4a8cP1",
+            //             }
+            //         },
+            //     )
+            //         .then((res) => {
+            //             console.log("OTP success");
+
+            //         })
+            //         .catch((err) => {
+            //             console.log("OTP error", err);
+            //         })
+            // }
             res.status(200).send(resp);
         }).catch((err) => {
             res.status(404).send("Error");
@@ -228,7 +256,10 @@ router.post("/getTodaysWork", (req, res) => {
 router.post("/updateWork", (req, res) => {
     const workId = req.body.workId;
     const name = req.body.name;
+    const spName = req.body.spName;
+    const custPhone = req.body.custPhone;
     const serv = req.body.serv;
+    const servName = req.body.servName;
     const wrnt = req.body.wrnt;
     const amnt = req.body.amnt;
     const wDetails = req.body.wDetails;
@@ -245,6 +276,42 @@ router.post("/updateWork", (req, res) => {
 
     if (workId) {
         dao.updateWork(workId, name, serv, amnt, wDetails, pmtMethod, nxtDate, nxtWork, wrnt, custId, spId, servId, date, todos, asgnTo).then((resp) => {
+            if (resp === "Success") {
+                const baseWorkId = Buffer.from(workId).toString('base64');
+                console.log('cipher', baseWorkId);
+                const originalText = Buffer.from(baseWorkId, "base64").toString();
+
+                console.log('original', originalText);
+                let dt = new Date().toDateString();
+                dt = dt.slice(4);
+                let tm = new Date().toLocaleTimeString();
+                tm = `${tm.slice(0, -6)} ${tm.slice(-2)}`;
+                dt = `${dt} ${tm}`;
+                console.log('date', dt, 'teim', tm);
+                const link = `https://sahayaks.com/feedback/${baseWorkId}`;
+                axios.post("https://api.msg91.com/api/v5/flow/", {
+                    "flow_id": "6283774ee1c07d702138b3f4",
+                    "mobiles": `91${custPhone}`,
+                    "name": spName,
+                    "servname": servName,
+                    "dt": dt,
+                    "url": link
+                },
+                    {
+                        headers: {
+                            "authkey": "375887AvOeC9dKi625e4a8cP1",
+                        }
+                    },
+                )
+                    .then((res) => {
+                        console.log("OTP success");
+
+                    })
+                    .catch((err) => {
+                        console.log("OTP error", err);
+                    })
+
+            }
             res.status(200).send(resp);
         }).catch((err) => {
             res.status(404).send("Error");
@@ -532,7 +599,7 @@ router.post("/getFeedbacks", (req, res) => {
 
 router.post("/getCallbacks", (req, res) => {
 
-    const spId= req.body.spId;
+    const spId = req.body.spId;
     if (spId) {
         dao.getCallbacks(spId).then((resp) => {
             console.log("Getting Callbacks")
@@ -552,11 +619,51 @@ router.post("/getCallbacks", (req, res) => {
 
 router.post("/getLogin", (req, res) => {
 
-    const number= req.body.number;
+    const number = req.body.number;
     if (number) {
         dao.getLogin(number).then((resp) => {
-            console.log("Getting Login")
-            res.status(200).send(resp);
+            console.log("Getting Login", resp);
+
+            var result = new Object();
+            result.otp = null;
+            result.password = null;
+            if (resp === "insert" || resp[0].password === null) {
+
+
+                const temp = Math.floor(100000 + Math.random() * 900000).toString();
+                const ciphertext = CryptoJS.AES.encrypt(temp, 'sahayak2').toString();
+                result.otp = ciphertext;
+                // result.resp = resp;
+
+                //     axios.post("https://api.msg91.com/api/v5/flow/", {
+                //         "flow_id": "6283736936461a612128aca6",
+                //         "mobiles": `91${number}`,
+                //         "otp": temp
+                //     },
+                //         {
+                //             headers: {
+                //                 // "Content-Type": "application/json",
+                //                 // "Access-Control-Allow-Origin": true,
+                //                 "authkey": "375887AvOeC9dKi625e4a8cP1",
+                //             }
+                //         },
+                //     )
+                //         .then((res) => {
+                //             console.log("OTP success");
+
+                //         })
+                //         .catch((err) => {
+                //             console.log("OTP error", err);
+                //         })
+            }
+            else {
+                result.password = resp[0].password;
+            }
+
+            console.log('resp update', result);
+            res.status(200).send(result);
+
+
         }).catch((err) => {
             console.log("Error", err)
             res.status(404).send({ "Error": err });
@@ -572,10 +679,10 @@ router.post("/getLogin", (req, res) => {
 
 router.post("/setPIN", (req, res) => {
 
-    const number= req.body.number;
+    const number = req.body.number;
     const pin = req.body.pin;
     if (number) {
-        dao.setPIN(number,pin).then((resp) => {
+        dao.setPIN(number, pin).then((resp) => {
             console.log("Set PIN")
             res.status(200).send("Success");
         }).catch((err) => {
@@ -597,7 +704,7 @@ router.post("/saveToken", (req, res) => {
     // console.log('files:',req.file);
     console.log('body', req.body);
     if (data && id) {
-        dao.saveToken(data,id).then((resp) => {
+        dao.saveToken(data, id).then((resp) => {
 
             console.log("Token Inserted successfully", resp);
             res.status(200).send("Success");

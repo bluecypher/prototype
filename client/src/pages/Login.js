@@ -149,7 +149,7 @@ export default function Login() {
     // password: Yup.string().required('OTP is required')
   });
   const handleSubmit2 = () => {
-    if (inputOtp === '123456') {
+    if (inputOtp === "123456") {
       localStorage.setItem('number', values.number);
       navigate('/setPin', { replace: true });
 
@@ -206,8 +206,7 @@ export default function Login() {
 
     const messaging = firebase.messaging();
     askForPermissionToReceiveNotifications(messaging);
-    if(webInstallPrompt || iosInstallPrompt)
-    {
+    if (webInstallPrompt || iosInstallPrompt) {
       setShowInstall(true);
     }
     if (cookies.token && data.number) {
@@ -236,34 +235,17 @@ export default function Login() {
       // })
 
       axios.post('/users/getLogin', { number: values.number }).then((res) => {
-        console.log('getlogin', res.data);
-        if (res.data === 'insert' || res.data[0].password === null) {
+        console.log('getlogin', res);
+        if (res.data.password === null) {
+
+          // const bytes = CryptoJS.AES.decrypt(res.data.otp, 'sahayak2');
+          // const originalText = bytes.toString(CryptoJS.enc.Utf8);
+          // setOTP(originalText);
           setShowOTP(true);
-          const temp = Math.floor(100000 + Math.random() * 900000).toString();
-          const msg = tmplt.concat(temp, ' is your OTP to login to Sahayaks.');
-          setOTP(temp);
-
-          console.log(msg);
-
-          //   axios.get("https://www.fast2sms.com/dev/bulkV2",{params:{'authorization' : "YgzaI0vM7BZLWe9cdHUwf41GkqiESbpNusX3tToK6Oy2Qnmjlr1olWahGJ3fzXv8iYQTdtIpsUcRCnDq",
-          //   'route' : 'v3',
-          //   'sender_id' : 'Cghpet',
-          //   'message': msg,
-          //   'language' : "english",
-          //   'numbers' : values.number,
-          //   'flash' : "0"
-
-          // }})
-          // .then((res)=>{
-          //   console.log("OTP api response:",res);
-          // })
-          // .catch((err)=>{
-          //   console.log("error in otp api",err);
-          // })
         }
         else {
           setShowPIN(true);
-          setEncPin(res.data[0].password);
+          setEncPin(res.data.password);
         }
       })
         .catch((err) => {
@@ -273,15 +255,15 @@ export default function Login() {
 
     }
   });
-  const handleInstallClick = () =>{
+  const handleInstallClick = () => {
     setShowInstall(false);
     handleWebInstallAccepted();
   }
-  const handleWebCloseClick = () =>{
+  const handleWebCloseClick = () => {
     setShowInstall(false);
     handleWebInstallDeclined();
   }
-  const handleIosCloseClick = () =>{
+  const handleIosCloseClick = () => {
     setShowInstall(false);
     handleIOSInstallDeclined();
   }
@@ -304,52 +286,54 @@ export default function Login() {
       </MHidden>
 
       <Container maxWidth="sm">
-      <Modal open={showInstall}>
-                <Card sx={{ position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: '90%',
-                justifyContent:'center',
-                alignItems:'center',
-                p: 1 }}>
-                  <Stack sx={{alignItems:'center'}}>
-                  <Avatar sx={{ width: 32, height: 32 }} src="/static/logo.png" alt="sahayak" />
-                  </Stack>
+        <Modal open={showInstall}>
+          <Card sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '90%',
+            justifyContent: 'center',
+            alignItems: 'center',
+            p: 1
+          }}>
+            <Stack sx={{ alignItems: 'center' }}>
+              <Avatar sx={{ width: 32, height: 32 }} src="/static/logo.png" alt="sahayak" />
+            </Stack>
 
-                  <CardHeader sx={{ py: 1, alignItems:'center' }} title="Would you like to install Sahayaks App?" />
-                  {iosInstallPrompt && (
-                    <Stack sx={{alignItems:'center',}} spacing={2}>
-                      <Typography variant="subtitle2">
-                        Tap
-                        share <Icon icon="fluent:share-ios-20-regular" width={22} height={22} />
-                         then &quot;Add to Home Screen&quot;
-                      </Typography>
+            <CardHeader sx={{ py: 1, alignItems: 'center' }} title="Would you like to install Sahayaks App?" />
+            {iosInstallPrompt && (
+              <Stack sx={{ alignItems: 'center', }} spacing={2}>
+                <Typography variant="subtitle2">
+                  Tap
+                  share <Icon icon="fluent:share-ios-20-regular" width={22} height={22} />
+                  then &quot;Add to Home Screen&quot;
+                </Typography>
 
-                      <Button onClick={handleIosCloseClick}>Close</Button>
+                <Button onClick={handleIosCloseClick}>Close</Button>
 
-                    </Stack>
-                  )}
-                  {webInstallPrompt && (
-                    // <Stack sx={{alignItems:'center', }}>
-                    <Stack sx={{alignItems:'center', justifyContent:'space-around' , mt:5}} direction="row">
-                      
-                      <Button color="error" variant="outlined" onClick={handleWebCloseClick}>Close</Button>
-                      <Button variant="contained" color="primary" onClick={handleInstallClick}>
-                        Install
-                      </Button>
-                    </Stack>
-                    // </Stack>
-                  )}
+              </Stack>
+            )}
+            {webInstallPrompt && (
+              // <Stack sx={{alignItems:'center', }}>
+              <Stack sx={{ alignItems: 'center', justifyContent: 'space-around', mt: 5 }} direction="row">
 
-                </Card>
-              </Modal>
+                <Button color="error" variant="outlined" onClick={handleWebCloseClick}>Close</Button>
+                <Button variant="contained" color="primary" onClick={handleInstallClick}>
+                  Install
+                </Button>
+              </Stack>
+              // </Stack>
+            )}
+
+          </Card>
+        </Modal>
         <ContentStyle>
           <Stack sx={{ mb: 5 }}>
             <Stack sx={{ mb: 5 }} alignItems="center">
 
 
-              
+
 
 
               {prevData && (
