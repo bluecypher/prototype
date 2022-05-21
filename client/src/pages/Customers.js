@@ -169,7 +169,9 @@ export default function Customers() {
   }, [error, success, id, refresh]);
 
 
+  
 
+  
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
@@ -201,6 +203,90 @@ export default function Customers() {
     }
     setSelected([]);
   };
+
+
+  const handlePhoneBook = () => {
+    const props = ['name', 'email', 'tel', 'address', 'icon'];
+    const opts = { multiple: true };
+    navigator.contacts.select(props, opts).then((contacts) => {
+      console.log('results:', contacts);
+      
+      // for(let i=0;i<contacts.length;i+=1)
+      // {
+      //   console.log('number:',contacts[i].tel[contacts[i].tel.length-1],' name:',contacts[i].name[0])
+      // }
+      for (let i = 0; i < contacts.length; i += 1) {
+        // console.log('number:',contacts[i].tel[concat.tel.length-1],' name:',contacts[i].name[0])
+        // axios
+        //   .post('/users/addMembers', {
+        //     number: contacts[i].tel[contacts[i].tel.length - 1],
+        //     name: contacts[i].name[0],
+        //     pNumber: parent,
+        //     ent_id: enterpriseId
+        //   })
+        //   .then((res) => {
+        //     console.log(res);
+        //     if (res.data === 'success') {
+        //       formik.values.name = '';
+        //       formik.values.phone = '';
+        //       // setNumber('');
+        //       // setTName('');
+        //       setRefresh(true);
+        //       setRefresh(false);
+        //       setError(false);
+        //       // setSuccess(true);
+        //     } else if (res.data === 'user_exists') {
+        //       setSuccess(false);
+        //       setError(true);
+        //     }
+        //   })
+        //   .catch((err) => {
+        //     console.log('err', err);
+        //   });
+
+
+          axios.post('/users/addCustomers', {
+            'number': contacts[i].tel[contacts[i].tel.length - 1],
+            'id': id,
+            'name': contacts[i].name[0],
+            'add': formik.values.address,
+          })
+            .then((res) => {
+              console.log(res);
+              if (res.data === 'Success') {
+    
+                formik.values.name = '';
+                formik.values.phone = '';
+                formik.values.address = '';
+    
+                setRefresh(true);
+                setRefresh(false);
+                setError(false);
+                setSuccess(true);
+    
+    
+              }
+    
+              else if (res.data.code === 'ER_DUP_ENTRY') {
+                setSuccess(false);
+                setError(true);
+              }
+    
+            })
+            .catch((err) => {
+              console.log('err', err);
+            })
+
+
+      }
+    })
+
+      .catch((ex) => {
+        console.log('err', ex);
+      })
+  }
+
+
 
   // const handleClick = (event, name) => {
   //   const selectedIndex = selected.indexOf(name);
@@ -294,7 +380,7 @@ export default function Customers() {
   //   // console.log('number34:', n);
   // }
 
-  
+
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
 
   const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
@@ -321,11 +407,11 @@ export default function Customers() {
         .then((res) => {
           console.log(res);
           if (res.data === 'Success') {
-           
+
             formik.values.name = '';
             formik.values.phone = '';
             formik.values.address = '';
-           
+
             setRefresh(true);
             setRefresh(false);
             setError(false);
@@ -370,11 +456,11 @@ export default function Customers() {
         .then((res) => {
           console.log(res);
           if (res.data === 'success') {
-            
+
             formik2.values.name = '';
             formik2.values.phone = '';
             formik2.values.address = '';
-            
+
             setRefresh(true);
             setRefresh(false);
             setError(false);
@@ -414,7 +500,7 @@ export default function Customers() {
   return (
     <Page title="Customers">
       <Container>
-      <Modal open={showAdd2} onClose={handleNewMember2}>
+        <Modal open={showAdd2} onClose={handleNewMember2}>
           <Card sx={{
             position: 'absolute',
             top: '50%',
@@ -479,8 +565,8 @@ export default function Customers() {
                 <Alert severity="success">Customer added successfully!</Alert>
               </Stack>
             }
-            </Card>
-            </Modal>
+          </Card>
+        </Modal>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
             Customers List
@@ -559,6 +645,13 @@ export default function Customers() {
             }
           </Card>)
         }
+
+        <Stack sx={{ alignItems: 'flex-end' }}>
+          <Button type="submit" onClick={handlePhoneBook}>
+            <Icon icon="typcn:contacts" width={24} height={24} />
+            Add From Phonebook</Button>
+        </Stack>
+
         <Card>
           <UserListToolbar
             numSelected={selected.length}

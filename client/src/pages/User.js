@@ -230,52 +230,70 @@ export default function User() {
     setPage(0);
   };
 
-  const handlePhoneBook = () =>{
-      const props = ['name', 'email', 'tel', 'address', 'icon'];
+  const handlePhoneBook = () => {
+    const props = ['name', 'email', 'tel', 'address', 'icon'];
     const opts = { multiple: true };
-      navigator.contacts.select(props, opts).then((contacts)=>{
-        console.log('results:',contacts);
-        const parent =localStorage.getItem('number');
-        const enterpriseId = profileData.ent_id;
-        // for(let i=0;i<contacts.length;i+=1)
-        // {
-        //   console.log('number:',contacts[i].tel[contacts[i].tel.length-1],' name:',contacts[i].name[0])
-        // }
-        for(let i=0;i<contacts.length;i+=1)
-        {
-          // console.log('number:',contacts[i].tel[concat.tel.length-1],' name:',contacts[i].name[0])
+    navigator.contacts.select(props, opts).then((contacts) => {
+      console.log('results:', contacts);
+      const parent = localStorage.getItem('number');
+      const enterpriseId = profileData.ent_id;
+      // for(let i=0;i<contacts.length;i+=1)
+      // {
+      //   console.log('number:',contacts[i].tel[contacts[i].tel.length-1],' name:',contacts[i].name[0])
+      // }
+      for (let i = 0; i < contacts.length; i += 1) {
+        // console.log('number:',contacts[i].tel[concat.tel.length-1],' name:',contacts[i].name[0])
         axios
-        .post('/users/addMembers', {
-          number: contacts[i].tel[contacts[i].tel.length-1],
-          name: contacts[i].name[0],
-          pNumber: parent,
-          ent_id: enterpriseId
-        })
-        .then((res) => {
-          console.log(res);
-          if (res.data === 'success') {
-            formik.values.name = '';
-            formik.values.phone = '';
-            // setNumber('');
-            // setTName('');
-            setRefresh(true);
-            setRefresh(false);
-            setError(false);
-            setSuccess(true);
-          } else if (res.data === 'user_exists') {
-            setSuccess(false);
-            setError(true);
-          }
-        })
-        .catch((err) => {
-          console.log('err', err);
-        });
+          .post('/users/addMembers', {
+            number: contacts[i].tel[contacts[i].tel.length - 1],
+            name: contacts[i].name[0],
+            pNumber: parent,
+            ent_id: enterpriseId
+          })
+          .then((res) => {
+            console.log(res);
+            if (res.data === 'success') {
+              formik.values.name = '';
+              formik.values.phone = '';
+              // setNumber('');
+              // setTName('');
+              setRefresh(true);
+              setRefresh(false);
+              setError(false);
+              // const msg = `Hi, ${profileData.fname} has added you to Sahayaks app. Please use htts://sahayaks.com to Login.`
+              // axios.get("https://www.fast2sms.com/dev/bulkV2", {
+              //   params: {
+              //     'authorization': "YgzaI0vM7BZLWe9cdHUwf41GkqiESbpNusX3tToK6Oy2Qnmjlr1olWahGJ3fzXv8iYQTdtIpsUcRCnDq",
+              //     'route': 'v3',
+              //     'sender_id': 'Cghpet',
+              //     'message': msg,
+              //     'language': "english",
+              //     'numbers': contacts[i].tel[contacts[i].tel.length - 1],
+              //     'flash': "0"
+
+              //   }
+              // })
+              //   .then((res) => {
+              //     console.log("OTP api response:", res);
+              //   })
+              //   .catch((err) => {
+              //     console.log("error in otp api", err);
+              //   })
+              // setSuccess(true);
+            } else if (res.data === 'user_exists') {
+              setSuccess(false);
+              // setError(true);
+            }
+          })
+          .catch((err) => {
+            console.log('err', err);
+          });
       }
-      })
-      
-      .catch ((ex)=> {
-      console.log('err',ex);
     })
+
+      .catch((ex) => {
+        console.log('err', ex);
+      })
   }
 
   const handleFilterByName = (event) => {
@@ -352,14 +370,36 @@ export default function User() {
         .then((res) => {
           console.log(res);
           if (res.data === 'success') {
-            formik.values.name = '';
-            formik.values.phone = '';
+
             // setNumber('');
             // setTName('');
             setRefresh(true);
             setRefresh(false);
             setError(false);
             setSuccess(true);
+            // const msg = `Hi, ${profileData.fname} has added you to Sahayaks app. Please use htts://sahayaks.com to Login.`;
+            // axios.get("https://www.fast2sms.com/dev/bulkV2", {
+            //   params: {
+            //     'authorization': "YgzaI0vM7BZLWe9cdHUwf41GkqiESbpNusX3tToK6Oy2Qnmjlr1olWahGJ3fzXv8iYQTdtIpsUcRCnDq",
+            //     'route': 'v3',
+            //     'sender_id': 'Cghpet',
+            //     'message': msg,
+            //     'language': "english",
+            //     'numbers': formik.values.phone,
+            //     'flash': "0"
+
+            //   }
+            // })
+            //   .then((res) => {
+            //     console.log("OTP api response:", res);
+            //   })
+            //   .catch((err) => {
+            //     console.log("error in otp api", err);
+            //   })
+
+            formik.values.name = '';
+            formik.values.phone = '';
+
           } else if (res.data === 'user_exists') {
             setSuccess(false);
             setError(true);
@@ -386,7 +426,7 @@ export default function User() {
           id: formik2.values.id,
         })
         .then((res) => {
-          console.log('response',res);
+          console.log('response', res);
           if (res.data === 'success') {
             formik2.values.nam = '';
             formik2.values.phon = '';
@@ -395,7 +435,7 @@ export default function User() {
             setError(false);
             setSuccess(true);
             handleNewMember2();
-          } else  {
+          } else {
             setSuccess(false);
             setError(true);
           }
@@ -403,7 +443,7 @@ export default function User() {
         .catch((err) => {
           console.log('err', err);
         });
-      console.log('addnew',formik2.values.id);
+      console.log('addnew', formik2.values.id);
     }
   });
 
@@ -486,9 +526,7 @@ export default function User() {
         </Stack>
         {showAdd && (
           <Card sx={{ mb: 3, p: 2, }}>
-            <Stack>
-            <Button type="submit" onClick={handlePhoneBook}>Add From Phonebook</Button>
-            </Stack>
+
             <Stack direction="row" justifyContent="space-between">
               <Typography variant="h6" gutterBottom>
                 Add a new member
@@ -534,6 +572,13 @@ export default function User() {
             )}
           </Card>
         )}
+
+        <Stack sx={{ alignItems: 'flex-end' }}>
+          <Button type="submit" onClick={handlePhoneBook}>
+            <Icon icon="typcn:contacts" width={24} height={24} />
+            Add From Phonebook</Button>
+        </Stack>
+
         <Card>
           <UserListToolbar
             numSelected={selected.length}

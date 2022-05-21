@@ -1,5 +1,10 @@
 const mysql = require("mysql2");
 const jwt = require("jsonwebtoken");
+
+const { google } = require("googleapis")
+const https = require("https")
+
+const key = require("./sahayak-s-firebase-adminsdk-7r1dc-233d98f52e.json")
 // const { download } = require("express/lib/response");
 
 const getconnection = () => {
@@ -11,6 +16,7 @@ const getconnection = () => {
     });
     return con;
 };
+
 
 // const checkToken = (number) => {
 //     return new Promise((resolve, reject) => {
@@ -466,7 +472,19 @@ const addWork = (spId, custId, date, todos, servId, asgnTo) => {
             new Date(Date.now())
         ], (err, row) => {
             if (!err) {
-
+                db.query("SELECT spm1.first_name AS master, spm2.first_name AS member, spm2.push_token, sm.serv_name, spcm.cust_name FROM service_provider_work_list spwl INNER JOIN service_provider_master spm1 ON spm1.user_mast_id=spwl.service_provider_id INNER JOIN service_provider_master spm2 ON spm2.user_mast_id=spwl.assign_to INNER JOIN service_master sm ON spwl.work_type=sm.serv_id INNER JOIN service_provider_customer_master spcm ON spcm.cust_mast_id=spwl.cust_mast_id WHERE spwl.work_list_id=?;", [
+                    row.insertId
+                ], (err, row) => {
+                    if (!err) {
+                        console.log('select', row[0])
+                        sendNotification(row[0].push_token,row[0].master,row[0].member,row[0].serv_name,row[0].cust_name);
+                        // resolve("Success");
+                    }
+                    else{
+                        console.log('select err', err);
+                        reject(err);
+                    }
+                });
                 resolve("Success");
             }
             else {
@@ -1031,6 +1049,97 @@ const setPIN = (number, pin) => {
             });
     });
 }
+
+const saveToken = (token, id) => {
+    return new Promise((resolve, reject) => {
+        const db = getconnection();
+        db.query("UPDATE service_provider_master SET push_token=? WHERE user_mast_id=?",
+            [token,
+            id],
+            (err, row) => {
+                if (!err) {
+                    
+                        console.log("saveToken");
+                        resolve(row);
+                   
+
+                }
+                else reject(err);
+            })
+
+    });
+};
+
+
+const getAccessToken = () => {
+
+    return new Promise((resolve, reject) => {
+        const jwtClient = new google.auth.JWT(
+
+            key.client_email,
+            null,
+            key.private_key,
+            ["https://www.googleapis.com/auth/firebase.messaging"],
+            null
+        );
+        jwtClient.authorize(function (err, tokens) {
+            if (err) {
+                reject(err);
+                return;
+            }
+            resolve(tokens.access_token);
+        });
+    })
+
+
+}
+const sendNotification = (token,master,member,service,customer) => {
+
+    // console.log("sendnoti")
+    return new Promise((resolve, reject) => {
+        getAccessToken().then((access_token) => {
+            var PROJECT_ID = "sahayak-s";
+            var HOST = "fcm.googleapis.com";
+            var PATH = "/v1/projects/" + PROJECT_ID + "/messages:send";
+
+            var options = {
+                hostname: HOST,
+                path: PATH,
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + access_token
+                }
+                // … plus the body of your notification or data message
+            };
+
+            fcmMessage = {
+                "message": {
+                    "token": token,
+                    "notification": {
+                        "title": "Work Assigned",
+                        "body": member + ", you have been assigned a "+ service
+                    }
+                }
+
+            }
+            var request = https.request(options, function (resp) {
+                resp.setEncoding('utf8');
+                resp.on('data', function (data) {
+                    console.log('Message sent to Firebase for delivery, response');
+                    console.log(data);
+                    resolve("success")
+                });
+            });
+            request.on('error', function (err) {
+                console.log('Unable to send message to Firebase');
+                reject(err);
+            });
+            request.write(JSON.stringify(fcmMessage));
+            request.end();
+        })
+    })
+
+}
     module.exports = {
         getconnection,
         updateDetails,
@@ -1068,4 +1177,5 @@ const setPIN = (number, pin) => {
         getCallbacks,
         getLogin,
         setPIN,
+        saveToken
     };

@@ -590,4 +590,22 @@ router.post("/setPIN", (req, res) => {
 
 
 })
+
+router.post("/saveToken", (req, res) => {
+    const data = req.body.token;
+    const id = req.body.id;
+    // console.log('files:',req.file);
+    console.log('body', req.body);
+    if (data && id) {
+        dao.saveToken(data,id).then((resp) => {
+
+            console.log("Token Inserted successfully", resp);
+            res.status(200).send("Success");
+        }).catch((err) => {
+            console.log(err);
+            res.status(404).send("Error")
+        })
+    }
+    // res.status(200).send("testing");
+})
 module.exports = router;

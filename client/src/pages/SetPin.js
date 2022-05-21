@@ -1,9 +1,9 @@
 import * as Yup from 'yup';
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+// import { useSelector } from 'react-redux';
 import { Link as RouterLink,useNavigate } from 'react-router-dom';
 import { useFormik, Form, FormikProvider } from 'formik';
-import { useCookies } from 'react-cookie';
+// import { useCookies } from 'react-cookie';
 // import PWAInstallerPrompt from 'react-pwa-installer-prompt';
 // material
 
@@ -11,15 +11,12 @@ import { styled } from '@mui/material/styles';
 import {
   Card,
   Stack,
-  Link,
   Container,
   Typography,
-  Avatar,
-  CardActionArea,
+
   Alert,
   TextField,
-  Icon,
-  Button
+
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
@@ -190,12 +187,6 @@ export default function SetPin() {
                     <Alert severity="error">PINs does not match!</Alert>
                   </Stack>
                 )}
-
-               
-
-                
-            
-            
           </Stack>
         </ContentStyle>
       </Container>

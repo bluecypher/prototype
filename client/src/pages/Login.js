@@ -2,6 +2,12 @@ import * as Yup from 'yup';
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
+
+import firebase from "firebase/compat/app";
+
+
+import "firebase/compat/messaging";
+
 import { useFormik, Form, FormikProvider } from 'formik';
 import { useCookies } from 'react-cookie';
 // import PWAInstallerPrompt from 'react-pwa-installer-prompt';
@@ -18,14 +24,21 @@ import {
   CardActionArea,
   Alert,
   TextField,
-  Icon,
-  Button
+  Modal,
+  Button,
+  CardHeader
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+import { Icon } from '@iconify/react';
+import { firebaseConfig } from "../utils/pushNotification"
+
 
 // layouts
 // import AuthLayout from '../layouts/AuthLayout';
 // components
+// import InstallPrompt from '../components/InstallPrompt';
+import useIosInstallPrompt from '../app/shared/hooks/useIosInstallPrompt';
+import useWebInstallPrompt from '../app/shared/hooks/useWebInstallPrompt';
 import Page from '../components/Page';
 import { MHidden } from '../components/@material-extend';
 // import { LoginForm } from '../components/authentication/login';
@@ -63,6 +76,54 @@ const ContentStyle = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function Login() {
+
+
+  const askForPermissionToReceiveNotifications = async (messaging) => {
+    try {
+
+
+      messaging.getToken({ vapidKey: 'BOtVSIcvlmR7eGLUd321oqBBH_l-kX5hVwvBCqhuG120mrk8Dk0nLXu1kEHeFG4kSR2CxnmjFKTKMKvrToz6s1c' }).then((currentToken) => {
+        if (currentToken) {
+          // Send the token to your server and update the UI if necessary
+          // ...
+
+          // send the token to backend for with corresponding user id
+          console.log(currentToken)
+          localStorage.setItem('pToken', currentToken);
+          // axios.post('/users/saveToken',{ token: currentToken }).then(res => {
+          //     console.log(res);
+          //   }).catch(err => {
+          //     console.log(err);
+          //   })
+
+          // axios.post('/users/sendNotification', { token: currentToken }).then(res => {
+          //   console.log(res);
+          // }).catch(err => {
+          //   console.log(err);
+          // })
+
+          // from server get token of team member to be added and then post request to the destination token
+
+
+
+        } else {
+          // Show permission request UI
+          console.log('No registration token available. Request permission to generate one.');
+          // ...
+        }
+      }).catch((err) => {
+        console.log('An error occurred while retrieving token. ', err);
+        // ...
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const [iosInstallPrompt, handleIOSInstallDeclined] = useIosInstallPrompt();
+  const [webInstallPrompt, handleWebInstallDeclined, handleWebInstallAccepted] = useWebInstallPrompt();
+
+
   const prevData = JSON.parse(localStorage.getItem('prev_user'));
 
   const navigate = useNavigate();
@@ -75,6 +136,7 @@ export default function Login() {
   const [showPIN, setShowPIN] = useState(false);
   const [error, setError] = useState(false);
   const [pinError, setPinError] = useState(false);
+  const [showInstall, setShowInstall] = useState(false);
   // const [supported, setSupported] = useState(false);
 
   const [cookies, setCookie] = useCookies('');
@@ -89,8 +151,8 @@ export default function Login() {
   const handleSubmit2 = () => {
     if (inputOtp === '123456') {
       localStorage.setItem('number', values.number);
-      navigate('/setPin',{replace: true});
-      
+      navigate('/setPin', { replace: true });
+
     } else {
       setError(true);
       console.log('less than 6');
@@ -98,12 +160,11 @@ export default function Login() {
   };
 
   const handleSubmit3 = () => {
-    const bytes  = CryptoJS.AES.decrypt(encPin, 'sahayak2');
+    const bytes = CryptoJS.AES.decrypt(encPin, 'sahayak2');
     const originalText = bytes.toString(CryptoJS.enc.Utf8);
-    console.log('dec',inputPin);
-    if(originalText === inputPin)
-    {
-    axios
+    console.log('dec', inputPin);
+    if (originalText === inputPin) {
+      axios
         .post(
           '/users/login',
           {
@@ -132,20 +193,27 @@ export default function Login() {
         .catch((e) => {
           console.log('Error', e);
         });
-      }
-      else
-      {
-        setPinError(true);
-      }
-    
+    }
+    else {
+      setPinError(true);
+    }
+
   }
 
   useEffect(() => {
-    
+    console.log("useEfet")
+    firebase.initializeApp(firebaseConfig);
+
+    const messaging = firebase.messaging();
+    askForPermissionToReceiveNotifications(messaging);
+    if(webInstallPrompt || iosInstallPrompt)
+    {
+      setShowInstall(true);
+    }
     if (cookies.token && data.number) {
       navigate('/dashboard', { replace: true });
     }
-  }, [data]);
+  }, [data, webInstallPrompt, iosInstallPrompt]);
 
   const formik = useFormik({
     initialValues: {
@@ -157,56 +225,66 @@ export default function Login() {
     onSubmit: () => {
       // console.log(event);
 
-    //   const props = ['name', 'email', 'tel', 'address', 'icon'];
-    // const opts = { multiple: true };
-    //   navigator.contacts.select(props, opts).then((contacts)=>{
-    //     console.log('results:',contacts);
-    //   })
-      
-    //   .catch ((ex)=> {
-    //   console.log('err',ex);
-    // })
+      //   const props = ['name', 'email', 'tel', 'address', 'icon'];
+      // const opts = { multiple: true };
+      //   navigator.contacts.select(props, opts).then((contacts)=>{
+      //     console.log('results:',contacts);
+      //   })
 
-    axios.post('/users/getLogin', { number: values.number }).then((res) => {
-      console.log('getlogin', res.data);
-      if(res.data==='insert' || res.data[0].password === null)
-      {
-        setShowOTP(true);
-        const temp = Math.floor(100000 + Math.random() * 900000).toString();
-        const msg = tmplt.concat(temp, ' is your OTP to login to Sahayaks.');
-        setOTP(temp);
-        
-        console.log(msg);
-
-      //   axios.get("https://www.fast2sms.com/dev/bulkV2",{params:{'authorization' : "YgzaI0vM7BZLWe9cdHUwf41GkqiESbpNusX3tToK6Oy2Qnmjlr1olWahGJ3fzXv8iYQTdtIpsUcRCnDq",
-      //   'route' : 'v3',
-      //   'sender_id' : 'Cghpet',
-      //   'message': msg,
-      //   'language' : "english",
-      //   'numbers' : values.number,
-      //   'flash' : "0"
-
-      // }})
-      // .then((res)=>{
-      //   console.log("OTP api response:",res);
+      //   .catch ((ex)=> {
+      //   console.log('err',ex);
       // })
-      // .catch((err)=>{
-      //   console.log("error in otp api",err);
-      // })
-      }
-      else
-      {
-        setShowPIN(true);
-        setEncPin(res.data[0].password);
-      }
-    })
-      .catch((err) => {
-        console.log('err', err);
+
+      axios.post('/users/getLogin', { number: values.number }).then((res) => {
+        console.log('getlogin', res.data);
+        if (res.data === 'insert' || res.data[0].password === null) {
+          setShowOTP(true);
+          const temp = Math.floor(100000 + Math.random() * 900000).toString();
+          const msg = tmplt.concat(temp, ' is your OTP to login to Sahayaks.');
+          setOTP(temp);
+
+          console.log(msg);
+
+          //   axios.get("https://www.fast2sms.com/dev/bulkV2",{params:{'authorization' : "YgzaI0vM7BZLWe9cdHUwf41GkqiESbpNusX3tToK6Oy2Qnmjlr1olWahGJ3fzXv8iYQTdtIpsUcRCnDq",
+          //   'route' : 'v3',
+          //   'sender_id' : 'Cghpet',
+          //   'message': msg,
+          //   'language' : "english",
+          //   'numbers' : values.number,
+          //   'flash' : "0"
+
+          // }})
+          // .then((res)=>{
+          //   console.log("OTP api response:",res);
+          // })
+          // .catch((err)=>{
+          //   console.log("error in otp api",err);
+          // })
+        }
+        else {
+          setShowPIN(true);
+          setEncPin(res.data[0].password);
+        }
       })
+        .catch((err) => {
+          console.log('err', err);
+        })
 
-      
+
     }
   });
+  const handleInstallClick = () =>{
+    setShowInstall(false);
+    handleWebInstallAccepted();
+  }
+  const handleWebCloseClick = () =>{
+    setShowInstall(false);
+    handleWebInstallDeclined();
+  }
+  const handleIosCloseClick = () =>{
+    setShowInstall(false);
+    handleIOSInstallDeclined();
+  }
   const profileClick = () => {
     formik.setFieldValue('number', prevData.number).then((res) => {
       if (!showOTP) formik.handleSubmit();
@@ -226,9 +304,54 @@ export default function Login() {
       </MHidden>
 
       <Container maxWidth="sm">
+      <Modal open={showInstall}>
+                <Card sx={{ position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: '90%',
+                justifyContent:'center',
+                alignItems:'center',
+                p: 1 }}>
+                  <Stack sx={{alignItems:'center'}}>
+                  <Avatar sx={{ width: 32, height: 32 }} src="/static/logo.png" alt="sahayak" />
+                  </Stack>
+
+                  <CardHeader sx={{ py: 1, alignItems:'center' }} title="Would you like to install Sahayaks App?" />
+                  {iosInstallPrompt && (
+                    <Stack sx={{alignItems:'center',}} spacing={2}>
+                      <Typography variant="subtitle2">
+                        Tap
+                        share <Icon icon="fluent:share-ios-20-regular" width={22} height={22} />
+                         then &quot;Add to Home Screen&quot;
+                      </Typography>
+
+                      <Button onClick={handleIosCloseClick}>Close</Button>
+
+                    </Stack>
+                  )}
+                  {webInstallPrompt && (
+                    // <Stack sx={{alignItems:'center', }}>
+                    <Stack sx={{alignItems:'center', justifyContent:'space-around' , mt:5}} direction="row">
+                      
+                      <Button color="error" variant="outlined" onClick={handleWebCloseClick}>Close</Button>
+                      <Button variant="contained" color="primary" onClick={handleInstallClick}>
+                        Install
+                      </Button>
+                    </Stack>
+                    // </Stack>
+                  )}
+
+                </Card>
+              </Modal>
         <ContentStyle>
           <Stack sx={{ mb: 5 }}>
             <Stack sx={{ mb: 5 }} alignItems="center">
+
+
+              
+
+
               {prevData && (
                 <Card sx={{ maxWidth: 345, p: 1, boxShadow: 10, minWidth: 100 }}>
                   <CardActionArea onClick={profileClick}>
@@ -299,6 +422,16 @@ export default function Login() {
                   >
                     Next
                   </LoadingButton>
+                  {/* <Button
+                    fullWidth
+
+                    variant="contained"
+                    onClick={() => {
+                      setShowInstall(true)
+                      console.log('click')
+                    }
+                    }
+                  >Install</Button> */}
                 </Stack>
               </Form>
             </FormikProvider>
@@ -378,11 +511,23 @@ export default function Login() {
                 // error={Boolean(touched.password && errors.password)}
                 // helperText={touched.password && errors.password}
                 />
+
                 {pinError && (
                   <Stack m={2}>
                     <Alert severity="error">Wrong PIN!</Alert>
                   </Stack>
                 )}
+
+                <Stack direction="row" alignItems="center" justifyContent="flex-end" sx={{ my: 2 }}>
+                  {/* <FormControlLabel
+      control={<Checkbox {...getFieldProps('remember')} checked={values.remember} />}
+      label="Remember me"
+    /> */}
+
+                  <Link component={RouterLink} variant="subtitle2" to="/forgotPin">
+                    Forgot PIN?
+                  </Link>
+                </Stack>
 
                 <LoadingButton
                   id="signin"

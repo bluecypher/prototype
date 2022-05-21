@@ -46,6 +46,13 @@ const DashboardApp = () => {
   useEffect(() => {
     const num = localStorage.getItem('number');
     console.log('data', num);
+
+    axios.post('/users/saveToken',{ token: localStorage.getItem('pToken'), id: data.id }).then(res => {
+      console.log('savetoken',res);
+    }).catch(err => {
+      console.log(err);
+    })
+
     axios
       .get('/users/getData', { params: { number: num } })
 

@@ -1,5 +1,6 @@
 import { Navigate, useRoutes } from 'react-router-dom';
 import React, { lazy } from 'react';
+
 // layouts
 
 
@@ -56,6 +57,7 @@ const MyCollections = lazy(()=> import('./pages/MyCollections'));
 const Feedback = lazy(()=> import('./pages/Feedback'));
 const FeedbackSubmit = lazy(()=> import('./pages/FeedbackSubmit'));
 const SetPin = lazy(()=> import('./pages/SetPin'));
+const ForgotPin = lazy(()=> import('./pages/ForgotPin'));
 
 // ----------------------------------------------------------------------
 
@@ -94,6 +96,7 @@ export default function Router() {
         { element: <Navigate to="/login" replace /> },
         { path: 'login', element: <Login /> },
         { path: 'register', element: <Register /> },
+        { path: 'forgotPin', element: <ForgotPin /> },
         { path: 'setPin', element: <SetPin /> },
         { path: '404', element: <NotFound /> },
         { path: 'sessionExpired', element: <SessionExpired /> },
