@@ -30,10 +30,14 @@ export default function App() {
 
     messaging.onMessage((payload) => {
       console.log('Message received. ', payload);
-
-      const temp = new Notification(payload.notification.title, { body: payload.notification.body });
+     
+      // const temp = new Notification(payload.notification.title, { body: payload.notification.body });
+      navigator.serviceWorker.getRegistration().then(reg => {
+        reg.showNotification(payload.notification.title, { body: payload.notification.body });
+      });
+      /* eslint-disable-next-line no-restricted-globals */
       // self.registration.showNotification(payload.notification.title, { body: payload.notification.body })
-      // ...
+
     });
   }
   );

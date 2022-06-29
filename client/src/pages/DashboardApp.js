@@ -47,7 +47,7 @@ const DashboardApp = () => {
     const num = localStorage.getItem('number');
     console.log('data', num);
 
-    axios.post('/users/saveToken',{ token: localStorage.getItem('pToken'), id: data.id }).then(res => {
+    axios.post('/users/saveToken',{ token: localStorage.getItem('pToken'), number: num }).then(res => {
       console.log('savetoken',res);
     }).catch(err => {
       console.log(err);

@@ -243,10 +243,12 @@ export default function User() {
       // }
       for (let i = 0; i < contacts.length; i += 1) {
         // console.log('number:',contacts[i].tel[concat.tel.length-1],' name:',contacts[i].name[0])
+
         axios
           .post('/users/addMembers', {
             number: contacts[i].tel[contacts[i].tel.length - 1],
             name: contacts[i].name[0],
+            pName: profileData.fname,
             pNumber: parent,
             ent_id: enterpriseId
           })
@@ -364,6 +366,7 @@ export default function User() {
         .post('/users/addMembers', {
           number: `+91${formik.values.phone}`,
           name: formik.values.name,
+          pName: profileData.fname,
           pNumber: localStorage.getItem('number'),
           ent_id: profileData.ent_id
         })

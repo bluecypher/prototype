@@ -308,6 +308,11 @@ const addMembers = (name, number, pNumber, ent_id) => {
                     if (!err) {
                         console.log('insert member ', row)
                         db.query("SELECT spd.serv_id FROM service_provider_detail spd INNER JOIN service_provider_master spm USING(user_mast_id) WHERE spm.phone=?", [pNumber], (err, prow) => {
+                            if(err)
+                            {
+                                console.log('add service err',err);
+                                reject(err);
+                            }
                             let servIds = [];
                             prow.forEach(element => {
                                 servIds.push(element.serv_id);
@@ -358,6 +363,7 @@ const mapOwnertoTeam = (name, pNumber, number, member_id) => {
                     }
                 }
                 if (err) {
+                    console.log('mapowner err',err);
                     reject(err);
                 }
             })
@@ -1050,12 +1056,13 @@ const setPIN = (number, pin) => {
     });
 }
 
-const saveToken = (token, id) => {
+const saveToken = (token, number) => {
     return new Promise((resolve, reject) => {
         const db = getconnection();
-        db.query("UPDATE service_provider_master SET push_token=? WHERE user_mast_id=?",
+        db.query("UPDATE service_provider_master SET push_token=?, last_updated=? WHERE phone=?",
             [token,
-            id],
+                new Date(Date.now()),
+            number],
             (err, row) => {
                 if (!err) {
                     

@@ -102,40 +102,42 @@ router.post("/addMembers", (req, res) => {
     const number = req.body.number;
     const pNumber = req.body.pNumber;
     const name = req.body.name;
+    const pName = req.body.pName;
     const ent_id = req.body.ent_id;
 
+    console.log('pnumber', pName);
     if (pNumber) {
         dao.addMembers(name, number, pNumber, ent_id).then((resp) => {
             console.log("Members details updated", resp)
-            // if(resp === "success")
-            // {
-            //         axios.post("https://api.msg91.com/api/v5/flow/", {
-            //             "flow_id": "6283774ee1c07d702138b3f4",
-            //             "mobiles": `91${number}`,
-            //             "name": "Raju",
-            //             "servname":"AC",
-            //             "dt":"17/05/2022",
-            //             "url":"http://sahayakscom"
-            //     },
-            //         {
-            //             headers: {
-            //                 // "Content-Type": "application/json",
-            //                 // "Access-Control-Allow-Origin": true,
-            //                 "authkey": "375887AvOeC9dKi625e4a8cP1",
-            //             }
-            //         },
-            //     )
-            //         .then((res) => {
-            //             console.log("OTP success");
+            const tempNum = number.slice(1);
+            console.log('temonum', tempNum);
+            if (resp === "success") {
+                axios.post("https://api.msg91.com/api/v5/flow/", {
+                    "flow_id": "628f76f9228d1a295a698953",
+                    "mobiles": tempNum,
+                    "name": pName,
+                    "url":"https://sahayaks.com"
 
-            //         })
-            //         .catch((err) => {
-            //             console.log("OTP error", err);
-            //         })
-            // }
+                },
+                    {
+                        headers: {
+                            // "Content-Type": "application/json",
+                            // "Access-Control-Allow-Origin": true,
+                            "authkey": "375887AvOeC9dKi625e4a8cP1",
+                        }
+                    },
+                )
+                    .then((res) => {
+                        console.log("SMS success");
+
+                    })
+                    .catch((err) => {
+                        console.log("SMS error", err);
+                    })
+            }
             res.status(200).send(resp);
         }).catch((err) => {
-            res.status(404).send("Error");
+            res.status(404).send(err);
         })
     }
 
@@ -700,11 +702,11 @@ router.post("/setPIN", (req, res) => {
 
 router.post("/saveToken", (req, res) => {
     const data = req.body.token;
-    const id = req.body.id;
+    const num = req.body.number;
     // console.log('files:',req.file);
     console.log('body', req.body);
-    if (data && id) {
-        dao.saveToken(data, id).then((resp) => {
+    if (data && num) {
+        dao.saveToken(data, num).then((resp) => {
 
             console.log("Token Inserted successfully", resp);
             res.status(200).send("Success");
